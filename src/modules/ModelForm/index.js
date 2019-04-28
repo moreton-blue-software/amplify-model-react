@@ -17,7 +17,6 @@ import ModelFormControllerContext from "../ModelFormController";
 const NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
 let objectTypes;
-const flatFields = {};
 
 export const ModelFormContext = React.createContext();
 
@@ -298,31 +297,14 @@ function ControllerWatcher(props) {
 export default function(props) {
   const { name } = props;
   const [schemaInfo, setSchemaInfo] = React.useState();
-  const { schema } = React.useContext(ModelFormControllerContext);
+  const { schema, getModelSchema } = React.useContext(
+    ModelFormControllerContext
+  );
 
   React.useEffect(() => {
-    if (!objectTypes) {
-      objectTypes = schema.data.__schema.types.filter(o => {
-        if (o.kind !== "OBJECT") return;
-        if (o.fields.find(f => f.name === "id") === undefined) return;
-
-        return true;
-      });
-    }
-    const objectType = objectTypes.find(objType => objType.name === name);
-    const flatFields = get(objectType, "fields", []).filter(f => {
-      const kind = get(f, "type.ofType.kind") || get(f, "type.kind");
-      return kind !== "OBJECT";
-    });
-    setSchemaInfo({
-      model: objectType,
-      flatFields,
-      basicFieldsString:
-        `    ` +
-        flatFields.map(f => f.name).join(`
-    `)
-    });
-  }, [schema]);
+    const info = getModelSchema(name);
+    setSchemaInfo(info);
+  }, [schema, name]);
 
   if (!schemaInfo) return <div>Loading model ${name}..</div>;
   return <ModelForm {...props} schemaInfo={schemaInfo} />;
