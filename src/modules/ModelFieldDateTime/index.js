@@ -23,8 +23,9 @@ export default function ModelFieldDateTime(props) {
       const year = date.getFullYear();
       const hours = padStart(date.getHours(), 2, "0");
       const minutes = padStart(date.getMinutes(), 2, "0");
-      const awsDate = `${year}-${month}-${day}T${hours}:${minutes}:00.000Z`;
-      handlers.setFieldValue(field, awsDate);
+      const awsDate = `${year}-${month}-${day}`;
+      const awsDateTime = awsDate + `T${hours}:${minutes}:00.000Z`;
+      handlers.setFieldValue(field, dateOnly ? awsDate : awsDateTime);
     },
     [field, handlers]
   );
