@@ -56,8 +56,9 @@ function ModelFieldDateTime(props) {
     var year = date.getFullYear();
     var hours = (0, _padStart2.default)(date.getHours(), 2, "0");
     var minutes = (0, _padStart2.default)(date.getMinutes(), 2, "0");
-    var awsDate = year + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":00.000Z";
-    handlers.setFieldValue(field, awsDate);
+    var awsDate = year + "-" + month + "-" + day;
+    var awsDateTime = awsDate + ("T" + hours + ":" + minutes + ":00.000Z");
+    handlers.setFieldValue(field, dateOnly ? awsDate : awsDateTime);
   }, [field, handlers]);
   return _react2.default.createElement(
     "div",
