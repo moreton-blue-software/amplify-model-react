@@ -104,7 +104,7 @@ const Uploader = props => {
     );
   }, [fileData, render]);
   return (
-    <>
+    <React.Fragment>
       <UploadButton
         onChange={e => {
           console.log(e.target.files[0]);
@@ -118,7 +118,7 @@ const Uploader = props => {
         // url={fileData.get('url')}
       />
       {hasSelectedFile && renderFn}
-    </>
+    </React.Fragment>
   );
 };
 

@@ -14,9 +14,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _immutable = require("immutable");
 
+var _get = require("lodash/get");
+
+var _get2 = _interopRequireDefault(_get);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var ModelFormControllerContext = _react2.default.createContext();
+
+var objectTypes = void 0;
 
 function ModelFormControllerProvider(props) {
   var schema = props.schema;
@@ -25,14 +31,39 @@ function ModelFormControllerProvider(props) {
       _React$useState2 = _slicedToArray(_React$useState, 2),
       formMap = _React$useState2[0],
       setFormMap = _React$useState2[1];
-  // console.log('>>ModelFormController/index::', 'schema', schema); //TRACE
 
+  // console.log('>>ModelFormController/index::', 'schema', schema); //TRACE
 
   var contextState = _react2.default.useMemo(function () {
     return {
       schema: schema,
       formMap: formMap.toJS(),
-      setFormMap: setFormMap
+      setFormMap: setFormMap,
+      getModelSchema: function getModelSchema(name) {
+        if (!objectTypes) {
+          objectTypes = (0, _get2.default)(schema, "data.__schema.types", []).filter(function (o) {
+            if (o.kind !== "OBJECT") return;
+            if (o.fields.find(function (f) {
+              return f.name === "id";
+            }) === undefined) return;
+            return true;
+          });
+        }
+        var objectType = objectTypes.find(function (objType) {
+          return objType.name === name;
+        });
+        var flatFields = (0, _get2.default)(objectType, "fields", []).filter(function (f) {
+          var kind = (0, _get2.default)(f, "type.ofType.kind") || (0, _get2.default)(f, "type.kind");
+          return kind !== "OBJECT";
+        });
+        return {
+          model: objectType,
+          flatFields: flatFields,
+          basicFieldsString: "    " + flatFields.map(function (f) {
+            return f.name;
+          }).join("\n        ")
+        };
+      }
     };
   }, [formMap]);
   return _react2.default.createElement(

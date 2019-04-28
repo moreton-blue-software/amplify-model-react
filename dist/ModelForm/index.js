@@ -20,34 +20,13 @@ exports.default = function (props) {
       setSchemaInfo = _React$useState16[1];
 
   var _React$useContext2 = _react2.default.useContext(_ModelFormController2.default),
-      schema = _React$useContext2.schema;
+      schema = _React$useContext2.schema,
+      getModelSchema = _React$useContext2.getModelSchema;
 
   _react2.default.useEffect(function () {
-    if (!objectTypes) {
-      objectTypes = schema.data.__schema.types.filter(function (o) {
-        if (o.kind !== "OBJECT") return;
-        if (o.fields.find(function (f) {
-          return f.name === "id";
-        }) === undefined) return;
-
-        return true;
-      });
-    }
-    var objectType = objectTypes.find(function (objType) {
-      return objType.name === name;
-    });
-    var flatFields = (0, _get2.default)(objectType, "fields", []).filter(function (f) {
-      var kind = (0, _get2.default)(f, "type.ofType.kind") || (0, _get2.default)(f, "type.kind");
-      return kind !== "OBJECT";
-    });
-    setSchemaInfo({
-      model: objectType,
-      flatFields: flatFields,
-      basicFieldsString: "    " + flatFields.map(function (f) {
-        return f.name;
-      }).join("\n    ")
-    });
-  }, [schema]);
+    var info = getModelSchema(name);
+    setSchemaInfo(info);
+  }, [schema, name]);
 
   if (!schemaInfo) return _react2.default.createElement(
     "div",
@@ -104,7 +83,6 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 var NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
 var objectTypes = void 0;
-var flatFields = {};
 
 var ModelFormContext = exports.ModelFormContext = _react2.default.createContext();
 
