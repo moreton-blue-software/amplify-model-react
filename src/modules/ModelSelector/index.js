@@ -16,7 +16,8 @@ export default function ModelSelector(props) {
     renderLabel,
     limit = 100,
     value,
-    label
+    label,
+    queryOpts = {}
   } = props;
   const labelText = label || startCase(props.name);
   const { getModelSchema } = React.useContext(ControllerContext);
@@ -42,7 +43,7 @@ export default function ModelSelector(props) {
     };
   }, [name]);
 
-  const { data, loading } = useQuery(query);
+  const { data, loading } = useQuery(query, queryOpts);
   const { options } = React.useMemo(() => {
     const options = [];
     get(data, "list.items", []).forEach(modelItem => {
