@@ -52,7 +52,9 @@ function ModelSelector(props) {
       _props$limit = props.limit,
       limit = _props$limit === undefined ? 100 : _props$limit,
       value = props.value,
-      label = props.label;
+      label = props.label,
+      _props$queryOpts = props.queryOpts,
+      queryOpts = _props$queryOpts === undefined ? {} : _props$queryOpts;
 
   var labelText = label || (0, _startCase2.default)(props.name);
 
@@ -74,7 +76,7 @@ function ModelSelector(props) {
       queryKey = _React$useMemo.queryKey,
       query = _React$useMemo.query;
 
-  var _useQuery = (0, _reactApolloHooks.useQuery)(query),
+  var _useQuery = (0, _reactApolloHooks.useQuery)(query, queryOpts),
       data = _useQuery.data,
       loading = _useQuery.loading;
 

@@ -1,19 +1,19 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = ModelFieldSelector;
 
-var _react = require('react');
+var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ModelSelector = require('../ModelSelector');
+var _ModelSelector = require("../ModelSelector");
 
 var _ModelSelector2 = _interopRequireDefault(_ModelSelector);
 
-var _ModelForm = require('../ModelForm');
+var _ModelForm = require("../ModelForm");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,7 +22,8 @@ function ModelFieldSelector(props) {
       disabled = props.disabled,
       renderLabel = props.renderLabel,
       label = props.label,
-      field = props.field;
+      field = props.field,
+      queryOpts = props.queryOpts;
 
   var _React$useContext = _react2.default.useContext(_ModelForm.ModelFormContext),
       handlers = _React$useContext.handlers;
@@ -36,6 +37,7 @@ function ModelFieldSelector(props) {
     renderLabel: renderLabel,
     value: handlers.getFieldValue(field),
     onChange: handleChange,
-    label: label
+    label: label,
+    queryOpts: queryOpts
   });
 }
