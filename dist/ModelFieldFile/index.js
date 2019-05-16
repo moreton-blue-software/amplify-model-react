@@ -81,63 +81,63 @@ var Uploader = function Uploader(props) {
       var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref2) {
         var contextData = _ref2.context.data,
             parentData = _ref2.parent.data;
-        var file, retFields, uploadSnackbar, filepath, storeData, id, rest;
+        var file, retFields, uploadSnackbar, filepath, storeData, rest;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                console.log("1234: before saving delay", parentData);
+                // console.log("1234: before saving delay", contextData, parentData);
                 file = fileData.get("file");
                 retFields = {};
                 uploadSnackbar = void 0;
 
                 if (!(file && field)) {
-                  _context.next = 34;
+                  _context.next = 32;
                   break;
                 }
 
-                _context.next = 7;
-                return _bluebird2.default.delay(2000);
+                _context.next = 6;
+                return _bluebird2.default.delay(1000);
 
-              case 7:
-                _context.prev = 7;
+              case 6:
+                _context.prev = 6;
 
                 if (parentData.id) {
-                  _context.next = 11;
+                  _context.next = 10;
                   break;
                 }
 
                 console.log("1234: no parent data id found!.");
                 return _context.abrupt("return", {});
 
-              case 11:
+              case 10:
                 filepath = parentData.id + "/" + file.name;
 
                 uploadSnackbar = enqueueSnackbar("Uploading attachments..", {
                   variant: "info",
                   persist: true
                 });
-                _context.next = 15;
+                _context.next = 14;
                 return _awsAmplify.Storage.put(filepath, file, _extends({}, storageOpts));
 
-              case 15:
+              case 14:
                 storeData = _context.sent;
 
                 enqueueSnackbar("Attchments saved.", { variant: "success" });
                 //omit all fields except file field and id
-                id = contextData.id, rest = _objectWithoutProperties(contextData, ["id"]);
+                rest = _objectWithoutProperties(contextData, []);
 
                 Object.keys(rest).forEach(function (k) {
                   retFields[k] = undefined;
                 });
-                retFields.id = id;
+                retFields.id = parentData.id;
                 retFields[field] = { filename: storeData.key };
-                _context.next = 28;
+                _context.next = 27;
                 break;
 
-              case 23:
-                _context.prev = 23;
-                _context.t0 = _context["catch"](7);
+              case 22:
+                _context.prev = 22;
+                _context.t0 = _context["catch"](6);
 
                 enqueueSnackbar("Something went wrong with saving video", {
                   variant: "error"
@@ -145,23 +145,23 @@ var Uploader = function Uploader(props) {
                 console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", _context.t0);
                 return _context.abrupt("return", false);
 
-              case 28:
-                _context.prev = 28;
+              case 27:
+                _context.prev = 27;
 
                 console.log("1234: before saving delay done");
-                console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
+                // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
                 closeSnackbar(uploadSnackbar);
                 return _context.abrupt("return", retFields);
 
-              case 34:
+              case 32:
                 return _context.abrupt("return", false);
 
-              case 35:
+              case 33:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, undefined, [[7, 23, 28, 34]]);
+        }, _callee, undefined, [[6, 22, 27, 32]]);
       }));
 
       return function beforeSave(_x) {
@@ -177,11 +177,11 @@ var Uploader = function Uploader(props) {
   _react2.default.useEffect(function () {
     var hasCancelled = false;
     var url = handlers.getFieldValue(field);
-    console.log(">>ModelFieldFile/index::", "url", url); //TRACE
+    // console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     var filename = (0, _get2.default)(url, "filename");
     if (filename) {
       _awsAmplify.Storage.get(filename, _extends({}, storageOpts)).then(function (result) {
-        console.log(">>ModelFieldFile/index::", "result", result); //TRACE
+        // console.log(">>ModelFieldFile/index::", "result", result); //TRACE
         if (!hasCancelled) setFileData(function (oldFileData) {
           return oldFileData.merge({ url: result });
         });
@@ -206,7 +206,7 @@ var Uploader = function Uploader(props) {
       onChange: function onChange(e) {
         console.log(e.target.files[0]);
         var file = e.target.files[0];
-        console.log(">>ModelFieldFile/index::", "file", file); //TRACE
+        // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
         setFileData(function (oldFileData) {
           return oldFileData.merge({ file: file, url: null });
         });

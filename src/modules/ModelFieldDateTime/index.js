@@ -34,7 +34,7 @@ export default function ModelFieldDateTime(props) {
       <FormControl fullWidth>
         <Picker
           {...pickerProps}
-          value={value}
+          value={value === "" ? null : value}
           onChange={checkDate}
           label={labelText}
         />

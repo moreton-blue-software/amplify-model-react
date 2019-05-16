@@ -14,10 +14,10 @@ var _templateObject = _taggedTemplateLiteral(["\n    query ", "{\n      model:ge
 exports.default = function (props) {
   var name = props.name;
 
-  var _React$useState15 = _react2.default.useState(),
-      _React$useState16 = _slicedToArray(_React$useState15, 2),
-      schemaInfo = _React$useState16[0],
-      setSchemaInfo = _React$useState16[1];
+  var _React$useState17 = _react2.default.useState(),
+      _React$useState18 = _slicedToArray(_React$useState17, 2),
+      schemaInfo = _React$useState18[0],
+      setSchemaInfo = _React$useState18[1];
 
   var _React$useContext2 = _react2.default.useContext(_ModelFormController2.default),
       schema = _React$useContext2.schema,
@@ -125,7 +125,13 @@ var ModelForm = _react2.default.memo(function (props) {
       _React$useState12 = _slicedToArray(_React$useState11, 2),
       beforeSaveHandlers = _React$useState12[0],
       setBeforeSaveHandlers = _React$useState12[1];
-  // console.log(">>ModelForm/index::", "form re-rendered", name, schemaInfo); //TRACE
+
+  var _React$useState13 = _react2.default.useState((0, _immutable.List)([])),
+      _React$useState14 = _slicedToArray(_React$useState13, 2),
+      afterSaveHandlers = _React$useState14[0],
+      setAfterSaveHandlers = _React$useState14[1];
+
+  //attach before save
 
 
   _react2.default.useEffect(function () {
@@ -145,12 +151,32 @@ var ModelForm = _react2.default.memo(function (props) {
     };
   }, [beforeSave]);
 
+  //attach after save
+  _react2.default.useEffect(function () {
+    var afterSaveObj = { precedence: Infinity, fn: afterSave }; //precedence Infinity = it will execute last
+    // add
+    afterSave && setAfterSaveHandlers(function (oldState) {
+      return oldState.push(afterSaveObj);
+    });
+    return function () {
+      //remove
+      afterSave && setAfterSaveHandlers(function (oldState) {
+        var idx = oldState.findIndex(function (obj) {
+          return obj === afterSaveObj;
+        });
+        return oldState.delete(idx);
+      });
+    };
+  }, [afterSave]);
+
   var modelId = (0, _get2.default)(defaultModelValue, "id", modelIdTmp);
   var editMode = !!modelId;
-  var mutation = editMode ? (0, _Base.composeUpdateMutation)(name) : (0, _Base.composeCreateMutation)(name);
+  // const mutation = editMode
+  //   ? composeUpdateMutation(name)
+  //   : composeCreateMutation(name);
 
   var apolloClient = (0, _reactApolloHooks.useApolloClient)();
-  var saveMutation = (0, _reactApolloHooks.useMutation)(mutation);
+  // const saveMutation = useMutation(mutation);
 
   var parentModelContext = _react2.default.useContext(ModelFormContext);
   var hasParent = !!parentModelContext;
@@ -198,6 +224,19 @@ var ModelForm = _react2.default.memo(function (props) {
       },
       detachBeforeSave: function detachBeforeSave(fn) {
         return setBeforeSaveHandlers(function (oldState) {
+          var idx = oldState.findIndex(function (obj) {
+            return obj === fn;
+          });
+          return oldState.delete(idx);
+        });
+      },
+      attachAfterSave: function attachAfterSave(fn, precedence) {
+        return setAfterSaveHandlers(function (oldState) {
+          return oldState.push({ fn: fn, precedence: precedence });
+        });
+      },
+      detachAfterSave: function detachAfterSave(fn) {
+        return setAfterSaveHandlers(function (oldState) {
           var idx = oldState.findIndex(function (obj) {
             return obj === fn;
           });
@@ -256,7 +295,7 @@ var ModelForm = _react2.default.memo(function (props) {
 
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-          var refetchQueries, savedParentId, noRefetch, formDataJson, formDataClean, parentData, beforeSaveData, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, beforeSaveObj, beforeSaveDataTmp, ret, savedId;
+          var refetchQueries, savedParentId, noRefetch, formDataJson, objFields, formDataClean, parentData, beforeSaveData, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, beforeSaveObj, beforeSaveDataTmp, input, mutation, ret, savedId, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, afterSaveObj;
 
           return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
@@ -264,7 +303,12 @@ var ModelForm = _react2.default.memo(function (props) {
                 case 0:
                   refetchQueries = options.refetchQueries, savedParentId = options.savedParentId, noRefetch = options.noRefetch;
                   formDataJson = formData.toJS();
-                  formDataClean = (0, _omit2.default)(formDataJson, NOISE_FIELDS);
+                  objFields = (0, _get2.default)(query, "definitions.0.selectionSet.selections.0.selectionSet.selections", []).filter(function (f) {
+                    return !!f.selectionSet;
+                  }).map(function (f) {
+                    return (0, _get2.default)(f, "name.value");
+                  });
+                  formDataClean = (0, _omit2.default)(formDataJson, [].concat(NOISE_FIELDS, _toConsumableArray(objFields)));
                   parentData = (0, _get2.default)(parentModelContext, "data", {});
                   // update parent data id from saved model
 
@@ -275,94 +319,94 @@ var ModelForm = _react2.default.memo(function (props) {
                   _iteratorNormalCompletion = true;
                   _didIteratorError = false;
                   _iteratorError = undefined;
-                  _context3.prev = 9;
+                  _context3.prev = 10;
                   _iterator = beforeSaveHandlers.sortBy(function (o) {
                     return o.precedence;
                   }).toJS()[Symbol.iterator]();
 
-                case 11:
+                case 12:
                   if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                    _context3.next = 22;
+                    _context3.next = 23;
                     break;
                   }
 
                   beforeSaveObj = _step.value;
-                  _context3.next = 15;
+                  _context3.next = 16;
                   return _bluebird2.default.resolve(beforeSaveObj.fn({
                     context: { data: formDataClean },
                     parent: { data: parentData }
                   }));
 
-                case 15:
+                case 16:
                   beforeSaveDataTmp = _context3.sent;
 
                   if (!(beforeSaveDataTmp === false)) {
-                    _context3.next = 18;
+                    _context3.next = 19;
                     break;
                   }
 
                   return _context3.abrupt("return");
 
-                case 18:
+                case 19:
                   beforeSaveData = _extends({}, beforeSaveData, beforeSaveDataTmp);
 
-                case 19:
+                case 20:
                   _iteratorNormalCompletion = true;
-                  _context3.next = 11;
+                  _context3.next = 12;
                   break;
 
-                case 22:
-                  _context3.next = 28;
+                case 23:
+                  _context3.next = 29;
                   break;
 
-                case 24:
-                  _context3.prev = 24;
-                  _context3.t0 = _context3["catch"](9);
+                case 25:
+                  _context3.prev = 25;
+                  _context3.t0 = _context3["catch"](10);
                   _didIteratorError = true;
                   _iteratorError = _context3.t0;
 
-                case 28:
-                  _context3.prev = 28;
+                case 29:
                   _context3.prev = 29;
+                  _context3.prev = 30;
 
                   if (!_iteratorNormalCompletion && _iterator.return) {
                     _iterator.return();
                   }
 
-                case 31:
-                  _context3.prev = 31;
+                case 32:
+                  _context3.prev = 32;
 
                   if (!_didIteratorError) {
-                    _context3.next = 34;
+                    _context3.next = 35;
                     break;
                   }
 
                   throw _iteratorError;
 
-                case 34:
-                  return _context3.finish(31);
-
                 case 35:
-                  return _context3.finish(28);
+                  return _context3.finish(32);
 
                 case 36:
-                  _context3.next = 38;
-                  return saveMutation({
+                  return _context3.finish(29);
+
+                case 37:
+                  input = _extends({}, formDataClean, beforeSaveData);
+                  mutation = !!input.id ? (0, _Base.composeUpdateMutation)(name) : (0, _Base.composeCreateMutation)(name);
+                  _context3.next = 41;
+                  return apolloClient.mutate({
+                    mutation: mutation,
                     variables: {
-                      input: _extends({}, formDataClean, beforeSaveData)
+                      input: input
                     },
                     refetchQueries: refetchQueries
                   });
 
-                case 38:
+                case 41:
                   ret = _context3.sent;
-
-                  // console.log("childContexts", childContexts); //TRACE
-
                   savedId = (0, _get2.default)(ret, "data.model.id");
                   //save children models
 
-                  _context3.next = 42;
+                  _context3.next = 45;
                   return _bluebird2.default.map(childContexts || [], function (childCtx) {
                     return childCtx.handlers._saveModel({
                       savedParentId: savedId,
@@ -370,39 +414,91 @@ var ModelForm = _react2.default.memo(function (props) {
                     });
                   });
 
-                case 42:
+                case 45:
                   formDataClean.id = savedId;
-                  _context3.t1 = afterSave;
-
-                  if (!_context3.t1) {
-                    _context3.next = 47;
-                    break;
-                  }
-
-                  _context3.next = 47;
-                  return afterSave({
-                    context: { data: formDataClean },
-                    parent: { data: parentData }
-                  });
-
-                case 47:
-                  if (noRefetch) {
-                    _context3.next = 50;
-                    break;
-                  }
-
-                  _context3.next = 50;
-                  return apolloClient.queryManager.refetchQueryByName(queryKey);
-
-                case 50:
-                  return _context3.abrupt("return", savedId);
+                  // afterSave &&
+                  //   (await afterSave({
+                  //     context: { data: formDataClean },
+                  //     parent: { data: parentData }
+                  //   }));
+                  _iteratorNormalCompletion2 = true;
+                  _didIteratorError2 = false;
+                  _iteratorError2 = undefined;
+                  _context3.prev = 49;
+                  _iterator2 = afterSaveHandlers.sortBy(function (o) {
+                    return o.precedence;
+                  }).toJS()[Symbol.iterator]();
 
                 case 51:
+                  if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
+                    _context3.next = 58;
+                    break;
+                  }
+
+                  afterSaveObj = _step2.value;
+                  _context3.next = 55;
+                  return _bluebird2.default.resolve(afterSaveObj.fn({
+                    context: { data: formDataClean },
+                    parent: { data: parentData }
+                  }));
+
+                case 55:
+                  _iteratorNormalCompletion2 = true;
+                  _context3.next = 51;
+                  break;
+
+                case 58:
+                  _context3.next = 64;
+                  break;
+
+                case 60:
+                  _context3.prev = 60;
+                  _context3.t1 = _context3["catch"](49);
+                  _didIteratorError2 = true;
+                  _iteratorError2 = _context3.t1;
+
+                case 64:
+                  _context3.prev = 64;
+                  _context3.prev = 65;
+
+                  if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
+                  }
+
+                case 67:
+                  _context3.prev = 67;
+
+                  if (!_didIteratorError2) {
+                    _context3.next = 70;
+                    break;
+                  }
+
+                  throw _iteratorError2;
+
+                case 70:
+                  return _context3.finish(67);
+
+                case 71:
+                  return _context3.finish(64);
+
+                case 72:
+                  if (noRefetch) {
+                    _context3.next = 75;
+                    break;
+                  }
+
+                  _context3.next = 75;
+                  return apolloClient.queryManager.refetchQueryByName(queryKey);
+
+                case 75:
+                  return _context3.abrupt("return", savedId);
+
+                case 76:
                 case "end":
                   return _context3.stop();
               }
             }
-          }, _callee3, _this3, [[9, 24, 28, 36], [29,, 31, 35]]);
+          }, _callee3, _this3, [[10, 25, 29, 37], [30,, 32, 36], [49, 60, 64, 72], [65,, 67, 71]]);
         }))();
       },
       save: function save() {
@@ -521,10 +617,10 @@ function ControllerWatcher(props) {
       formMap = _React$useContext.formMap,
       setFormMap = _React$useContext.setFormMap;
 
-  var _React$useState13 = _react2.default.useState((0, _immutable.Map)({ childContexts: null })),
-      _React$useState14 = _slicedToArray(_React$useState13, 2),
-      state = _React$useState14[0],
-      setState = _React$useState14[1];
+  var _React$useState15 = _react2.default.useState((0, _immutable.Map)({ childContexts: null })),
+      _React$useState16 = _slicedToArray(_React$useState15, 2),
+      state = _React$useState16[0],
+      setState = _React$useState16[1];
 
   //Add this context to controller map
 

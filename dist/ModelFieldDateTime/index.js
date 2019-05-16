@@ -67,7 +67,7 @@ function ModelFieldDateTime(props) {
       _FormControl2.default,
       { fullWidth: true },
       _react2.default.createElement(Picker, _extends({}, pickerProps, {
-        value: value,
+        value: value === "" ? null : value,
         onChange: checkDate,
         label: labelText
       }))

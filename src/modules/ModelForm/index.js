@@ -37,7 +37,9 @@ const ModelForm = React.memo(function(props) {
   const [childrenMap, setChildrenMap] = React.useState(Map({}));
   const [childContexts, setChildContexts] = React.useState([]);
   const [beforeSaveHandlers, setBeforeSaveHandlers] = React.useState(List([]));
-  // console.log(">>ModelForm/index::", "form re-rendered", name, schemaInfo); //TRACE
+  const [afterSaveHandlers, setAfterSaveHandlers] = React.useState(List([]));
+
+  //attach before save
   React.useEffect(() => {
     const beforeSaveObj = { precedence: Infinity, fn: beforeSave }; //precedence Infinity = it will execute last
     // add
@@ -53,14 +55,29 @@ const ModelForm = React.memo(function(props) {
     };
   }, [beforeSave]);
 
+  //attach after save
+  React.useEffect(() => {
+    const afterSaveObj = { precedence: Infinity, fn: afterSave }; //precedence Infinity = it will execute last
+    // add
+    afterSave && setAfterSaveHandlers(oldState => oldState.push(afterSaveObj));
+    return () => {
+      //remove
+      afterSave &&
+        setAfterSaveHandlers(oldState => {
+          const idx = oldState.findIndex(obj => obj === afterSaveObj);
+          return oldState.delete(idx);
+        });
+    };
+  }, [afterSave]);
+
   const modelId = get(defaultModelValue, "id", modelIdTmp);
   const editMode = !!modelId;
-  const mutation = editMode
-    ? composeUpdateMutation(name)
-    : composeCreateMutation(name);
+  // const mutation = editMode
+  //   ? composeUpdateMutation(name)
+  //   : composeCreateMutation(name);
 
   const apolloClient = useApolloClient();
-  const saveMutation = useMutation(mutation);
+  // const saveMutation = useMutation(mutation);
 
   const parentModelContext = React.useContext(ModelFormContext);
   const hasParent = !!parentModelContext;
@@ -109,6 +126,17 @@ const ModelForm = React.memo(function(props) {
           return oldState.delete(idx);
         });
       },
+      attachAfterSave(fn, precedence) {
+        return setAfterSaveHandlers(oldState =>
+          oldState.push({ fn, precedence })
+        );
+      },
+      detachAfterSave(fn) {
+        return setAfterSaveHandlers(oldState => {
+          const idx = oldState.findIndex(obj => obj === fn);
+          return oldState.delete(idx);
+        });
+      },
       async setFormData(formData) {
         return setFormData(oldFormData => oldFormData.merge(formData));
       },
@@ -123,7 +151,19 @@ const ModelForm = React.memo(function(props) {
       async _saveModel(options = {}) {
         const { refetchQueries, savedParentId, noRefetch } = options;
         const formDataJson = formData.toJS();
-        const formDataClean = omit(formDataJson, NOISE_FIELDS);
+
+        const objFields = get(
+          query,
+          "definitions.0.selectionSet.selections.0.selectionSet.selections",
+          []
+        )
+          .filter(f => !!f.selectionSet)
+          .map(f => get(f, "name.value"));
+
+        const formDataClean = omit(formDataJson, [
+          ...NOISE_FIELDS,
+          ...objFields
+        ]);
         let parentData = get(parentModelContext, "data", {});
         // update parent data id from saved model
         if (savedParentId) {
@@ -145,14 +185,17 @@ const ModelForm = React.memo(function(props) {
           }
           beforeSaveData = { ...beforeSaveData, ...beforeSaveDataTmp };
         }
-        // console.log("saving beforeSaveData", beforeSaveData); //TRACE
-        const ret = await saveMutation({
+        const input = { ...formDataClean, ...beforeSaveData };
+        const mutation = !!input.id
+          ? composeUpdateMutation(name)
+          : composeCreateMutation(name);
+        const ret = await apolloClient.mutate({
+          mutation,
           variables: {
-            input: { ...formDataClean, ...beforeSaveData }
+            input
           },
           refetchQueries
         });
-        // console.log("childContexts", childContexts); //TRACE
 
         const savedId = get(ret, "data.model.id");
         //save children models
@@ -163,11 +206,21 @@ const ModelForm = React.memo(function(props) {
           });
         });
         formDataClean.id = savedId;
-        afterSave &&
-          (await afterSave({
-            context: { data: formDataClean },
-            parent: { data: parentData }
-          }));
+        // afterSave &&
+        //   (await afterSave({
+        //     context: { data: formDataClean },
+        //     parent: { data: parentData }
+        //   }));
+        for (let afterSaveObj of afterSaveHandlers
+          .sortBy(o => o.precedence)
+          .toJS()) {
+          await Promise.resolve(
+            afterSaveObj.fn({
+              context: { data: formDataClean },
+              parent: { data: parentData }
+            })
+          );
+        }
 
         if (!noRefetch)
           await apolloClient.queryManager.refetchQueryByName(queryKey);

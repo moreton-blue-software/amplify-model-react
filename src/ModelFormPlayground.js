@@ -54,14 +54,14 @@ const extraProps = `
   video {
     filename
   }
-`
+`;
 
 export default function ModelFormPlayground(props) {
   return (
     <div>
       <ModelForm
         name="Vacancy"
-        modelId={"d83e2918-8fc1-4750-bb15-b40844c72842"}
+        modelId={"cdf71f59-debb-44ce-94b2-f94f2e41d5e4"}
         // onSave={onSave}
         additionalFields={extraProps}
       >

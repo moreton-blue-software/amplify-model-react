@@ -29,12 +29,12 @@ const Uploader = props => {
       context: { data: contextData },
       parent: { data: parentData }
     }) => {
-      console.log("1234: before saving delay", parentData);
+      // console.log("1234: before saving delay", contextData, parentData);
       const file = fileData.get("file");
       let retFields = {};
       let uploadSnackbar;
       if (file && field) {
-        await Promise.delay(2000);
+        await Promise.delay(1000);
         try {
           if (!parentData.id) {
             console.log("1234: no parent data id found!.");
@@ -50,11 +50,11 @@ const Uploader = props => {
           });
           enqueueSnackbar("Attchments saved.", { variant: "success" });
           //omit all fields except file field and id
-          const { id, ...rest } = contextData;
+          const { ...rest } = contextData;
           Object.keys(rest).forEach(k => {
             retFields[k] = undefined;
           });
-          retFields.id = id;
+          retFields.id = parentData.id;
           retFields[field] = { filename: storeData.key };
         } catch (e) {
           enqueueSnackbar("Something went wrong with saving video", {
@@ -64,7 +64,7 @@ const Uploader = props => {
           return false;
         } finally {
           console.log("1234: before saving delay done");
-          console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
+          // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
           closeSnackbar(uploadSnackbar);
           return retFields;
         }
@@ -80,12 +80,12 @@ const Uploader = props => {
   React.useEffect(() => {
     let hasCancelled = false;
     const url = handlers.getFieldValue(field);
-    console.log(">>ModelFieldFile/index::", "url", url); //TRACE
+    // console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     const filename = get(url, "filename");
     if (filename) {
       Storage.get(filename, { ...storageOpts })
         .then(result => {
-          console.log(">>ModelFieldFile/index::", "result", result); //TRACE
+          // console.log(">>ModelFieldFile/index::", "result", result); //TRACE
           if (!hasCancelled)
             setFileData(oldFileData => oldFileData.merge({ url: result }));
         })
@@ -109,7 +109,7 @@ const Uploader = props => {
         onChange={e => {
           console.log(e.target.files[0]);
           const file = e.target.files[0];
-          console.log(">>ModelFieldFile/index::", "file", file); //TRACE
+          // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
           setFileData(oldFileData => oldFileData.merge({ file, url: null }));
         }}
         accept={accept}
