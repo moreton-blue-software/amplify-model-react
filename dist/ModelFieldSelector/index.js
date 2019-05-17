@@ -23,6 +23,7 @@ function ModelFieldSelector(props) {
       renderLabel = props.renderLabel,
       label = props.label,
       field = props.field,
+      placeholder = props.placeholder,
       queryOpts = props.queryOpts,
       sorter = props.sorter;
 
@@ -39,6 +40,7 @@ function ModelFieldSelector(props) {
     value: handlers.getFieldValue(field),
     onChange: handleChange,
     label: label,
+    placeholder: placeholder,
     queryOpts: queryOpts,
     sorter: sorter
   });

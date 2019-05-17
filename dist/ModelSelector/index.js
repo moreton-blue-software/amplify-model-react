@@ -53,6 +53,7 @@ function ModelSelector(props) {
       limit = _props$limit === undefined ? 100 : _props$limit,
       value = props.value,
       label = props.label,
+      placeholder = props.placeholder,
       _props$queryOpts = props.queryOpts,
       queryOpts = _props$queryOpts === undefined ? {} : _props$queryOpts,
       _props$sorter = props.sorter,
@@ -115,7 +116,7 @@ function ModelSelector(props) {
       cacheOptions: true,
       isLoading: loading,
       options: options,
-      placeholder: "Select " + (0, _startCase2.default)(name),
+      placeholder: placeholder ? placeholder : "Select " + (0, _startCase2.default)(name),
       defaultOptions: true,
       onChange: handleModelInputChange
     })

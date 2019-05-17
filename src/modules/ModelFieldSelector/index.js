@@ -9,6 +9,7 @@ export default function ModelFieldSelector(props) {
     renderLabel,
     label,
     field,
+    placeholder,
     queryOpts,
     sorter
   } = props;
@@ -27,6 +28,7 @@ export default function ModelFieldSelector(props) {
       value={handlers.getFieldValue(field)}
       onChange={handleChange}
       label={label}
+      placeholder={placeholder}
       queryOpts={queryOpts}
       sorter={sorter}
     />

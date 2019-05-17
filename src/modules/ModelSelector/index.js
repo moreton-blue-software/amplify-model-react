@@ -17,6 +17,7 @@ export default function ModelSelector(props) {
     limit = 100,
     value,
     label,
+    placeholder,
     queryOpts = {},
     sorter = () => {}
   } = props;
@@ -74,7 +75,7 @@ export default function ModelSelector(props) {
         cacheOptions
         isLoading={loading}
         options={options}
-        placeholder={`Select ${startCase(name)}`}
+        placeholder={placeholder ? placeholder : `Select ${startCase(name)}`}
         defaultOptions
         onChange={handleModelInputChange}
       />
