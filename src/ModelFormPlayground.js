@@ -30,6 +30,19 @@ const FormBody = props => {
         field="vacancyClientId"
         renderLabel={client => client.name}
       />
+      <ModelFieldSelector
+        name="Employee"
+        // disabled={!!agencyId}
+        label="Account Manager"
+        field="clientAccountManagerId"
+        renderLabel={employee => `${employee.firstName} ${employee.surname}`}
+        sorter={(a, b) => {
+          if (a.label.toLowerCase() < b.label.toLowerCase()) return -1;
+          if (a.label.toLowerCase() > b.label.toLowerCase()) return 1;
+          return 0;
+        }}
+        // queryOpts={{ fetchPolicy: "network-only" }}
+      />
       <ModelFieldDateTime field="startDate" />
       <ModelFieldInput field="description" />
       <ModelFieldFile

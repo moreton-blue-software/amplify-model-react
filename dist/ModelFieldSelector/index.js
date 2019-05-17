@@ -23,7 +23,8 @@ function ModelFieldSelector(props) {
       renderLabel = props.renderLabel,
       label = props.label,
       field = props.field,
-      queryOpts = props.queryOpts;
+      queryOpts = props.queryOpts,
+      sorter = props.sorter;
 
   var _React$useContext = _react2.default.useContext(_ModelForm.ModelFormContext),
       handlers = _React$useContext.handlers;
@@ -38,6 +39,7 @@ function ModelFieldSelector(props) {
     value: handlers.getFieldValue(field),
     onChange: handleChange,
     label: label,
-    queryOpts: queryOpts
+    queryOpts: queryOpts,
+    sorter: sorter
   });
 }

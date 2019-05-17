@@ -3,7 +3,15 @@ import ModelSelector from "../ModelSelector";
 import { ModelFormContext } from "../ModelForm";
 
 export default function ModelFieldSelector(props) {
-  const { name, disabled, renderLabel, label, field, queryOpts } = props;
+  const {
+    name,
+    disabled,
+    renderLabel,
+    label,
+    field,
+    queryOpts,
+    sorter
+  } = props;
   const { handlers } = React.useContext(ModelFormContext);
   const handleChange = React.useCallback(
     item => {
@@ -20,6 +28,7 @@ export default function ModelFieldSelector(props) {
       onChange={handleChange}
       label={label}
       queryOpts={queryOpts}
+      sorter={sorter}
     />
   );
 }

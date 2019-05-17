@@ -54,7 +54,9 @@ function ModelSelector(props) {
       value = props.value,
       label = props.label,
       _props$queryOpts = props.queryOpts,
-      queryOpts = _props$queryOpts === undefined ? {} : _props$queryOpts;
+      queryOpts = _props$queryOpts === undefined ? {} : _props$queryOpts,
+      _props$sorter = props.sorter,
+      sorter = _props$sorter === undefined ? function () {} : _props$sorter;
 
   var labelText = label || (0, _startCase2.default)(props.name);
 
@@ -90,7 +92,7 @@ function ModelSelector(props) {
       };
       options.push(item);
     });
-    return { options: options };
+    return { options: options.sort(sorter) };
   }, [data]),
       options = _React$useMemo2.options;
 

@@ -17,7 +17,8 @@ export default function ModelSelector(props) {
     limit = 100,
     value,
     label,
-    queryOpts = {}
+    queryOpts = {},
+    sorter = () => {}
   } = props;
   const labelText = label || startCase(props.name);
   const { getModelSchema } = React.useContext(ControllerContext);
@@ -54,7 +55,7 @@ export default function ModelSelector(props) {
       };
       options.push(item);
     });
-    return { options };
+    return { options: options.sort(sorter) };
   }, [data]);
   const handleModelInputChange = React.useCallback(
     e => {
