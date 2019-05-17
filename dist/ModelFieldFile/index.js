@@ -56,6 +56,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 var Uploader = function Uploader(props) {
   var _props$accept = props.accept,
       accept = _props$accept === undefined ? "video/*" : _props$accept,
+      label = props.label,
       field = props.field,
       render = props.render,
       storageOpts = props.storageOpts;
@@ -203,6 +204,7 @@ var Uploader = function Uploader(props) {
     _react2.default.Fragment,
     null,
     _react2.default.createElement(_UploadButton2.default, {
+      labelText: label,
       onChange: function onChange(e) {
         console.log(e.target.files[0]);
         var file = e.target.files[0];
@@ -226,6 +228,7 @@ function ModelFieldFile(props) {
       render = props.render,
       _props$label = props.label,
       label = _props$label === undefined ? "File" : _props$label,
+      buttonLabel = props.buttonLabel,
       _props$storageOpts = props.storageOpts,
       storageOpts = _props$storageOpts === undefined ? {} : _props$storageOpts;
 
@@ -257,6 +260,7 @@ function ModelFieldFile(props) {
         label
       ),
       _react2.default.createElement(Uploader, {
+        label: buttonLabel || label,
         accept: accept,
         field: field,
         render: render,

@@ -14,7 +14,7 @@ import get from "lodash/get";
 // });
 
 const Uploader = props => {
-  const { accept = "video/*", field, render, storageOpts } = props;
+  const { accept = "video/*", label, field, render, storageOpts } = props;
   const [fileData, setFileData] = React.useState(
     Map({ url: null, file: null })
   );
@@ -106,6 +106,7 @@ const Uploader = props => {
   return (
     <React.Fragment>
       <UploadButton
+        labelText={label}
         onChange={e => {
           console.log(e.target.files[0]);
           const file = e.target.files[0];
@@ -123,7 +124,14 @@ const Uploader = props => {
 };
 
 export default function ModelFieldFile(props) {
-  const { field, accept, render, label = "File", storageOpts = {} } = props;
+  const {
+    field,
+    accept,
+    render,
+    label = "File",
+    buttonLabel,
+    storageOpts = {}
+  } = props;
   const { name, data: modelData, handlers } = React.useContext(
     ModelFormContext
   );
@@ -142,6 +150,7 @@ export default function ModelFieldFile(props) {
       <div style={{ marginTop: 15 }}>
         <label>{label}</label>
         <Uploader
+          label={buttonLabel || label}
           accept={accept}
           field={field}
           render={render}

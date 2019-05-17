@@ -46,6 +46,8 @@ const FormBody = props => {
       <ModelFieldDateTime field="startDate" />
       <ModelFieldInput field="description" />
       <ModelFieldFile
+        label="hello"
+        buttonLabel="world"
         field="video"
         render={videoRender}
         storageOpts={{ provider: "DummyStorageProvider" }}
