@@ -25,7 +25,8 @@ function ModelFieldSelector(props) {
       field = props.field,
       placeholder = props.placeholder,
       queryOpts = props.queryOpts,
-      sorter = props.sorter;
+      sorter = props.sorter,
+      filter = props.filter;
 
   var _React$useContext = _react2.default.useContext(_ModelForm.ModelFormContext),
       handlers = _React$useContext.handlers;
@@ -42,6 +43,7 @@ function ModelFieldSelector(props) {
     label: label,
     placeholder: placeholder,
     queryOpts: queryOpts,
-    sorter: sorter
+    sorter: sorter,
+    filter: filter
   });
 }

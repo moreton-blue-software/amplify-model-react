@@ -41,6 +41,10 @@ const FormBody = props => {
           if (a.label.toLowerCase() > b.label.toLowerCase()) return 1;
           return 0;
         }}
+        filter={f => {
+          console.log(">>src/ModelFormPlayground::", "f", f); //TRACE
+          return true;
+        }}
         // queryOpts={{ fetchPolicy: "network-only" }}
       />
       <ModelFieldDateTime field="startDate" />

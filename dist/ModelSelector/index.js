@@ -56,8 +56,8 @@ function ModelSelector(props) {
       placeholder = props.placeholder,
       _props$queryOpts = props.queryOpts,
       queryOpts = _props$queryOpts === undefined ? {} : _props$queryOpts,
-      _props$sorter = props.sorter,
-      sorter = _props$sorter === undefined ? function () {} : _props$sorter;
+      sorter = props.sorter,
+      filter = props.filter;
 
   var labelText = label || (0, _startCase2.default)(props.name);
 
@@ -79,6 +79,18 @@ function ModelSelector(props) {
       queryKey = _React$useMemo.queryKey,
       query = _React$useMemo.query;
 
+  var sorterFn = _react2.default.useMemo(function () {
+    if (sorter) return sorter;
+    return function () {};
+  }, [sorter]);
+
+  var filterFn = _react2.default.useMemo(function () {
+    if (filter) return filter;
+    return function () {
+      return true;
+    };
+  }, [filter]);
+
   var _useQuery = (0, _reactApolloHooks.useQuery)(query, queryOpts),
       data = _useQuery.data,
       loading = _useQuery.loading;
@@ -93,8 +105,8 @@ function ModelSelector(props) {
       };
       options.push(item);
     });
-    return { options: options.sort(sorter) };
-  }, [data]),
+    return { options: options.filter(filterFn).sort(sorterFn) };
+  }, [data, sorterFn, filterFn]),
       options = _React$useMemo2.options;
 
   var handleModelInputChange = _react2.default.useCallback(function (e) {

@@ -19,7 +19,8 @@ export default function ModelSelector(props) {
     label,
     placeholder,
     queryOpts = {},
-    sorter = () => {}
+    sorter,
+    filter
   } = props;
   const labelText = label || startCase(props.name);
   const { getModelSchema } = React.useContext(ControllerContext);
@@ -45,6 +46,16 @@ export default function ModelSelector(props) {
     };
   }, [name]);
 
+  const sorterFn = React.useMemo(() => {
+    if (sorter) return sorter;
+    return () => {};
+  }, [sorter]);
+
+  const filterFn = React.useMemo(() => {
+    if (filter) return filter;
+    return () => true;
+  }, [filter]);
+
   const { data, loading } = useQuery(query, queryOpts);
   const { options } = React.useMemo(() => {
     const options = [];
@@ -56,8 +67,8 @@ export default function ModelSelector(props) {
       };
       options.push(item);
     });
-    return { options: options.sort(sorter) };
-  }, [data]);
+    return { options: options.filter(filterFn).sort(sorterFn) };
+  }, [data, sorterFn, filterFn]);
   const handleModelInputChange = React.useCallback(
     e => {
       onChange && onChange(e.value);

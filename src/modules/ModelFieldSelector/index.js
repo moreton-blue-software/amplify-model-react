@@ -11,7 +11,8 @@ export default function ModelFieldSelector(props) {
     field,
     placeholder,
     queryOpts,
-    sorter
+    sorter,
+    filter
   } = props;
   const { handlers } = React.useContext(ModelFormContext);
   const handleChange = React.useCallback(
@@ -31,6 +32,7 @@ export default function ModelFieldSelector(props) {
       placeholder={placeholder}
       queryOpts={queryOpts}
       sorter={sorter}
+      filter={filter}
     />
   );
 }
