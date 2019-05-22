@@ -35,6 +35,8 @@ function ModelFieldDateTime(props) {
       _props$dateOnly = props.dateOnly,
       dateOnly = _props$dateOnly === undefined ? false : _props$dateOnly,
       label = props.label,
+      _props$strictDate = props.strictDate,
+      strictDate = _props$strictDate === undefined ? false : _props$strictDate,
       _props$pickerProps = props.pickerProps,
       pickerProps = _props$pickerProps === undefined ? {} : _props$pickerProps;
 
@@ -58,6 +60,7 @@ function ModelFieldDateTime(props) {
     var minutes = (0, _padStart2.default)(date.getMinutes(), 2, "0");
     var awsDate = year + "-" + month + "-" + day;
     var awsDateTime = awsDate + ("T" + hours + ":" + minutes + ":00.000Z");
+    if (strictDate === false) awsDate = awsDate + "T00:00:00.000Z";
     handlers.setFieldValue(field, dateOnly ? awsDate : awsDateTime);
   }, [field, handlers]);
   return _react2.default.createElement(

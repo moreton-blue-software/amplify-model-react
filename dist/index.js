@@ -52,6 +52,15 @@ Object.defineProperty(exports, "ModelFieldDateTime", {
   }
 });
 
+var _ModelFieldDate = require("./ModelFieldDate");
+
+Object.defineProperty(exports, "ModelFieldDate", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_ModelFieldDate).default;
+  }
+});
+
 var _ModelFieldFile = require("./ModelFieldFile");
 
 Object.defineProperty(exports, "ModelFieldFile", {

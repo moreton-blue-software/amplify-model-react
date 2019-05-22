@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _templateObject = _taggedTemplateLiteral(["\n    query ", "{\n      list:list", "s(limit: ", "){\n        nextToken\n        items{\n        ", "\n        }\n      }\n    }\n  "], ["\n    query ", "{\n      list:list", "s(limit: ", "){\n        nextToken\n        items{\n        ", "\n        }\n      }\n    }\n  "]);
+var _templateObject = _taggedTemplateLiteral(["\n    query ", " ($limit: Int, $filter: Model", "FilterInput){\n      list:list", "s(limit: $limit, filter: $filter){\n        nextToken\n        items{\n        ", "\n        }\n      }\n    }\n  "], ["\n    query ", " ($limit: Int, $filter: Model", "FilterInput){\n      list:list", "s(limit: $limit, filter: $filter){\n        nextToken\n        items{\n        ", "\n        }\n      }\n    }\n  "]);
 
 exports.default = ModelSelector;
 
@@ -40,22 +40,26 @@ var _ModelFormController = require("../ModelFormController");
 
 var _ModelFormController2 = _interopRequireDefault(_ModelFormController);
 
+var _merge = require("lodash/fp/merge");
+
+var _merge2 = _interopRequireDefault(_merge);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 function ModelSelector(props) {
   var name = props.name,
       onChange = props.onChange,
       disabled = props.disabled,
       renderLabel = props.renderLabel,
-      _props$limit = props.limit,
-      limit = _props$limit === undefined ? 100 : _props$limit,
       value = props.value,
       label = props.label,
       placeholder = props.placeholder,
       _props$queryOpts = props.queryOpts,
-      queryOpts = _props$queryOpts === undefined ? {} : _props$queryOpts,
+      queryOptions = _props$queryOpts === undefined ? {} : _props$queryOpts,
       sorter = props.sorter,
       filter = props.filter;
 
@@ -63,6 +67,11 @@ function ModelSelector(props) {
 
   var _React$useContext = _react2.default.useContext(_ModelFormController2.default),
       getModelSchema = _React$useContext.getModelSchema;
+
+  var dataFilter = queryOptions.dataFilter,
+      _queryOptions$limit = queryOptions.limit,
+      limit = _queryOptions$limit === undefined ? 100 : _queryOptions$limit,
+      queryOpts = _objectWithoutProperties(queryOptions, ["dataFilter", "limit"]);
 
   var modelSchema = getModelSchema(name);
   var modelFlatFields = modelSchema.basicFieldsString;
@@ -72,7 +81,7 @@ function ModelSelector(props) {
     var queryKey = "LIST_" + (0, _upperCase2.default)("" + name);
     console.log("queryKey", queryKey); //TRACE
     return {
-      query: (0, _graphqlTag2.default)(_templateObject, queryKey, name, limit, modelFlatFields),
+      query: (0, _graphqlTag2.default)(_templateObject, queryKey, name, name, modelFlatFields),
       queryKey: queryKey
     };
   }, [name]),
@@ -91,7 +100,7 @@ function ModelSelector(props) {
     };
   }, [filter]);
 
-  var _useQuery = (0, _reactApolloHooks.useQuery)(query, queryOpts),
+  var _useQuery = (0, _reactApolloHooks.useQuery)(query, (0, _merge2.default)({ variables: { limit: limit, filter: dataFilter } })(queryOpts)),
       data = _useQuery.data,
       loading = _useQuery.loading;
 
