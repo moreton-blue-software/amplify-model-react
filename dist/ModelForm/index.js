@@ -52,10 +52,6 @@ var _immutable = require("immutable");
 
 var _reactApolloHooks = require("react-apollo-hooks");
 
-var _omit = require("lodash/omit");
-
-var _omit2 = _interopRequireDefault(_omit);
-
 var _get = require("lodash/get");
 
 var _get2 = _interopRequireDefault(_get);
@@ -72,7 +68,25 @@ var _ModelFormController = require("../ModelFormController");
 
 var _ModelFormController2 = _interopRequireDefault(_ModelFormController);
 
+var _remove = require("lodash/fp/remove");
+
+var _remove2 = _interopRequireDefault(_remove);
+
+var _set = require("lodash/fp/set");
+
+var _set2 = _interopRequireDefault(_set);
+
+var _pick = require("lodash/pick");
+
+var _pick2 = _interopRequireDefault(_pick);
+
+var _omit = require("lodash/fp/omit");
+
+var _omit2 = _interopRequireDefault(_omit);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -80,11 +94,19 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-var NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
-
-var objectTypes = void 0;
+// const NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
 var ModelFormContext = exports.ModelFormContext = _react2.default.createContext();
+
+function getChildContextsById(parentId) {
+  var _ModelFormGlobalProvi = _ModelFormController.ModelFormGlobalProvider.getGlobal(),
+      formMap = _ModelFormGlobalProvi.formMap;
+
+  return Object.values(formMap).filter(function (ctx) {
+    var parentCtxId = (0, _get2.default)(ctx, "parent.ctxId");
+    return parentCtxId === parentId;
+  });
+}
 
 var ModelForm = _react2.default.memo(function (props) {
   var name = props.name,
@@ -101,17 +123,17 @@ var ModelForm = _react2.default.memo(function (props) {
       _React$useState2 = _slicedToArray(_React$useState, 1),
       ctxId = _React$useState2[0];
 
-  var _React$useState3 = _react2.default.useState((0, _immutable.Map)({})),
+  var _React$useState3 = _react2.default.useState({}),
       _React$useState4 = _slicedToArray(_React$useState3, 2),
       state = _React$useState4[0],
       setState = _React$useState4[1];
 
-  var _React$useState5 = _react2.default.useState((0, _immutable.Map)(defaultModelValue || {})),
+  var _React$useState5 = _react2.default.useState(defaultModelValue || {}),
       _React$useState6 = _slicedToArray(_React$useState5, 2),
       formData = _React$useState6[0],
       _setFormData = _React$useState6[1];
 
-  var _React$useState7 = _react2.default.useState((0, _immutable.Map)({})),
+  var _React$useState7 = _react2.default.useState({}),
       _React$useState8 = _slicedToArray(_React$useState7, 2),
       childrenMap = _React$useState8[0],
       setChildrenMap = _React$useState8[1];
@@ -209,14 +231,19 @@ var ModelForm = _react2.default.memo(function (props) {
 
   _react2.default.useEffect(function () {
     var modelData = (0, _get2.default)(data, "model", {});
-    _setFormData(function (oldFormData) {
-      return oldFormData.merge(modelData);
-    });
+    _setFormData(modelData);
   }, [data, editMode]);
+
+  _react2.default.useEffect(function () {
+    console.log(">>ModelForm/index::", "ctx childContexts", childContexts); //TRACE
+  }, [childContexts]);
 
   var handlers = _react2.default.useMemo(function () {
     return {
       setChildrenMap: setChildrenMap,
+      getChildContexts: function getChildContexts() {
+        return getChildContextsById(ctxId);
+      },
       attachBeforeSave: function attachBeforeSave(fn, precedence) {
         return setBeforeSaveHandlers(function (oldState) {
           return oldState.push({ fn: fn, precedence: precedence });
@@ -251,9 +278,7 @@ var ModelForm = _react2.default.memo(function (props) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  return _context.abrupt("return", _setFormData(function (oldFormData) {
-                    return oldFormData.merge(formData);
-                  }));
+                  return _context.abrupt("return", _setFormData(formData));
 
                 case 1:
                 case "end":
@@ -271,9 +296,7 @@ var ModelForm = _react2.default.memo(function (props) {
             while (1) {
               switch (_context2.prev = _context2.next) {
                 case 0:
-                  return _context2.abrupt("return", _setFormData(function (oldFormData) {
-                    return oldFormData.setIn(fieldPath.split("."), value);
-                  }));
+                  return _context2.abrupt("return", _setFormData((0, _set2.default)(fieldPath, value)));
 
                 case 1:
                 case "end":
@@ -288,27 +311,27 @@ var ModelForm = _react2.default.memo(function (props) {
           args[_key - 1] = arguments[_key];
         }
 
-        return formData.getIn.apply(formData, [fieldPath.split(".")].concat(_toConsumableArray(args)));
+        return _get2.default.apply(undefined, [formData, fieldPath].concat(_toConsumableArray(args)));
       },
       _saveModel: function _saveModel() {
         var _this3 = this;
 
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-          var refetchQueries, savedParentId, noRefetch, formDataJson, objFields, formDataClean, parentData, beforeSaveData, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, beforeSaveObj, beforeSaveDataTmp, input, mutation, ret, savedId, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, afterSaveObj;
+          var refetchQueries, savedParentId, noRefetch, formDataJson, objFields, formDataClean, parentData, beforeSaveData, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, beforeSaveObj, beforeSaveDataTmp, input, mutation, ret, savedId, _ModelFormGlobalProvi2, formMap, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, afterSaveObj;
 
           return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
               switch (_context3.prev = _context3.next) {
                 case 0:
                   refetchQueries = options.refetchQueries, savedParentId = options.savedParentId, noRefetch = options.noRefetch;
-                  formDataJson = formData.toJS();
+                  formDataJson = formData;
                   objFields = (0, _get2.default)(query, "definitions.0.selectionSet.selections.0.selectionSet.selections", []).filter(function (f) {
-                    return !!f.selectionSet;
+                    return !f.selectionSet;
                   }).map(function (f) {
                     return (0, _get2.default)(f, "name.value");
                   });
-                  formDataClean = (0, _omit2.default)(formDataJson, [].concat(NOISE_FIELDS, _toConsumableArray(objFields)));
+                  formDataClean = (0, _pick2.default)(formDataJson, [].concat(_toConsumableArray(objFields)));
                   parentData = (0, _get2.default)(parentModelContext, "data", {});
                   // update parent data id from saved model
 
@@ -404,17 +427,20 @@ var ModelForm = _react2.default.memo(function (props) {
                 case 41:
                   ret = _context3.sent;
                   savedId = (0, _get2.default)(ret, "data.model.id");
+                  _ModelFormGlobalProvi2 = _ModelFormController.ModelFormGlobalProvider.getGlobal(), formMap = _ModelFormGlobalProvi2.formMap;
                   //save children models
 
-                  _context3.next = 45;
-                  return _bluebird2.default.map(childContexts || [], function (childCtx) {
+                  _context3.next = 46;
+                  return _bluebird2.default.map(childContexts || [], function (childCtxKey) {
+                    var childCtx = formMap[childCtxKey];
+
                     return childCtx.handlers._saveModel({
                       savedParentId: savedId,
                       noRefetch: true
                     });
                   });
 
-                case 45:
+                case 46:
                   formDataClean.id = savedId;
                   // afterSave &&
                   //   (await afterSave({
@@ -424,81 +450,81 @@ var ModelForm = _react2.default.memo(function (props) {
                   _iteratorNormalCompletion2 = true;
                   _didIteratorError2 = false;
                   _iteratorError2 = undefined;
-                  _context3.prev = 49;
+                  _context3.prev = 50;
                   _iterator2 = afterSaveHandlers.sortBy(function (o) {
                     return o.precedence;
                   }).toJS()[Symbol.iterator]();
 
-                case 51:
+                case 52:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context3.next = 58;
+                    _context3.next = 59;
                     break;
                   }
 
                   afterSaveObj = _step2.value;
-                  _context3.next = 55;
+                  _context3.next = 56;
                   return _bluebird2.default.resolve(afterSaveObj.fn({
                     context: { data: formDataClean },
                     parent: { data: parentData }
                   }));
 
-                case 55:
+                case 56:
                   _iteratorNormalCompletion2 = true;
-                  _context3.next = 51;
+                  _context3.next = 52;
                   break;
 
-                case 58:
-                  _context3.next = 64;
+                case 59:
+                  _context3.next = 65;
                   break;
 
-                case 60:
-                  _context3.prev = 60;
-                  _context3.t1 = _context3["catch"](49);
+                case 61:
+                  _context3.prev = 61;
+                  _context3.t1 = _context3["catch"](50);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context3.t1;
 
-                case 64:
-                  _context3.prev = 64;
+                case 65:
                   _context3.prev = 65;
+                  _context3.prev = 66;
 
                   if (!_iteratorNormalCompletion2 && _iterator2.return) {
                     _iterator2.return();
                   }
 
-                case 67:
-                  _context3.prev = 67;
+                case 68:
+                  _context3.prev = 68;
 
                   if (!_didIteratorError2) {
-                    _context3.next = 70;
+                    _context3.next = 71;
                     break;
                   }
 
                   throw _iteratorError2;
 
-                case 70:
-                  return _context3.finish(67);
-
                 case 71:
-                  return _context3.finish(64);
+                  return _context3.finish(68);
 
                 case 72:
+                  return _context3.finish(65);
+
+                case 73:
                   if (noRefetch) {
-                    _context3.next = 75;
+                    _context3.next = 76;
                     break;
                   }
 
-                  _context3.next = 75;
+                  _context3.next = 76;
                   return apolloClient.queryManager.refetchQueryByName(queryKey);
 
-                case 75:
+                case 76:
                   return _context3.abrupt("return", savedId);
 
-                case 76:
+                case 77:
                 case "end":
                   return _context3.stop();
               }
             }
-          }, _callee3, _this3, [[10, 25, 29, 37], [30,, 32, 36], [49, 60, 64, 72], [65,, 67, 71]]);
+          }, _callee3, _this3, [[10, 25, 29, 37], [30,, 32, 36], [50, 61, 65, 73], [66,, 68, 72]]);
         }))();
       },
       save: function save() {
@@ -512,9 +538,7 @@ var ModelForm = _react2.default.memo(function (props) {
               switch (_context4.prev = _context4.next) {
                 case 0:
                   _context4.next = 2;
-                  return setState(function (oldState) {
-                    return oldState.merge({ saving: true });
-                  });
+                  return setState((0, _set2.default)("saving", true));
 
                 case 2:
                   _context4.next = 4;
@@ -523,9 +547,7 @@ var ModelForm = _react2.default.memo(function (props) {
                 case 4:
                   savedId = _context4.sent;
                   _context4.next = 7;
-                  return setState(function (oldState) {
-                    return oldState.merge({ saving: false });
-                  });
+                  return setState((0, _set2.default)("saving", false));
 
                 case 7:
                   onSave && onSave(savedId);
@@ -542,16 +564,11 @@ var ModelForm = _react2.default.memo(function (props) {
     };
   }, [(0, _get2.default)(parentModelContext, "data"), formData, childContexts, beforeSaveHandlers, afterSave]);
   // console.log("childContexts", childContexts); //TRACE
-  var formDataJS = _react2.default.useMemo(function () {
-    return formData.toJS();
-  }, [formData]);
+  var formDataJS = formData;
   var stateJS = _react2.default.useMemo(function () {
-    return _extends({}, state.toJS(), { loading: loading, editMode: editMode });
+    return _extends({}, state, { loading: loading, editMode: editMode });
   }, [state, loading, editMode]);
-  var childrenMapJS = _react2.default.useMemo(function () {
-    return childrenMap.toJS();
-  }, [childrenMap]);
-
+  var childrenMapJS = childrenMap;
   var contextState = _react2.default.useMemo(function () {
     return {
       ctxId: ctxId,
@@ -567,17 +584,11 @@ var ModelForm = _react2.default.memo(function (props) {
   //Add this context to parent context's children
   _react2.default.useEffect(function () {
     // console.log("parentModelContext", parentModelContext); //TRACE
-    console.log("mf: mounted");
-
-    parentModelContext && parentModelContext.handlers.setChildrenMap(function (oldMap) {
-      return oldMap.set(ctxId, true);
-    });
+    parentModelContext && parentModelContext.handlers.setChildrenMap((0, _set2.default)(ctxId, true));
     // remove
     return function () {
-      console.log("mf: unmounted");
-      parentModelContext && parentModelContext.handlers.setChildrenMap(function (oldMap) {
-        return oldMap.delete(ctxId);
-      });
+      console.log(">>ModelForm/index::", "unmounted", ctxId); //TRACE
+      parentModelContext && parentModelContext.handlers.setChildrenMap((0, _omit2.default)([ctxId]));
     };
   }, []);
   // console.log("contextState", contextState); //TRACE
@@ -586,13 +597,9 @@ var ModelForm = _react2.default.memo(function (props) {
     setChildContexts(ctxs);
   }, []);
 
-  var contextStateExtended = _react2.default.useMemo(function () {
-    return _extends({}, contextState, { childContexts: childContexts || [] });
-  }, [contextState, childContexts]);
-
   return _react2.default.createElement(
     ModelFormContext.Provider,
-    { value: contextStateExtended },
+    { value: contextState },
     _react2.default.createElement(ControllerWatcher, {
       contextState: contextState,
       onChildContextsChange: handleChildContextChange
@@ -614,14 +621,13 @@ function ControllerWatcher(props) {
       onChildContextsChange = props.onChildContextsChange;
 
   var _React$useContext = _react2.default.useContext(_ModelFormController2.default),
-      formMap = _React$useContext.formMap,
-      setFormMap = _React$useContext.setFormMap;
+      setFormMap = _React$useContext.setFormMap,
+      getFormMap = _React$useContext.getFormMap;
 
-  var _React$useState15 = _react2.default.useState((0, _immutable.Map)({ childContexts: null })),
+  var _React$useState15 = _react2.default.useState({ childContexts: null }),
       _React$useState16 = _slicedToArray(_React$useState15, 2),
       state = _React$useState16[0],
       setState = _React$useState16[1];
-
   //Add this context to controller map
 
 
@@ -630,40 +636,19 @@ function ControllerWatcher(props) {
         parent = _ref.parent,
         ctxId = _ref.ctxId;
 
-    if (parent) setFormMap(function (oldFormMap) {
-      return oldFormMap.set(ctxId, contextState);
-    });
+    if (parent) setFormMap(_defineProperty({}, ctxId, contextState));
     // remove
     return function () {
-      setFormMap(function (oldFormMap) {
-        return oldFormMap.delete(ctxId);
-      });
+      setFormMap((0, _omit2.default)([ctxId])(getFormMap()));
     };
   }, [contextState]);
+
   var childrenMap = (0, _get2.default)(contextState, "childrenMap");
-  // console.log("childrenMap", childrenMap); //TRACE
-  var childrenCtxKeys = _react2.default.useMemo(function () {
-    if (!childrenMap) return [];
-    return Object.keys(childrenMap).sort();
+
+  _react2.default.useEffect(function () {
+    var keys = Object.keys(childrenMap || []).sort();
+    onChildContextsChange && onChildContextsChange(keys || []);
   }, [childrenMap]);
-  // console.log("childrenCtxKeys", childrenCtxKeys); //TRACE
-  _react2.default.useEffect(function () {
-    var childContexts = state.get("childContexts");
-    var newChildContexts = [];
-    childrenCtxKeys.forEach(function (k) {
-      newChildContexts.push(formMap[k]);
-    });
-
-    if (newChildContexts.length === 0 && childContexts === null) return;
-
-    setState(function (oldState) {
-      return oldState.merge({ childContexts: newChildContexts });
-    });
-  }, [childrenCtxKeys, formMap]);
-
-  _react2.default.useEffect(function () {
-    onChildContextsChange && onChildContextsChange(state.get("childContexts"));
-  }, [state.get("childContexts")]);
 
   return null;
 }

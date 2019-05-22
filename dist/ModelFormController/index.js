@@ -3,42 +3,53 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.ModelFormGlobalProvider = undefined;
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 exports.ModelFormControllerProvider = ModelFormControllerProvider;
 
-var _react = require("react");
+var _reactn = require("reactn");
 
-var _react2 = _interopRequireDefault(_react);
-
-var _immutable = require("immutable");
+var _reactn2 = _interopRequireDefault(_reactn);
 
 var _get = require("lodash/get");
 
 var _get2 = _interopRequireDefault(_get);
 
+var _merge = require("lodash/fp/merge");
+
+var _merge2 = _interopRequireDefault(_merge);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var ModelFormControllerContext = _react2.default.createContext();
+var ModelFormGlobalProvider = exports.ModelFormGlobalProvider = (0, _reactn.createProvider)({
+  formMap: {}
+});
+
+var ModelFormControllerContext = _reactn2.default.createContext();
 
 var objectTypes = void 0;
 
 function ModelFormControllerProvider(props) {
   var schema = props.schema;
-
-  var _React$useState = _react2.default.useState((0, _immutable.Map)({})),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      formMap = _React$useState2[0],
-      setFormMap = _React$useState2[1];
-
   // console.log('>>ModelFormController/index::', 'schema', schema); //TRACE
 
-  var contextState = _react2.default.useMemo(function () {
+  var _ModelFormGlobalProvi = ModelFormGlobalProvider.useGlobal("formMap"),
+      _ModelFormGlobalProvi2 = _slicedToArray(_ModelFormGlobalProvi, 2),
+      formMap = _ModelFormGlobalProvi2[0],
+      _setFormMap = _ModelFormGlobalProvi2[1];
+
+  var contextState = _reactn2.default.useMemo(function () {
     return {
       schema: schema,
-      formMap: formMap.toJS(),
-      setFormMap: setFormMap,
+      formMap: formMap,
+      getFormMap: function getFormMap() {
+        return ModelFormGlobalProvider.getGlobal().formMap;
+      },
+      setFormMap: function setFormMap(formData) {
+        _setFormMap((0, _merge2.default)(ModelFormGlobalProvider.getGlobal().formMap)(formData));
+      },
       getModelSchema: function getModelSchema(name) {
         if (!objectTypes) {
           objectTypes = (0, _get2.default)(schema, "data.__schema.types", []).filter(function (o) {
@@ -66,7 +77,7 @@ function ModelFormControllerProvider(props) {
       }
     };
   }, [formMap]);
-  return _react2.default.createElement(
+  return _reactn2.default.createElement(
     ModelFormControllerContext.Provider,
     { value: contextState },
     props.children

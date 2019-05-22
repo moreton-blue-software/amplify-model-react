@@ -28,13 +28,19 @@ var _capitalize = require("lodash/capitalize");
 
 var _capitalize2 = _interopRequireDefault(_capitalize);
 
-var _immutable = require("immutable");
-
 var _UploadButton = require("../UploadButton");
 
 var _UploadButton2 = _interopRequireDefault(_UploadButton);
 
 var _awsAmplify = require("aws-amplify");
+
+var _set = require("lodash/fp/set");
+
+var _set2 = _interopRequireDefault(_set);
+
+var _merge = require("lodash/fp/merge");
+
+var _merge2 = _interopRequireDefault(_merge);
 
 var _get = require("lodash/get");
 
@@ -61,7 +67,7 @@ var Uploader = function Uploader(props) {
       render = props.render,
       storageOpts = props.storageOpts;
 
-  var _React$useState = _react2.default.useState((0, _immutable.Map)({ url: null, file: null })),
+  var _React$useState = _react2.default.useState({ url: null, file: null }),
       _React$useState2 = _slicedToArray(_React$useState, 2),
       fileData = _React$useState2[0],
       setFileData = _React$useState2[1];
@@ -88,7 +94,7 @@ var Uploader = function Uploader(props) {
             switch (_context.prev = _context.next) {
               case 0:
                 // console.log("1234: before saving delay", contextData, parentData);
-                file = fileData.get("file");
+                file = fileData.file;
                 retFields = {};
                 uploadSnackbar = void 0;
 
@@ -173,7 +179,7 @@ var Uploader = function Uploader(props) {
     return function () {
       handlers.detachBeforeSave(beforeSave);
     };
-  }, [fileData.get("file"), field]);
+  }, [fileData.file, field]);
 
   _react2.default.useEffect(function () {
     var hasCancelled = false;
@@ -183,9 +189,7 @@ var Uploader = function Uploader(props) {
     if (filename) {
       _awsAmplify.Storage.get(filename, _extends({}, storageOpts)).then(function (result) {
         // console.log(">>ModelFieldFile/index::", "result", result); //TRACE
-        if (!hasCancelled) setFileData(function (oldFileData) {
-          return oldFileData.merge({ url: result });
-        });
+        if (!hasCancelled) setFileData((0, _set2.default)("url", result));
       }).catch(function (err) {
         return console.error(err);
       });
@@ -195,10 +199,10 @@ var Uploader = function Uploader(props) {
     };
   }, [field]);
 
-  var hasSelectedFile = fileData.get("file") || fileData.get("url");
+  var hasSelectedFile = fileData.file || fileData.url;
 
   var renderFn = _react2.default.useMemo(function () {
-    return render && render({ file: fileData.get("file"), url: fileData.get("url") });
+    return render && render({ file: fileData.file, url: fileData.url });
   }, [fileData, render]);
   return _react2.default.createElement(
     _react2.default.Fragment,
@@ -209,9 +213,7 @@ var Uploader = function Uploader(props) {
         console.log(e.target.files[0]);
         var file = e.target.files[0];
         // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
-        setFileData(function (oldFileData) {
-          return oldFileData.merge({ file: file, url: null });
-        });
+        setFileData((0, _merge2.default)({ file: file, url: null }));
       },
       accept: accept,
       hasSelectedFile: hasSelectedFile
