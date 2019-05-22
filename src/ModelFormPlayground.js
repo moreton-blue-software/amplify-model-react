@@ -5,6 +5,7 @@ import ModelFieldInput from "./modules/ModelFieldInput";
 import ModelFieldSelector from "./modules/ModelFieldSelector";
 import ModelFieldTextSelector from "./modules/ModelFieldTextSelector";
 import ModelFieldDateTime from "./modules/ModelFieldDateTime";
+import ModelFieldDate from "./modules/ModelFieldDate";
 import ModelFieldFile from "./modules/ModelFieldFile";
 import ReactPlayer from "react-player";
 import get from "lodash/get";
@@ -70,6 +71,15 @@ const FormBody = props => {
         name="Client"
         field="vacancyClientId"
         renderLabel={client => client.name}
+        queryOpts={{
+          fetchPolicy: "network-only",
+          limit: 101,
+          dataFilter: {
+            archived: {
+              ne: true
+            }
+          }
+        }}
       />
       <ModelFieldSelector
         name="Employee"
@@ -86,9 +96,27 @@ const FormBody = props => {
           console.log(">>src/ModelFormPlayground::", "f", f); //TRACE
           return true;
         }}
-        // queryOpts={{ fetchPolicy: "network-only" }}
       />
       <ModelFieldDateTime field="startDate" />
+      <ModelFieldDateTime
+        field="startDate"
+        dateOnly
+        label="Start Date(date only)"
+        pickerProps={{
+          format: "dd/MM/yyyy",
+          label: "Date of birth",
+          views: ["year", "month", "day"]
+        }}
+      />
+      {/* <ModelFieldDate
+        field="startDate"
+        label="Start Date(date only, strict)"
+        pickerProps={{
+          format: "dd/MM/yyyy",
+          label: "Date of birth",
+          views: ["year", "month", "day"]
+        }}
+      /> */}
       <ModelFieldInput field="description" />
       <ModelFieldFile
         label="hello"

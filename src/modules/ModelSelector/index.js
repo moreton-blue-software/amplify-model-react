@@ -7,6 +7,7 @@ import upperCase from "lodash/upperCase";
 import startCase from "lodash/startCase";
 import { Map } from "immutable";
 import ControllerContext from "../ModelFormController";
+import merge from "lodash/fp/merge";
 
 export default function ModelSelector(props) {
   const {
@@ -14,17 +15,16 @@ export default function ModelSelector(props) {
     onChange,
     disabled,
     renderLabel,
-    limit = 100,
     value,
     label,
     placeholder,
-    queryOpts = {},
+    queryOpts: queryOptions = {},
     sorter,
     filter
   } = props;
   const labelText = label || startCase(props.name);
   const { getModelSchema } = React.useContext(ControllerContext);
-
+  const { dataFilter, limit = 100, ...queryOpts } = queryOptions;
   const modelSchema = getModelSchema(name);
   const modelFlatFields = modelSchema.basicFieldsString;
   if (!modelFlatFields) throw `Flat Field for "${name}" not found`;
@@ -33,8 +33,8 @@ export default function ModelSelector(props) {
     console.log("queryKey", queryKey); //TRACE
     return {
       query: gql`
-    query ${queryKey}{
-      list:list${name}s(limit: ${limit}){
+    query ${queryKey} ($limit: Int, $filter: Model${name}FilterInput){
+      list:list${name}s(limit: $limit, filter: $filter){
         nextToken
         items{
         ${modelFlatFields}
@@ -56,7 +56,10 @@ export default function ModelSelector(props) {
     return () => true;
   }, [filter]);
 
-  const { data, loading } = useQuery(query, queryOpts);
+  const { data, loading } = useQuery(
+    query,
+    merge({ variables: { limit, filter: dataFilter } })(queryOpts)
+  );
   const { options } = React.useMemo(() => {
     const options = [];
     get(data, "list.items", []).forEach(modelItem => {

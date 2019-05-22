@@ -12,7 +12,7 @@ export default function ModelFieldSelector(props) {
     placeholder,
     queryOpts,
     sorter,
-    filter
+    filter //options filter
   } = props;
   const { handlers } = React.useContext(ModelFormContext);
   const handleChange = React.useCallback(

@@ -6,7 +6,13 @@ import padStart from "lodash/padStart";
 import { DateTimePicker, DatePicker } from "material-ui-pickers";
 
 export default function ModelFieldDateTime(props) {
-  const { field, dateOnly = false, label, pickerProps = {} } = props;
+  const {
+    field,
+    dateOnly = false,
+    label,
+    strictDate = false,
+    pickerProps = {}
+  } = props;
   const labelText = label || startCase(field);
   const { handlers } = React.useContext(ModelFormContext);
   const rawValue = handlers.getFieldValue(field);
@@ -23,8 +29,9 @@ export default function ModelFieldDateTime(props) {
       const year = date.getFullYear();
       const hours = padStart(date.getHours(), 2, "0");
       const minutes = padStart(date.getMinutes(), 2, "0");
-      const awsDate = `${year}-${month}-${day}`;
+      let awsDate = `${year}-${month}-${day}`;
       const awsDateTime = awsDate + `T${hours}:${minutes}:00.000Z`;
+      if (strictDate === false) awsDate = awsDate + `T00:00:00.000Z`;
       handlers.setFieldValue(field, dateOnly ? awsDate : awsDateTime);
     },
     [field, handlers]
