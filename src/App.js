@@ -4,7 +4,6 @@ import { ApolloProvider as ApolloHooksProvider } from "react-apollo-hooks";
 import { SnackbarProvider } from "notistack";
 import { ModelFormControllerProvider } from "./modules/ModelFormController";
 import TextField from "@material-ui/core/TextField";
-import { Map } from "immutable";
 import { createApolloClient } from "./client";
 import Divider from "@material-ui/core/Divider";
 import ModelFormPlayground from "./ModelFormPlayground";
@@ -12,6 +11,7 @@ import { MuiPickersUtilsProvider } from "material-ui-pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { Storage } from "aws-amplify";
 import DummyStorageProvider from "./DummyStorageProvider";
+import set from "lodash/fp/set";
 
 function registerFakeStorageProvider() {
   // add the plugin
@@ -71,19 +71,16 @@ function SchemaInput(props) {
 }
 
 export default function App(props) {
-  const [stateMap, setState] = React.useState(
-    Map({
-      ep: localStorage.getItem("amr-ep") || "https://ep",
-      token: localStorage.getItem("amr-token") || "token here",
-      schema: JSON.parse(localStorage.getItem("amr-schema"))
-    })
-  );
-  const state = React.useMemo(() => stateMap.toJS(), [stateMap]);
+  const [state, setState] = React.useState({
+    ep: localStorage.getItem("amr-ep") || "https://ep",
+    token: localStorage.getItem("amr-token") || "token here",
+    schema: JSON.parse(localStorage.getItem("amr-schema"))
+  });
   const { schema, client, ep, token } = state;
   React.useEffect(() => {
     if (!ep || !token) return;
     const client = createApolloClient(state.ep, state.token);
-    setState(oldState => oldState.merge({ client }));
+    setState(set("client", client));
   }, [state.ep, state.token]);
 
   return (
@@ -94,7 +91,7 @@ export default function App(props) {
           const { value } = e.target;
           console.log(">>src/App::", "value", value); //TRACE
           localStorage.setItem("amr-ep", value);
-          setState(oldState => oldState.merge({ ep: value }));
+          setState(set("ep", value));
         }}
       />
       <TokenInput
@@ -103,7 +100,7 @@ export default function App(props) {
           const { value } = e.target;
           console.log(">>src/App::", "value", value); //TRACE
           localStorage.setItem("amr-token", value);
-          setState(oldState => oldState.merge({ token: value }));
+          setState(set("token", value));
         }}
       />
       <div>
@@ -113,7 +110,7 @@ export default function App(props) {
             const { value } = e.target;
             console.log(">>src/App::", "value", value); //TRACE
             localStorage.setItem("amr-schema", value);
-            setState(oldState => oldState.merge({ schema: JSON.parse(value) }));
+            setState(set("schema", JSON.parse(value)));
           }}
         />
       </div>

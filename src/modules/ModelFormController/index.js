@@ -1,6 +1,10 @@
-import React from "react";
-import { Map } from "immutable";
+import React, { createProvider } from "reactn";
 import get from "lodash/get";
+import merge from "lodash/fp/merge";
+
+export const ModelFormGlobalProvider = createProvider({
+  formMap: {}
+});
 
 const ModelFormControllerContext = React.createContext();
 
@@ -8,15 +12,22 @@ let objectTypes;
 
 export function ModelFormControllerProvider(props) {
   const { schema } = props;
-  const [formMap, setFormMap] = React.useState(Map({}));
-
   // console.log('>>ModelFormController/index::', 'schema', schema); //TRACE
+
+  const [formMap, _setFormMap] = ModelFormGlobalProvider.useGlobal("formMap");
 
   const contextState = React.useMemo(
     () => ({
       schema,
-      formMap: formMap.toJS(),
-      setFormMap,
+      formMap: formMap,
+      getFormMap() {
+        return ModelFormGlobalProvider.getGlobal().formMap;
+      },
+      setFormMap(formData) {
+        _setFormMap(
+          merge(ModelFormGlobalProvider.getGlobal().formMap)(formData)
+        );
+      },
       getModelSchema(name) {
         if (!objectTypes) {
           objectTypes = get(schema, "data.__schema.types", []).filter(o => {

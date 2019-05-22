@@ -3,9 +3,10 @@ import ModelForm, { ModelFormContext } from "../ModelForm";
 import { useSnackbar } from "notistack";
 import Promise from "bluebird";
 import capitalize from "lodash/capitalize";
-import { Map, List } from "immutable";
 import UploadButton from "../UploadButton";
 import { Storage } from "aws-amplify";
+import set from "lodash/fp/set";
+import merge from "lodash/fp/merge";
 import get from "lodash/get";
 
 // const Renderer = React.memo(props=>{
@@ -15,9 +16,7 @@ import get from "lodash/get";
 
 const Uploader = props => {
   const { accept = "video/*", label, field, render, storageOpts } = props;
-  const [fileData, setFileData] = React.useState(
-    Map({ url: null, file: null })
-  );
+  const [fileData, setFileData] = React.useState({ url: null, file: null });
 
   const { data, state, handlers } = React.useContext(ModelFormContext);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -30,7 +29,7 @@ const Uploader = props => {
       parent: { data: parentData }
     }) => {
       // console.log("1234: before saving delay", contextData, parentData);
-      const file = fileData.get("file");
+      const file = fileData.file;
       let retFields = {};
       let uploadSnackbar;
       if (file && field) {
@@ -75,7 +74,7 @@ const Uploader = props => {
     return () => {
       handlers.detachBeforeSave(beforeSave);
     };
-  }, [fileData.get("file"), field]);
+  }, [fileData.file, field]);
 
   React.useEffect(() => {
     let hasCancelled = false;
@@ -86,8 +85,7 @@ const Uploader = props => {
       Storage.get(filename, { ...storageOpts })
         .then(result => {
           // console.log(">>ModelFieldFile/index::", "result", result); //TRACE
-          if (!hasCancelled)
-            setFileData(oldFileData => oldFileData.merge({ url: result }));
+          if (!hasCancelled) setFileData(set("url", result));
         })
         .catch(err => console.error(err));
     }
@@ -96,12 +94,10 @@ const Uploader = props => {
     };
   }, [field]);
 
-  const hasSelectedFile = fileData.get("file") || fileData.get("url");
+  const hasSelectedFile = fileData.file || fileData.url;
 
   const renderFn = React.useMemo(() => {
-    return (
-      render && render({ file: fileData.get("file"), url: fileData.get("url") })
-    );
+    return render && render({ file: fileData.file, url: fileData.url });
   }, [fileData, render]);
   return (
     <React.Fragment>
@@ -111,7 +107,7 @@ const Uploader = props => {
           console.log(e.target.files[0]);
           const file = e.target.files[0];
           // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
-          setFileData(oldFileData => oldFileData.merge({ file, url: null }));
+          setFileData(merge({ file, url: null }));
         }}
         accept={accept}
         hasSelectedFile={hasSelectedFile}
