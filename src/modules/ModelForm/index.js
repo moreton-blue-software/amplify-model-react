@@ -54,7 +54,7 @@ const ModelForm = React.memo(function(props) {
   React.useEffect(() => {
     onChange && onChange(formData);
   }, [formData]);
-  
+
   //attach before save
   React.useEffect(() => {
     const beforeSaveObj = { precedence: Infinity, fn: beforeSave }; //precedence Infinity = it will execute last
@@ -117,7 +117,6 @@ const ModelForm = React.memo(function(props) {
   }, [name, modelId]);
 
   const { data, loading } = useQuery(query, {
-    notifyOnNetworkStatusChange: true,
     skip: !editMode // || (modelId && defaultModelValue),
   });
   // console.log("formData.toJS()", formData.toJS()); //TRACE
@@ -125,7 +124,7 @@ const ModelForm = React.memo(function(props) {
   //Fetch model data for editting
   React.useEffect(() => {
     const modelData = get(data, "model", {});
-    setFormData(modelData);
+    setFormData(oldModelData => ({ ...oldModelData, ...modelData }));
   }, [data, editMode]);
 
   React.useEffect(() => {

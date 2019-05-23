@@ -222,7 +222,6 @@ var ModelForm = _react2.default.memo(function (props) {
       query = _React$useMemo.query;
 
   var _useQuery = (0, _reactApolloHooks.useQuery)(query, {
-    notifyOnNetworkStatusChange: true,
     skip: !editMode // || (modelId && defaultModelValue),
   }),
       data = _useQuery.data,
@@ -234,7 +233,9 @@ var ModelForm = _react2.default.memo(function (props) {
 
   _react2.default.useEffect(function () {
     var modelData = (0, _get2.default)(data, "model", {});
-    _setFormData(modelData);
+    _setFormData(function (oldModelData) {
+      return _extends({}, oldModelData, modelData);
+    });
   }, [data, editMode]);
 
   _react2.default.useEffect(function () {
