@@ -35,6 +35,9 @@ const VacancyQuestion = props => {
   return (
     <ModelForm
       key={index}
+      onChange={e => {
+        console.log(">>src/ModelFormPlayground::", "formData onChange", e); //TRACE
+      }}
       name="VacancyQuestion"
       defaultModelValue={vq}
       beforeSave={beforeSave}
@@ -168,6 +171,9 @@ export default function ModelFormPlayground(props) {
         modelId={"10009c7f-f77c-4389-b480-19cc3675e109"}
         // onSave={onSave}
         additionalFields={extraProps}
+        onChange={e => {
+          console.log(">>src/ModelFormPlayground::", "formData onChange", e); //TRACE
+        }}
       >
         <FormBody {...props} />
       </ModelForm>

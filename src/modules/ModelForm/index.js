@@ -36,6 +36,7 @@ const ModelForm = React.memo(function(props) {
     name,
     modelId: modelIdTmp,
     onSave,
+    onChange,
     defaultModelValue,
     beforeSave,
     afterSave,
@@ -50,6 +51,10 @@ const ModelForm = React.memo(function(props) {
   const [beforeSaveHandlers, setBeforeSaveHandlers] = React.useState(List([]));
   const [afterSaveHandlers, setAfterSaveHandlers] = React.useState(List([]));
 
+  React.useEffect(() => {
+    onChange && onChange(formData);
+  }, [formData]);
+  
   //attach before save
   React.useEffect(() => {
     const beforeSaveObj = { precedence: Infinity, fn: beforeSave }; //precedence Infinity = it will execute last
@@ -179,7 +184,7 @@ const ModelForm = React.memo(function(props) {
           .map(f => get(f, "name.value"));
 
         const formDataClean = pick(formDataJson, [...objFields]);
-   
+
         let parentData = get(parentModelContext, "data", {});
         // update parent data id from saved model
         if (savedParentId) {

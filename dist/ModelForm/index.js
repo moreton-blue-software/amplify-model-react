@@ -112,6 +112,7 @@ var ModelForm = _react2.default.memo(function (props) {
   var name = props.name,
       modelIdTmp = props.modelId,
       onSave = props.onSave,
+      onChange = props.onChange,
       defaultModelValue = props.defaultModelValue,
       beforeSave = props.beforeSave,
       afterSave = props.afterSave,
@@ -153,9 +154,11 @@ var ModelForm = _react2.default.memo(function (props) {
       afterSaveHandlers = _React$useState14[0],
       setAfterSaveHandlers = _React$useState14[1];
 
+  _react2.default.useEffect(function () {
+    onChange && onChange(formData);
+  }, [formData]);
+
   //attach before save
-
-
   _react2.default.useEffect(function () {
     var beforeSaveObj = { precedence: Infinity, fn: beforeSave }; //precedence Infinity = it will execute last
     // add
