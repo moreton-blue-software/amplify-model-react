@@ -6,7 +6,6 @@ import capitalize from "lodash/capitalize";
 import UploadButton from "../UploadButton";
 import { Storage } from "aws-amplify";
 import set from "lodash/fp/set";
-import merge from "lodash/fp/merge";
 import get from "lodash/get";
 
 // const Renderer = React.memo(props=>{
@@ -79,6 +78,7 @@ const Uploader = props => {
   React.useEffect(() => {
     let hasCancelled = false;
     const url = handlers.getFieldValue(field);
+    console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     // console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     const filename = get(url, "filename");
     if (filename) {
@@ -107,7 +107,7 @@ const Uploader = props => {
           console.log(e.target.files[0]);
           const file = e.target.files[0];
           // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
-          setFileData(merge({ file, url: null }));
+          setFileData(oldFileData => ({ ...oldFileData, file, url: null }));
         }}
         accept={accept}
         hasSelectedFile={hasSelectedFile}

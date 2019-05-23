@@ -38,10 +38,6 @@ var _set = require("lodash/fp/set");
 
 var _set2 = _interopRequireDefault(_set);
 
-var _merge = require("lodash/fp/merge");
-
-var _merge2 = _interopRequireDefault(_merge);
-
 var _get = require("lodash/get");
 
 var _get2 = _interopRequireDefault(_get);
@@ -184,6 +180,7 @@ var Uploader = function Uploader(props) {
   _react2.default.useEffect(function () {
     var hasCancelled = false;
     var url = handlers.getFieldValue(field);
+    console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     // console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     var filename = (0, _get2.default)(url, "filename");
     if (filename) {
@@ -213,7 +210,9 @@ var Uploader = function Uploader(props) {
         console.log(e.target.files[0]);
         var file = e.target.files[0];
         // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
-        setFileData((0, _merge2.default)({ file: file, url: null }));
+        setFileData(function (oldFileData) {
+          return _extends({}, oldFileData, { file: file, url: null });
+        });
       },
       accept: accept,
       hasSelectedFile: hasSelectedFile
