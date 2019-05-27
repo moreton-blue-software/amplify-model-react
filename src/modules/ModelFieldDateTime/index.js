@@ -3,7 +3,7 @@ import { ModelFormContext } from "../ModelForm";
 import startCase from "lodash/startCase";
 import FormControl from "@material-ui/core/FormControl";
 import padStart from "lodash/padStart";
-import { DateTimePicker, DatePicker } from "material-ui-pickers";
+import { DateTimePicker, DatePicker } from "@material-ui/pickers";
 
 export default function ModelFieldDateTime(props) {
   const {

@@ -106,9 +106,10 @@ const FormBody = props => {
         dateOnly
         label="Start Date(date only)"
         pickerProps={{
+          openTo: "year",
           format: "dd/MM/yyyy",
           label: "Date of birth",
-          views: ["year", "month", "day"]
+          views: ["year", "month", "date"]
         }}
       />
       {/* <ModelFieldDate

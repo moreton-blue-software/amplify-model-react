@@ -225,7 +225,8 @@ var ModelForm = _react2.default.memo(function (props) {
     skip: !editMode // || (modelId && defaultModelValue),
   }),
       data = _useQuery.data,
-      loading = _useQuery.loading;
+      loading = _useQuery.loading,
+      refetch = _useQuery.refetch;
   // console.log("formData.toJS()", formData.toJS()); //TRACE
 
   //Fetch model data for editting
@@ -518,7 +519,7 @@ var ModelForm = _react2.default.memo(function (props) {
                   }
 
                   _context3.next = 76;
-                  return apolloClient.queryManager.refetchQueryByName(queryKey);
+                  return refetch();
 
                 case 76:
                   return _context3.abrupt("return", savedId);

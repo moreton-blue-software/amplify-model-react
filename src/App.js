@@ -7,7 +7,7 @@ import TextField from "@material-ui/core/TextField";
 import { createApolloClient } from "./client";
 import Divider from "@material-ui/core/Divider";
 import ModelFormPlayground from "./ModelFormPlayground";
-import { MuiPickersUtilsProvider } from "material-ui-pickers";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { Storage } from "aws-amplify";
 import DummyStorageProvider from "./DummyStorageProvider";

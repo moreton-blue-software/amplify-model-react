@@ -26,7 +26,7 @@ var _padStart = require("lodash/padStart");
 
 var _padStart2 = _interopRequireDefault(_padStart);
 
-var _materialUiPickers = require("material-ui-pickers");
+var _pickers = require("@material-ui/pickers");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -46,7 +46,7 @@ function ModelFieldDateTime(props) {
       handlers = _React$useContext.handlers;
 
   var rawValue = handlers.getFieldValue(field);
-  var Picker = dateOnly ? _materialUiPickers.DatePicker : _materialUiPickers.DateTimePicker;
+  var Picker = dateOnly ? _pickers.DatePicker : _pickers.DateTimePicker;
   var value = rawValue ? new Date(rawValue) : "";
   var checkDate = _react2.default.useCallback(function (mDate) {
     // if (!mDate || !mDate._d) return;

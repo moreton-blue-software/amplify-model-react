@@ -116,7 +116,7 @@ const ModelForm = React.memo(function(props) {
     };
   }, [name, modelId]);
 
-  const { data, loading } = useQuery(query, {
+  const { data, loading, refetch } = useQuery(query, {
     skip: !editMode // || (modelId && defaultModelValue),
   });
   // console.log("formData.toJS()", formData.toJS()); //TRACE
@@ -245,8 +245,8 @@ const ModelForm = React.memo(function(props) {
           );
         }
 
-        if (!noRefetch)
-          await apolloClient.queryManager.refetchQueryByName(queryKey);
+        if (!noRefetch) await refetch();
+        // await apolloClient.queryManager.ref.refetchQueryByName(queryKey);
 
         // console.log("ret", ret); //TRACE
         return savedId;
