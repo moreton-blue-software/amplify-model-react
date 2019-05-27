@@ -8,7 +8,7 @@ import { DateTimePicker, DatePicker } from "@material-ui/pickers";
 export default function ModelFieldDateTime(props) {
   const {
     field,
-    dateOnly = false,
+    dateOnly: dateOnlyTmp = false,
     label,
     strictDate = false,
     pickerProps = {}
@@ -16,6 +16,7 @@ export default function ModelFieldDateTime(props) {
   const labelText = label || startCase(field);
   const { handlers } = React.useContext(ModelFormContext);
   const rawValue = handlers.getFieldValue(field);
+  const dateOnly = strictDate || dateOnlyTmp;
   const Picker = dateOnly ? DatePicker : DateTimePicker;
   const value = rawValue ? new Date(rawValue) : "";
   const checkDate = React.useCallback(

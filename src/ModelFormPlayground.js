@@ -108,19 +108,17 @@ const FormBody = props => {
         pickerProps={{
           openTo: "year",
           format: "dd/MM/yyyy",
-          label: "Date of birth",
           views: ["year", "month", "date"]
         }}
       />
-      {/* <ModelFieldDate
+      <ModelFieldDate
         field="startDate"
         label="Start Date(date only, strict)"
         pickerProps={{
           format: "dd/MM/yyyy",
-          label: "Date of birth",
-          views: ["year", "month", "day"]
+          views: ["year", "month", "date"]
         }}
-      /> */}
+      />
       <ModelFieldInput field="description" />
       <ModelFieldFile
         label="hello"

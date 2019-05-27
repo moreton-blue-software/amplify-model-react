@@ -33,7 +33,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function ModelFieldDateTime(props) {
   var field = props.field,
       _props$dateOnly = props.dateOnly,
-      dateOnly = _props$dateOnly === undefined ? false : _props$dateOnly,
+      dateOnlyTmp = _props$dateOnly === undefined ? false : _props$dateOnly,
       label = props.label,
       _props$strictDate = props.strictDate,
       strictDate = _props$strictDate === undefined ? false : _props$strictDate,
@@ -46,6 +46,7 @@ function ModelFieldDateTime(props) {
       handlers = _React$useContext.handlers;
 
   var rawValue = handlers.getFieldValue(field);
+  var dateOnly = strictDate || dateOnlyTmp;
   var Picker = dateOnly ? _pickers.DatePicker : _pickers.DateTimePicker;
   var value = rawValue ? new Date(rawValue) : "";
   var checkDate = _react2.default.useCallback(function (mDate) {
