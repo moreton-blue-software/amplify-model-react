@@ -12,6 +12,8 @@ import DateFnsUtils from "@date-io/date-fns";
 import { Storage } from "aws-amplify";
 import DummyStorageProvider from "./DummyStorageProvider";
 import set from "lodash/fp/set";
+import get from "lodash/get";
+import { introSpecQuery } from "./introspec";
 
 function registerFakeStorageProvider() {
   // add the plugin
@@ -74,15 +76,29 @@ export default function App(props) {
   const [state, setState] = React.useState({
     ep: localStorage.getItem("amr-ep") || "https://ep",
     token: localStorage.getItem("amr-token") || "token here",
-    schema: JSON.parse(localStorage.getItem("amr-schema"))
+    schema: null
   });
   const { schema, client, ep, token } = state;
   React.useEffect(() => {
+    let um = false;
     if (!ep || !token) return;
     const client = createApolloClient(state.ep, state.token);
-    setState(set("client", client));
+    client
+      .query({
+        query: introSpecQuery,
+        fetchPolicy: "network-only"
+      })
+      .then(data => {
+        setState(set("client", client));
+        setState(oldState => ({
+          ...oldState,
+          client,
+          schema: data
+        }));
+      });
+    return () => (um = true);
   }, [state.ep, state.token]);
-
+  console.log(">>src/App::", "schema", schema); //TRACE
   return (
     <>
       <GraphqlEndpoint
@@ -94,6 +110,7 @@ export default function App(props) {
           setState(set("ep", value));
         }}
       />
+      <span style={{ marginLeft: 20 }} />
       <TokenInput
         defaultValue={token}
         onChange={e => {
@@ -103,17 +120,6 @@ export default function App(props) {
           setState(set("token", value));
         }}
       />
-      <div>
-        <SchemaInput
-          defaultValue={JSON.stringify(schema)}
-          onChange={e => {
-            const { value } = e.target;
-            console.log(">>src/App::", "value", value); //TRACE
-            localStorage.setItem("amr-schema", value);
-            setState(set("schema", JSON.parse(value)));
-          }}
-        />
-      </div>
       {client && schema && (
         <>
           <Divider />
