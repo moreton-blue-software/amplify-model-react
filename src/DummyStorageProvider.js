@@ -1,5 +1,5 @@
 import { Storage, StorageProvider } from "aws-amplify";
-
+import Promise from "bluebird";
 export default class DummyStorageProvider {
   // category and provider name
   static category = "Storage";
@@ -18,6 +18,10 @@ export default class DummyStorageProvider {
 
   // upload storage object
   async put(key, object, options) {
+    for (let index = 0; index < 10; index++) {
+      await Promise.delay(1000);
+      options.progressCallback({ loaded: index * 10, total: 100 });
+    }
     return { key: "http://techslides.com/demos/sample-videos/small.webm" };
   }
 

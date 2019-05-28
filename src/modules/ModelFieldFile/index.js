@@ -13,6 +13,23 @@ import get from "lodash/get";
 //   return
 // });
 
+function ProgressDisplay({ onDone, filepath, storageOpts, file }) {
+  const [state, setState] = React.useState(0);
+
+  React.useEffect(() => {
+    Storage.put(filepath, file, {
+      progressCallback(progress) {
+        const progressPercentage = (progress.loaded / progress.total) * 100;
+        setState(progressPercentage);
+      },
+      ...storageOpts
+    }).then(storeData => {
+      onDone(storeData);
+    });
+  }, []);
+  return <span>`Uploading attachments.. {state}%`</span>;
+}
+
 const Uploader = props => {
   const { accept = "video/*", label, field, render, storageOpts } = props;
   const [fileData, setFileData] = React.useState({ url: null, file: null });
@@ -25,7 +42,7 @@ const Uploader = props => {
 
     const beforeSave = async ({
       context: { data: contextData },
-      parent: { data: parentData },
+      parent: { data: parentData }
     }) => {
       // console.log("1234: before saving delay", contextData, parentData);
       const file = fileData.file;
@@ -40,20 +57,22 @@ const Uploader = props => {
           }
           const filepath = `${parentData.id}/${file.name}`;
           let progressPercentage = 0;
-          uploadSnackbar = enqueueSnackbar(
-            `Uploading attachments.. ${progressPercentage}%`,
-            {
-              variant: "info",
-              persist: true,
-            }
-          );
 
-          const storeData = await Storage.put(filepath, file, {
-            progressCallback(progress) {
-              progressPercentage = (progress.loaded / progress.total) * 100;
-            },
-            ...storageOpts,
+          const storeDataPromise = new Promise(function(resolve, reject) {
+            uploadSnackbar = enqueueSnackbar(
+              // `Uploading attachments.. ${progressPercentage}%`,
+              <ProgressDisplay
+                {...{ file, filepath, storageOpts }}
+                onDone={resolve}
+              />,
+              {
+                variant: "info",
+                persist: true
+              }
+            );
           });
+          const storeData = await storeDataPromise;
+          console.log(">>ModelFieldFile/index::", "storeData", storeData); //TRACE
           enqueueSnackbar("Attchments saved.", { variant: "success" });
           //omit all fields except file field and id
           const { ...rest } = contextData;
@@ -64,7 +83,7 @@ const Uploader = props => {
           retFields[field] = { filename: storeData.key };
         } catch (e) {
           enqueueSnackbar("Something went wrong with saving video", {
-            variant: "error",
+            variant: "error"
           });
           console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", e);
           return false;
@@ -134,7 +153,7 @@ export default function ModelFieldFile(props) {
     render,
     label = "File",
     buttonLabel,
-    storageOpts = {},
+    storageOpts = {}
   } = props;
   const { name, data: modelData, handlers } = React.useContext(
     ModelFormContext

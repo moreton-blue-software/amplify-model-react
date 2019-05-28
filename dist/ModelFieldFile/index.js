@@ -55,6 +55,36 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //   return
 // });
 
+function ProgressDisplay(_ref) {
+  var onDone = _ref.onDone,
+      filepath = _ref.filepath,
+      storageOpts = _ref.storageOpts,
+      file = _ref.file;
+
+  var _React$useState = _react2.default.useState(0),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      state = _React$useState2[0],
+      setState = _React$useState2[1];
+
+  _react2.default.useEffect(function () {
+    _awsAmplify.Storage.put(filepath, file, _extends({
+      progressCallback: function progressCallback(progress) {
+        var progressPercentage = progress.loaded / progress.total * 100;
+        setState(progressPercentage);
+      }
+    }, storageOpts)).then(function (storeData) {
+      onDone(storeData);
+    });
+  }, []);
+  return _react2.default.createElement(
+    "span",
+    null,
+    "`Uploading attachments.. ",
+    state,
+    "%`"
+  );
+}
+
 var Uploader = function Uploader(props) {
   var _props$accept = props.accept,
       accept = _props$accept === undefined ? "video/*" : _props$accept,
@@ -63,10 +93,10 @@ var Uploader = function Uploader(props) {
       render = props.render,
       storageOpts = props.storageOpts;
 
-  var _React$useState = _react2.default.useState({ url: null, file: null }),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      fileData = _React$useState2[0],
-      setFileData = _React$useState2[1];
+  var _React$useState3 = _react2.default.useState({ url: null, file: null }),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      fileData = _React$useState4[0],
+      setFileData = _React$useState4[1];
 
   var _React$useContext = _react2.default.useContext(_ModelForm.ModelFormContext),
       data = _React$useContext.data,
@@ -81,10 +111,10 @@ var Uploader = function Uploader(props) {
     console.log("1234: before re-attching..");
 
     var beforeSave = function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref2) {
-        var contextData = _ref2.context.data,
-            parentData = _ref2.parent.data;
-        var file, retFields, uploadSnackbar, filepath, storeData, rest;
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref3) {
+        var contextData = _ref3.context.data,
+            parentData = _ref3.parent.data;
+        var file, retFields, uploadSnackbar, filepath, progressPercentage, storeDataPromise, storeData, rest;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -95,7 +125,7 @@ var Uploader = function Uploader(props) {
                 uploadSnackbar = void 0;
 
                 if (!(file && field)) {
-                  _context.next = 32;
+                  _context.next = 34;
                   break;
                 }
 
@@ -115,17 +145,24 @@ var Uploader = function Uploader(props) {
 
               case 10:
                 filepath = parentData.id + "/" + file.name;
-
-                uploadSnackbar = enqueueSnackbar("Uploading attachments..", {
-                  variant: "info",
-                  persist: true
+                progressPercentage = 0;
+                storeDataPromise = new _bluebird2.default(function (resolve, reject) {
+                  uploadSnackbar = enqueueSnackbar(
+                  // `Uploading attachments.. ${progressPercentage}%`,
+                  _react2.default.createElement(ProgressDisplay, _extends({ file: file, filepath: filepath, storageOpts: storageOpts }, {
+                    onDone: resolve
+                  })), {
+                    variant: "info",
+                    persist: true
+                  });
                 });
-                _context.next = 14;
-                return _awsAmplify.Storage.put(filepath, file, _extends({}, storageOpts));
+                _context.next = 15;
+                return storeDataPromise;
 
-              case 14:
+              case 15:
                 storeData = _context.sent;
 
+                console.log(">>ModelFieldFile/index::", "storeData", storeData); //TRACE
                 enqueueSnackbar("Attchments saved.", { variant: "success" });
                 //omit all fields except file field and id
                 rest = _objectWithoutProperties(contextData, []);
@@ -135,11 +172,11 @@ var Uploader = function Uploader(props) {
                 });
                 retFields.id = parentData.id;
                 retFields[field] = { filename: storeData.key };
-                _context.next = 27;
+                _context.next = 29;
                 break;
 
-              case 22:
-                _context.prev = 22;
+              case 24:
+                _context.prev = 24;
                 _context.t0 = _context["catch"](6);
 
                 enqueueSnackbar("Something went wrong with saving video", {
@@ -148,27 +185,27 @@ var Uploader = function Uploader(props) {
                 console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", _context.t0);
                 return _context.abrupt("return", false);
 
-              case 27:
-                _context.prev = 27;
+              case 29:
+                _context.prev = 29;
 
                 console.log("1234: before saving delay done");
                 // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
                 closeSnackbar(uploadSnackbar);
                 return _context.abrupt("return", retFields);
 
-              case 32:
+              case 34:
                 return _context.abrupt("return", false);
 
-              case 33:
+              case 35:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, undefined, [[6, 22, 27, 32]]);
+        }, _callee, undefined, [[6, 24, 29, 34]]);
       }));
 
       return function beforeSave(_x) {
-        return _ref.apply(this, arguments);
+        return _ref2.apply(this, arguments);
       };
     }();
     handlers.attachBeforeSave(beforeSave, 1);
@@ -240,9 +277,9 @@ function ModelFieldFile(props) {
   // const [state, setState] = React.useState(Map({ defaultValue: null }));
 
   var defaultValue = _react2.default.useMemo(function () {
-    var _ref3;
+    var _ref4;
 
-    return _ref3 = {}, _defineProperty(_ref3, field, modelData[field]), _defineProperty(_ref3, "id", modelData.id), _ref3;
+    return _ref4 = {}, _defineProperty(_ref4, field, modelData[field]), _defineProperty(_ref4, "id", modelData.id), _ref4;
   }, [modelData]);
 
   return _react2.default.createElement(
