@@ -70,7 +70,7 @@ function ProgressDisplay(_ref) {
     _awsAmplify.Storage.put(filepath, file, _extends({
       progressCallback: function progressCallback(progress) {
         var progressPercentage = progress.loaded / progress.total * 100;
-        setState(progressPercentage);
+        setState(Math.floor(progressPercentage));
       }
     }, storageOpts)).then(function (storeData) {
       onDone(storeData);

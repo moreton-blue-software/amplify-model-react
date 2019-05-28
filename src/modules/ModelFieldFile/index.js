@@ -20,7 +20,7 @@ function ProgressDisplay({ onDone, filepath, storageOpts, file }) {
     Storage.put(filepath, file, {
       progressCallback(progress) {
         const progressPercentage = (progress.loaded / progress.total) * 100;
-        setState(progressPercentage);
+        setState(Math.floor(progressPercentage));
       },
       ...storageOpts
     }).then(storeData => {
