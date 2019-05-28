@@ -13,7 +13,7 @@ import get from "lodash/get";
 //   return
 // });
 
-function ProgressDisplay({ onDone, filepath, storageOpts, file }) {
+function ProgressDisplay({ onDone, onError, filepath, storageOpts, file }) {
   const [state, setState] = React.useState(0);
 
   React.useEffect(() => {
@@ -23,9 +23,13 @@ function ProgressDisplay({ onDone, filepath, storageOpts, file }) {
         setState(Math.floor(progressPercentage));
       },
       ...storageOpts
-    }).then(storeData => {
-      onDone(storeData);
-    });
+    })
+      .then(storeData => {
+        onDone(storeData);
+      })
+      .catch(e => {
+        onError(e);
+      });
   }, []);
   return <span>`Uploading attachments.. {state}%`</span>;
 }
@@ -64,6 +68,7 @@ const Uploader = props => {
               <ProgressDisplay
                 {...{ file, filepath, storageOpts }}
                 onDone={resolve}
+                onError={reject}
               />,
               {
                 variant: "info",

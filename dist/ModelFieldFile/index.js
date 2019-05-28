@@ -57,6 +57,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function ProgressDisplay(_ref) {
   var onDone = _ref.onDone,
+      onError = _ref.onError,
       filepath = _ref.filepath,
       storageOpts = _ref.storageOpts,
       file = _ref.file;
@@ -74,7 +75,7 @@ function ProgressDisplay(_ref) {
       }
     }, storageOpts)).then(function (storeData) {
       onDone(storeData);
-    });
+    }).catch(onError);
   }, []);
   return _react2.default.createElement(
     "span",
@@ -150,7 +151,8 @@ var Uploader = function Uploader(props) {
                   uploadSnackbar = enqueueSnackbar(
                   // `Uploading attachments.. ${progressPercentage}%`,
                   _react2.default.createElement(ProgressDisplay, _extends({ file: file, filepath: filepath, storageOpts: storageOpts }, {
-                    onDone: resolve
+                    onDone: resolve,
+                    onError: reject
                   })), {
                     variant: "info",
                     persist: true
