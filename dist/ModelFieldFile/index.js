@@ -75,7 +75,9 @@ function ProgressDisplay(_ref) {
       }
     }, storageOpts)).then(function (storeData) {
       onDone(storeData);
-    }).catch(onError);
+    }).catch(function (e) {
+      onError(e);
+    });
   }, []);
   return _react2.default.createElement(
     "span",
