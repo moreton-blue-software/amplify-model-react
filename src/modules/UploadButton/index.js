@@ -68,6 +68,16 @@ const UploadButton = React.memo(
           </Button>
           {/* )} */}
         </label>
+        {hasSelectedFile && (
+          <Button
+            variant="contained"
+            component="span"
+            onClick={() => handleUpload(null)}
+            style={{ marginBottom: 10, marginLeft: 5 }}
+          >
+            <Typography variant="body1">Remove</Typography>
+          </Button>
+        )}
       </div>
     );
   }

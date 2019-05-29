@@ -31,7 +31,7 @@ function ProgressDisplay({ onDone, onError, filepath, storageOpts, file }) {
         onError(e);
       });
   }, []);
-  return <span>`Uploading attachments.. {state}%`</span>;
+  return <span>Uploading attachments.. {state}%</span>;
 }
 
 const Uploader = props => {
@@ -52,40 +52,44 @@ const Uploader = props => {
       const file = fileData.file;
       let retFields = {};
       let uploadSnackbar;
-      if (file && field) {
+      if (field) {
         await Promise.delay(1000);
         try {
           if (!parentData.id) {
             console.log("1234: no parent data id found!.");
             return {};
           }
-          const filepath = `${parentData.id}/${file.name}`;
-          let progressPercentage = 0;
 
-          const storeDataPromise = new Promise(function(resolve, reject) {
-            uploadSnackbar = enqueueSnackbar(
-              // `Uploading attachments.. ${progressPercentage}%`,
-              <ProgressDisplay
-                {...{ file, filepath, storageOpts }}
-                onDone={resolve}
-                onError={reject}
-              />,
-              {
-                variant: "info",
-                persist: true
-              }
-            );
-          });
-          const storeData = await storeDataPromise;
-          console.log(">>ModelFieldFile/index::", "storeData", storeData); //TRACE
-          enqueueSnackbar("Attchments saved.", { variant: "success" });
+          if (file) {
+            const filepath = `${parentData.id}/${file.name}`;
+
+            const storeDataPromise = new Promise(function(resolve, reject) {
+              uploadSnackbar = enqueueSnackbar(
+                // `Uploading attachments.. ${progressPercentage}%`,
+                <ProgressDisplay
+                  {...{ file, filepath, storageOpts }}
+                  onDone={resolve}
+                  onError={reject}
+                />,
+                {
+                  variant: "info",
+                  persist: true
+                }
+              );
+            });
+            const storeData = await storeDataPromise;
+            enqueueSnackbar("Attchments saved.", { variant: "success" });
+            retFields[field] = { filename: storeData.key };
+          } else {
+            retFields[field] = null;
+          }
+
           //omit all fields except file field and id
           const { ...rest } = contextData;
           Object.keys(rest).forEach(k => {
             retFields[k] = undefined;
           });
           retFields.id = parentData.id;
-          retFields[field] = { filename: storeData.key };
         } catch (e) {
           enqueueSnackbar("Something went wrong with saving video", {
             variant: "error"
@@ -136,8 +140,7 @@ const Uploader = props => {
       <UploadButton
         labelText={label}
         onChange={e => {
-          console.log(e.target.files[0]);
-          const file = e.target.files[0];
+          const file = get(e, "target.files.0", null);
           // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
           setFileData(oldFileData => ({ ...oldFileData, file, url: null }));
         }}

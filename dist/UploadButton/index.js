@@ -77,6 +77,22 @@ var UploadButton = _react2.default.memo(function (_ref) {
           labelText || "file"
         )
       )
+    ),
+    hasSelectedFile && _react2.default.createElement(
+      _Button2.default,
+      {
+        variant: "contained",
+        component: "span",
+        onClick: function onClick() {
+          return handleUpload(null);
+        },
+        style: { marginBottom: 10, marginLeft: 5 }
+      },
+      _react2.default.createElement(
+        _Typography2.default,
+        { variant: "body1" },
+        "Remove"
+      )
     )
   );
 });

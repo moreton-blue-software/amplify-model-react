@@ -82,9 +82,9 @@ function ProgressDisplay(_ref) {
   return _react2.default.createElement(
     "span",
     null,
-    "`Uploading attachments.. ",
+    "Uploading attachments.. ",
     state,
-    "%`"
+    "%"
   );
 }
 
@@ -117,7 +117,7 @@ var Uploader = function Uploader(props) {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref3) {
         var contextData = _ref3.context.data,
             parentData = _ref3.parent.data;
-        var file, retFields, uploadSnackbar, filepath, progressPercentage, storeDataPromise, storeData, rest;
+        var file, retFields, uploadSnackbar, filepath, storeDataPromise, storeData, rest;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -127,8 +127,8 @@ var Uploader = function Uploader(props) {
                 retFields = {};
                 uploadSnackbar = void 0;
 
-                if (!(file && field)) {
-                  _context.next = 34;
+                if (!field) {
+                  _context.next = 36;
                   break;
                 }
 
@@ -147,8 +147,12 @@ var Uploader = function Uploader(props) {
                 return _context.abrupt("return", {});
 
               case 10:
+                if (!file) {
+                  _context.next = 20;
+                  break;
+                }
+
                 filepath = parentData.id + "/" + file.name;
-                progressPercentage = 0;
                 storeDataPromise = new _bluebird2.default(function (resolve, reject) {
                   uploadSnackbar = enqueueSnackbar(
                   // `Uploading attachments.. ${progressPercentage}%`,
@@ -166,8 +170,16 @@ var Uploader = function Uploader(props) {
               case 15:
                 storeData = _context.sent;
 
-                console.log(">>ModelFieldFile/index::", "storeData", storeData); //TRACE
                 enqueueSnackbar("Attchments saved.", { variant: "success" });
+                retFields[field] = { filename: storeData.key };
+                _context.next = 21;
+                break;
+
+              case 20:
+                retFields[field] = null;
+
+              case 21:
+
                 //omit all fields except file field and id
                 rest = _objectWithoutProperties(contextData, []);
 
@@ -175,12 +187,11 @@ var Uploader = function Uploader(props) {
                   retFields[k] = undefined;
                 });
                 retFields.id = parentData.id;
-                retFields[field] = { filename: storeData.key };
-                _context.next = 29;
+                _context.next = 31;
                 break;
 
-              case 24:
-                _context.prev = 24;
+              case 26:
+                _context.prev = 26;
                 _context.t0 = _context["catch"](6);
 
                 enqueueSnackbar("Something went wrong with saving video", {
@@ -189,23 +200,23 @@ var Uploader = function Uploader(props) {
                 console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", _context.t0);
                 return _context.abrupt("return", false);
 
-              case 29:
-                _context.prev = 29;
+              case 31:
+                _context.prev = 31;
 
                 console.log("1234: before saving delay done");
                 // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
                 closeSnackbar(uploadSnackbar);
                 return _context.abrupt("return", retFields);
 
-              case 34:
+              case 36:
                 return _context.abrupt("return", false);
 
-              case 35:
+              case 37:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, undefined, [[6, 24, 29, 34]]);
+        }, _callee, undefined, [[6, 26, 31, 36]]);
       }));
 
       return function beforeSave(_x) {
@@ -248,8 +259,7 @@ var Uploader = function Uploader(props) {
     _react2.default.createElement(_UploadButton2.default, {
       labelText: label,
       onChange: function onChange(e) {
-        console.log(e.target.files[0]);
-        var file = e.target.files[0];
+        var file = (0, _get2.default)(e, "target.files.0", null);
         // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
         setFileData(function (oldFileData) {
           return _extends({}, oldFileData, { file: file, url: null });
