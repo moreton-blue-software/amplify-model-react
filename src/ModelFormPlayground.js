@@ -74,9 +74,14 @@ const FormBody = props => {
         name="Client"
         field="vacancyClientId"
         renderLabel={client => client.name}
+        sorter={(a, b) => {
+          if (a.label.toLowerCase() < b.label.toLowerCase()) return -1;
+          if (a.label.toLowerCase() > b.label.toLowerCase()) return 1;
+          return 0;
+        }}
         queryOpts={{
           fetchPolicy: "network-only",
-          limit: 101,
+          limit: 100,
           dataFilter: {
             archived: {
               ne: true
