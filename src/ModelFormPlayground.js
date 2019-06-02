@@ -73,6 +73,10 @@ const FormBody = props => {
       <ModelFieldSelector
         name="Client"
         field="vacancyClientId"
+        readOnly
+        onLabelClick={e => {
+          alert("hello");
+        }}
         renderLabel={client => client.name}
         sorter={(a, b) => {
           if (a.label.toLowerCase() < b.label.toLowerCase()) return -1;

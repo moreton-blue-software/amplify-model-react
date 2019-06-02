@@ -9,11 +9,14 @@ import startCase from "lodash/startCase";
 import { Map } from "immutable";
 import ControllerContext from "../ModelFormController";
 import merge from "lodash/fp/merge";
+import Typography from "@material-ui/core/Typography";
 
 export default function ModelSelector(props) {
   const {
     name,
     onChange,
+    readOnly,
+    onLabelClick,
     disabled,
     renderLabel,
     value,
@@ -161,21 +164,43 @@ export default function ModelSelector(props) {
     ph = placeholder ? placeholder : `Select ${startCase(name)}`;
   }
 
+  const readOnlyLabel = React.useMemo(() => {
+    if (!readOnly) return;
+    if (!state.selectedModelValue) return "...";
+    const readOnlyValue = asOption(state.selectedModelValue);
+    return (
+      <a
+        href="#"
+        style={{ textDecoration: "none" }}
+        onClick={e => {
+          e.preventDefault();
+          onLabelClick && onLabelClick(e);
+        }}
+      >
+        {readOnlyValue.label}
+      </a>
+    );
+  }, [readOnly, onLabelClick, state.selectedModelValue]);
+
   return (
     <div style={{ marginTop: 10 }}>
       <label>{labelText}</label>
-      <Select
-        value={value}
-        disabled={disabled}
-        optionKey="value.id"
-        cacheOptions
-        isLoading={loading}
-        options={theOpts}
-        placeholder={ph}
-        defaultOptions
-        // onSelectedModelChange={handleSelectedModelChange}
-        onChange={handleModelInputChange}
-      />
+      {readOnly ? (
+        <Typography>{readOnlyLabel}</Typography>
+      ) : (
+        <Select
+          value={value}
+          disabled={disabled}
+          optionKey="value.id"
+          cacheOptions
+          isLoading={loading}
+          options={theOpts}
+          placeholder={ph}
+          defaultOptions
+          // onSelectedModelChange={handleSelectedModelChange}
+          onChange={handleModelInputChange}
+        />
+      )}
     </div>
   );
 }

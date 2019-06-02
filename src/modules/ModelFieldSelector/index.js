@@ -5,6 +5,8 @@ import { ModelFormContext } from "../ModelForm";
 export default function ModelFieldSelector(props) {
   const {
     name,
+    readOnly,
+    onLabelClick,
     disabled,
     renderLabel,
     label,
@@ -24,6 +26,8 @@ export default function ModelFieldSelector(props) {
   return (
     <ModelSelector
       name={name}
+      readOnly={readOnly}
+      onLabelClick={onLabelClick}
       disabled={disabled}
       renderLabel={renderLabel}
       value={handlers.getFieldValue(field)}

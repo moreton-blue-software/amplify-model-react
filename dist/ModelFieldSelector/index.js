@@ -19,6 +19,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function ModelFieldSelector(props) {
   var name = props.name,
+      readOnly = props.readOnly,
+      onLabelClick = props.onLabelClick,
       disabled = props.disabled,
       renderLabel = props.renderLabel,
       label = props.label,
@@ -36,6 +38,8 @@ function ModelFieldSelector(props) {
   }, [handlers]);
   return _react2.default.createElement(_ModelSelector2.default, {
     name: name,
+    readOnly: readOnly,
+    onLabelClick: onLabelClick,
     disabled: disabled,
     renderLabel: renderLabel,
     value: handlers.getFieldValue(field),

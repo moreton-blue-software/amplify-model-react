@@ -53,6 +53,10 @@ var _merge = require("lodash/fp/merge");
 
 var _merge2 = _interopRequireDefault(_merge);
 
+var _Typography = require("@material-ui/core/Typography");
+
+var _Typography2 = _interopRequireDefault(_Typography);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -68,6 +72,8 @@ function ModelSelector(props) {
 
   var name = props.name,
       onChange = props.onChange,
+      readOnly = props.readOnly,
+      onLabelClick = props.onLabelClick,
       disabled = props.disabled,
       renderLabel = props.renderLabel,
       value = props.value,
@@ -244,6 +250,24 @@ function ModelSelector(props) {
     ph = placeholder ? placeholder : "Select " + (0, _startCase2.default)(name);
   }
 
+  var readOnlyLabel = _react2.default.useMemo(function () {
+    if (!readOnly) return;
+    if (!state.selectedModelValue) return "...";
+    var readOnlyValue = asOption(state.selectedModelValue);
+    return _react2.default.createElement(
+      "a",
+      {
+        href: "#",
+        style: { textDecoration: "none" },
+        onClick: function onClick(e) {
+          e.preventDefault();
+          onLabelClick && onLabelClick(e);
+        }
+      },
+      readOnlyValue.label
+    );
+  }, [readOnly, onLabelClick, state.selectedModelValue]);
+
   return _react2.default.createElement(
     "div",
     { style: { marginTop: 10 } },
@@ -252,7 +276,11 @@ function ModelSelector(props) {
       null,
       labelText
     ),
-    _react2.default.createElement(_Select2.default, {
+    readOnly ? _react2.default.createElement(
+      _Typography2.default,
+      null,
+      readOnlyLabel
+    ) : _react2.default.createElement(_Select2.default, {
       value: value,
       disabled: disabled,
       optionKey: "value.id",
