@@ -32,6 +32,16 @@ var _UploadButton = require("../UploadButton");
 
 var _UploadButton2 = _interopRequireDefault(_UploadButton);
 
+var _Paper = require("@material-ui/core/Paper");
+
+var _Paper2 = _interopRequireDefault(_Paper);
+
+var _Button = require("@material-ui/core/Button");
+
+var _Button2 = _interopRequireDefault(_Button);
+
+var _styles = require("@material-ui/core/styles");
+
 var _awsAmplify = require("aws-amplify");
 
 var _set = require("lodash/fp/set");
@@ -45,6 +55,8 @@ var _get2 = _interopRequireDefault(_get);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
@@ -68,8 +80,10 @@ function ProgressDisplay(_ref) {
       setState = _React$useState2[1];
 
   _react2.default.useEffect(function () {
+    var um = false;
     _awsAmplify.Storage.put(filepath, file, _extends({
       progressCallback: function progressCallback(progress) {
+        if (um) return;
         var progressPercentage = progress.loaded / progress.total * 100;
         setState(Math.floor(progressPercentage));
       }
@@ -78,6 +92,9 @@ function ProgressDisplay(_ref) {
     }).catch(function (e) {
       onError(e);
     });
+    return function () {
+      return um = true;
+    };
   }, []);
   return _react2.default.createElement(
     "span",
@@ -88,18 +105,38 @@ function ProgressDisplay(_ref) {
   );
 }
 
+var useUploaderStyles = (0, _styles.makeStyles)({
+  multipleDisplay: {
+    "& > div": {
+      minHeight: 30,
+      padding: 10
+    }
+  }
+});
+
 var Uploader = function Uploader(props) {
   var _props$accept = props.accept,
       accept = _props$accept === undefined ? "video/*" : _props$accept,
       label = props.label,
+      multiple = props.multiple,
       field = props.field,
       render = props.render,
       storageOpts = props.storageOpts;
 
-  var _React$useState3 = _react2.default.useState({ url: null, file: null }),
+  var _React$useState3 = _react2.default.useState({
+    url: null,
+    file: null
+  }),
       _React$useState4 = _slicedToArray(_React$useState3, 2),
       fileData = _React$useState4[0],
       setFileData = _React$useState4[1];
+
+  var classes = useUploaderStyles();
+
+  var _React$useState5 = _react2.default.useState([]),
+      _React$useState6 = _slicedToArray(_React$useState5, 2),
+      fileListData = _React$useState6[0],
+      setFileListData = _React$useState6[1];
 
   var _React$useContext = _react2.default.useContext(_ModelForm.ModelFormContext),
       data = _React$useContext.data,
@@ -114,71 +151,120 @@ var Uploader = function Uploader(props) {
     console.log("1234: before re-attching..");
 
     var beforeSave = function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref3) {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(_ref3) {
+        // console.log("1234: before saving delay", contextData, parentData);
+        var uploadFile = function () {
+          var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(file) {
+            var filepath, uploadSnackbar, storeDataPromise, storeData;
+            return regeneratorRuntime.wrap(function _callee$(_context) {
+              while (1) {
+                switch (_context.prev = _context.next) {
+                  case 0:
+                    filepath = parentData.id + "/" + file.name;
+                    uploadSnackbar = void 0;
+                    storeDataPromise = new _bluebird2.default(function (resolve, reject) {
+                      uploadSnackbar = enqueueSnackbar(
+                      // `Uploading attachments.. ${progressPercentage}%`,
+                      _react2.default.createElement(ProgressDisplay, _extends({ file: file, filepath: filepath, storageOpts: storageOpts }, {
+                        onDone: resolve,
+                        onError: reject
+                      })), {
+                        variant: "info",
+                        persist: true
+                      });
+                    });
+                    _context.next = 5;
+                    return storeDataPromise;
+
+                  case 5:
+                    storeData = _context.sent;
+
+                    closeSnackbar(uploadSnackbar);
+                    return _context.abrupt("return", storeData);
+
+                  case 8:
+                  case "end":
+                    return _context.stop();
+                }
+              }
+            }, _callee, this);
+          }));
+
+          return function uploadFile(_x2) {
+            return _ref4.apply(this, arguments);
+          };
+        }();
+
         var contextData = _ref3.context.data,
             parentData = _ref3.parent.data;
-        var file, retFields, uploadSnackbar, filepath, storeDataPromise, storeData, rest;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        var file, retFields, filesUpls, storeData, rest;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                // console.log("1234: before saving delay", contextData, parentData);
                 file = fileData.file;
                 retFields = {};
-                uploadSnackbar = void 0;
 
                 if (!field) {
-                  _context.next = 36;
+                  _context2.next = 39;
                   break;
                 }
 
-                _context.next = 6;
-                return _bluebird2.default.delay(1000);
-
-              case 6:
-                _context.prev = 6;
+                _context2.prev = 3;
 
                 if (parentData.id) {
-                  _context.next = 10;
+                  _context2.next = 7;
                   break;
                 }
 
                 console.log("1234: no parent data id found!.");
-                return _context.abrupt("return", {});
+                return _context2.abrupt("return", {});
 
-              case 10:
-                if (!file) {
-                  _context.next = 20;
+              case 7:
+                _context2.next = 9;
+                return _bluebird2.default.delay(1000);
+
+              case 9:
+                if (!(fileListData && fileListData.length > 0)) {
+                  _context2.next = 16;
                   break;
                 }
 
-                filepath = parentData.id + "/" + file.name;
-                storeDataPromise = new _bluebird2.default(function (resolve, reject) {
-                  uploadSnackbar = enqueueSnackbar(
-                  // `Uploading attachments.. ${progressPercentage}%`,
-                  _react2.default.createElement(ProgressDisplay, _extends({ file: file, filepath: filepath, storageOpts: storageOpts }, {
-                    onDone: resolve,
-                    onError: reject
-                  })), {
-                    variant: "info",
-                    persist: true
-                  });
-                });
-                _context.next = 15;
-                return storeDataPromise;
+                _context2.next = 12;
+                return _bluebird2.default.map(fileListData, function (fileData) {
+                  if (fileData.file) return uploadFile(fileData.file);
 
-              case 15:
-                storeData = _context.sent;
+                  // return {fileData.u}
+                }, { concurrency: 4 });
+
+              case 12:
+                filesUpls = _context2.sent;
+
+                console.log(">>ModelFieldFile/index::", "filesUpls", filesUpls); //TRACE
+                _context2.next = 25;
+                break;
+
+              case 16:
+                if (!file) {
+                  _context2.next = 24;
+                  break;
+                }
+
+                _context2.next = 19;
+                return uploadFile(file);
+
+              case 19:
+                storeData = _context2.sent;
 
                 enqueueSnackbar("Attchments saved.", { variant: "success" });
                 retFields[field] = { filename: storeData.key };
-                _context.next = 21;
+                _context2.next = 25;
                 break;
 
-              case 20:
+              case 24:
                 retFields[field] = null;
 
-              case 21:
+              case 25:
 
                 //omit all fields except file field and id
                 rest = _objectWithoutProperties(contextData, []);
@@ -187,36 +273,36 @@ var Uploader = function Uploader(props) {
                   retFields[k] = undefined;
                 });
                 retFields.id = parentData.id;
-                _context.next = 31;
+                _context2.next = 35;
                 break;
 
-              case 26:
-                _context.prev = 26;
-                _context.t0 = _context["catch"](6);
+              case 30:
+                _context2.prev = 30;
+                _context2.t0 = _context2["catch"](3);
 
                 enqueueSnackbar("Something went wrong with saving video", {
                   variant: "error"
                 });
-                console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", _context.t0);
-                return _context.abrupt("return", false);
+                console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", _context2.t0);
+                return _context2.abrupt("return", false);
 
-              case 31:
-                _context.prev = 31;
+              case 35:
+                _context2.prev = 35;
 
                 console.log("1234: before saving delay done");
                 // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
-                closeSnackbar(uploadSnackbar);
-                return _context.abrupt("return", retFields);
+                // closeSnackbar(uploadSnackbar);
+                return _context2.abrupt("return", retFields);
 
-              case 36:
-                return _context.abrupt("return", false);
+              case 39:
+                return _context2.abrupt("return", false);
 
-              case 37:
+              case 40:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, undefined, [[6, 26, 31, 36]]);
+        }, _callee2, undefined, [[3, 30, 35, 39]]);
       }));
 
       return function beforeSave(_x) {
@@ -227,13 +313,12 @@ var Uploader = function Uploader(props) {
     return function () {
       handlers.detachBeforeSave(beforeSave);
     };
-  }, [fileData.file, field]);
+  }, [fileData.file, field, fileListData]);
 
   _react2.default.useEffect(function () {
     var hasCancelled = false;
     var url = handlers.getFieldValue(field);
     console.log(">>ModelFieldFile/index::", "url", url); //TRACE
-    // console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     var filename = (0, _get2.default)(url, "filename");
     if (filename) {
       _awsAmplify.Storage.get(filename, _extends({}, storageOpts)).then(function (result) {
@@ -253,24 +338,62 @@ var Uploader = function Uploader(props) {
   var renderFn = _react2.default.useMemo(function () {
     return render && render({ file: fileData.file, url: fileData.url });
   }, [fileData, render]);
+  console.log(">>ModelFieldFile/index::", "fileData", fileListData); //TRACE
   return _react2.default.createElement(
     _react2.default.Fragment,
     null,
     _react2.default.createElement(_UploadButton2.default, {
       labelText: label,
+      multiple: multiple,
       onChange: function onChange(e) {
-        var file = (0, _get2.default)(e, "target.files.0", null);
-        // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
-        setFileData(function (oldFileData) {
-          return _extends({}, oldFileData, { file: file, url: null });
-        });
+        var fileList = (0, _get2.default)(e, "target.files", []);
+        if (multiple) {
+          setFileListData(function (oldFileListData) {
+            return [].concat(_toConsumableArray(oldFileListData), _toConsumableArray([].concat(_toConsumableArray(fileList)).map(function (f) {
+              return { file: f };
+            })));
+          });
+        } else {
+          setFileData(function (oldFileData) {
+            return _extends({}, oldFileData, {
+              file: fileList[0] || null,
+              url: null
+            });
+          });
+        }
       },
       accept: accept,
       hasSelectedFile: hasSelectedFile
       // file={fileData.get('file')}
       // url={fileData.get('url')}
     }),
-    hasSelectedFile && renderFn
+    hasSelectedFile && !multiple && renderFn,
+    multiple && _react2.default.createElement(
+      "div",
+      { className: classes.multipleDisplay },
+      fileListData.map(function (fileData, ii) {
+        return _react2.default.createElement(
+          _Paper2.default,
+          { key: ii },
+          render({ file: fileData.file, url: fileData.url }),
+          _react2.default.createElement(
+            _Button2.default,
+            {
+              size: "small",
+              style: { float: "right" },
+              onClick: function onClick() {
+                setFileListData(function (oldFileListData) {
+                  return oldFileListData.filter(function (v, indx) {
+                    return indx !== ii;
+                  });
+                });
+              }
+            },
+            "Remove"
+          )
+        );
+      })
+    )
   );
 };
 
@@ -281,6 +404,7 @@ function ModelFieldFile(props) {
       _props$label = props.label,
       label = _props$label === undefined ? "File" : _props$label,
       buttonLabel = props.buttonLabel,
+      multiple = props.multiple,
       _props$storageOpts = props.storageOpts,
       storageOpts = _props$storageOpts === undefined ? {} : _props$storageOpts;
 
@@ -291,9 +415,9 @@ function ModelFieldFile(props) {
   // const [state, setState] = React.useState(Map({ defaultValue: null }));
 
   var defaultValue = _react2.default.useMemo(function () {
-    var _ref4;
+    var _ref5;
 
-    return _ref4 = {}, _defineProperty(_ref4, field, modelData[field]), _defineProperty(_ref4, "id", modelData.id), _ref4;
+    return _ref5 = {}, _defineProperty(_ref5, field, modelData[field]), _defineProperty(_ref5, "id", modelData.id), _ref5;
   }, [modelData]);
 
   return _react2.default.createElement(
@@ -316,6 +440,7 @@ function ModelFieldFile(props) {
         accept: accept,
         field: field,
         render: render,
+        multiple: multiple,
         storageOpts: storageOpts
       })
     )

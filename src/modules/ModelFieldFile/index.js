@@ -4,6 +4,9 @@ import { useSnackbar } from "notistack";
 import Promise from "bluebird";
 import capitalize from "lodash/capitalize";
 import UploadButton from "../UploadButton";
+import Paper from "@material-ui/core/Paper";
+import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core/styles";
 import { Storage } from "aws-amplify";
 import set from "lodash/fp/set";
 import get from "lodash/get";
@@ -17,8 +20,10 @@ function ProgressDisplay({ onDone, onError, filepath, storageOpts, file }) {
   const [state, setState] = React.useState(0);
 
   React.useEffect(() => {
+    let um = false;
     Storage.put(filepath, file, {
       progressCallback(progress) {
+        if (um) return;
         const progressPercentage = (progress.loaded / progress.total) * 100;
         setState(Math.floor(progressPercentage));
       },
@@ -30,13 +35,35 @@ function ProgressDisplay({ onDone, onError, filepath, storageOpts, file }) {
       .catch(e => {
         onError(e);
       });
+    return () => (um = true);
   }, []);
   return <span>Uploading attachments.. {state}%</span>;
 }
 
+const useUploaderStyles = makeStyles({
+  multipleDisplay: {
+    "& > div": {
+      minHeight: 30,
+      padding: 10
+    }
+  }
+});
+
 const Uploader = props => {
-  const { accept = "video/*", label, field, render, storageOpts } = props;
-  const [fileData, setFileData] = React.useState({ url: null, file: null });
+  const {
+    accept = "video/*",
+    label,
+    multiple,
+    field,
+    render,
+    storageOpts
+  } = props;
+  const [fileData, setFileData] = React.useState({
+    url: null,
+    file: null
+  });
+  const classes = useUploaderStyles();
+  const [fileListData, setFileListData] = React.useState([]);
 
   const { data, state, handlers } = React.useContext(ModelFormContext);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -49,35 +76,49 @@ const Uploader = props => {
       parent: { data: parentData }
     }) => {
       // console.log("1234: before saving delay", contextData, parentData);
-      const file = fileData.file;
+      async function uploadFile(file) {
+        const filepath = `${parentData.id}/${file.name}`;
+        let uploadSnackbar;
+        const storeDataPromise = new Promise(function(resolve, reject) {
+          uploadSnackbar = enqueueSnackbar(
+            // `Uploading attachments.. ${progressPercentage}%`,
+            <ProgressDisplay
+              {...{ file, filepath, storageOpts }}
+              onDone={resolve}
+              onError={reject}
+            />,
+            {
+              variant: "info",
+              persist: true
+            }
+          );
+        });
+        const storeData = await storeDataPromise;
+        closeSnackbar(uploadSnackbar);
+        return storeData;
+      }
+      const { file } = fileData;
       let retFields = {};
-      let uploadSnackbar;
       if (field) {
-        await Promise.delay(1000);
         try {
           if (!parentData.id) {
             console.log("1234: no parent data id found!.");
             return {};
           }
+          await Promise.delay(1000);
+          if (fileListData && fileListData.length > 0) {
+            const filesUpls = await Promise.map(
+              fileListData,
+              fileData => {
+                if (fileData.file) return uploadFile(fileData.file);
 
-          if (file) {
-            const filepath = `${parentData.id}/${file.name}`;
-
-            const storeDataPromise = new Promise(function(resolve, reject) {
-              uploadSnackbar = enqueueSnackbar(
-                // `Uploading attachments.. ${progressPercentage}%`,
-                <ProgressDisplay
-                  {...{ file, filepath, storageOpts }}
-                  onDone={resolve}
-                  onError={reject}
-                />,
-                {
-                  variant: "info",
-                  persist: true
-                }
-              );
-            });
-            const storeData = await storeDataPromise;
+                // return {fileData.u}
+              },
+              { concurrency: 4 }
+            );
+            console.log(">>ModelFieldFile/index::", "filesUpls", filesUpls); //TRACE
+          } else if (file) {
+            const storeData = await uploadFile(file);
             enqueueSnackbar("Attchments saved.", { variant: "success" });
             retFields[field] = { filename: storeData.key };
           } else {
@@ -99,7 +140,7 @@ const Uploader = props => {
         } finally {
           console.log("1234: before saving delay done");
           // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
-          closeSnackbar(uploadSnackbar);
+          // closeSnackbar(uploadSnackbar);
           return retFields;
         }
       }
@@ -109,13 +150,12 @@ const Uploader = props => {
     return () => {
       handlers.detachBeforeSave(beforeSave);
     };
-  }, [fileData.file, field]);
+  }, [fileData.file, field, fileListData]);
 
   React.useEffect(() => {
     let hasCancelled = false;
     const url = handlers.getFieldValue(field);
     console.log(">>ModelFieldFile/index::", "url", url); //TRACE
-    // console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     const filename = get(url, "filename");
     if (filename) {
       Storage.get(filename, { ...storageOpts })
@@ -135,21 +175,55 @@ const Uploader = props => {
   const renderFn = React.useMemo(() => {
     return render && render({ file: fileData.file, url: fileData.url });
   }, [fileData, render]);
+  console.log(">>ModelFieldFile/index::", "fileData", fileListData); //TRACE
   return (
     <React.Fragment>
       <UploadButton
         labelText={label}
+        multiple={multiple}
         onChange={e => {
-          const file = get(e, "target.files.0", null);
-          // console.log(">>ModelFieldFile/index::", "file", file); //TRACE
-          setFileData(oldFileData => ({ ...oldFileData, file, url: null }));
+          const fileList = get(e, "target.files", []);
+          if (multiple) {
+            setFileListData(oldFileListData => [
+              ...oldFileListData,
+              ...[...fileList].map(f => ({ file: f }))
+            ]);
+          } else {
+            setFileData(oldFileData => ({
+              ...oldFileData,
+              file: fileList[0] || null,
+              url: null
+            }));
+          }
         }}
         accept={accept}
         hasSelectedFile={hasSelectedFile}
         // file={fileData.get('file')}
         // url={fileData.get('url')}
       />
-      {hasSelectedFile && renderFn}
+      {hasSelectedFile && !multiple && renderFn}
+      {multiple && (
+        <div className={classes.multipleDisplay}>
+          {fileListData.map((fileData, ii) => {
+            return (
+              <Paper key={ii}>
+                {render({ file: fileData.file, url: fileData.url })}
+                <Button
+                  size="small"
+                  style={{ float: "right" }}
+                  onClick={() => {
+                    setFileListData(oldFileListData => {
+                      return oldFileListData.filter((v, indx) => indx !== ii);
+                    });
+                  }}
+                >
+                  Remove
+                </Button>
+              </Paper>
+            );
+          })}
+        </div>
+      )}
     </React.Fragment>
   );
 };
@@ -161,6 +235,7 @@ export default function ModelFieldFile(props) {
     render,
     label = "File",
     buttonLabel,
+    multiple,
     storageOpts = {}
   } = props;
   const { name, data: modelData, handlers } = React.useContext(
@@ -185,6 +260,7 @@ export default function ModelFieldFile(props) {
           accept={accept}
           field={field}
           render={render}
+          multiple={multiple}
           storageOpts={storageOpts}
         />
       </div>

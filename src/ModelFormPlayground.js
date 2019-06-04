@@ -66,6 +66,12 @@ const FormBody = props => {
     return null;
   }, []);
 
+  const multipleRender = React.useCallback(({ file, url }) => {
+    if (url) return <span>{url}</span>;
+    else if (file) return <span>{file.name}</span>;
+    return null;
+  }, []);
+
   if (state.loading) return <div>loading...</div>;
 
   return (
@@ -129,11 +135,20 @@ const FormBody = props => {
         }}
       />
       <ModelFieldInput field="description" />
-      <ModelFieldFile
+      {/* <ModelFieldFile
         label="hello"
         buttonLabel="world"
         field="video"
         render={videoRender}
+        storageOpts={{ provider: "DummyStorageProvider" }}
+      /> */}
+      <ModelFieldFile
+        label="hello multiple"
+        buttonLabel="world"
+        field="video"
+        multiple
+        accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, text/plain, application/pdf, image/*"
+        render={multipleRender}
         storageOpts={{ provider: "DummyStorageProvider" }}
       />
       <ModelFieldTextSelector

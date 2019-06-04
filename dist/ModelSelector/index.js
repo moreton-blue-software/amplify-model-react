@@ -107,7 +107,7 @@ function ModelSelector(props) {
   if (!modelFlatFields) throw "Flat Field for \"" + name + "\" not found";
 
   var _React$useMemo = _react2.default.useMemo(function () {
-    var queryKey = "LIST_" + (0, _upperCase2.default)("" + name);
+    var queryKey = "LIST_" + (0, _upperCase2.default)("" + name).replace(/ /g, "_");
     return {
       query: (0, _graphqlTag2.default)(_templateObject, queryKey, name, name, modelFlatFields),
       queryKey: queryKey

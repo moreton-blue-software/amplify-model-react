@@ -3,7 +3,7 @@ import Button from "@material-ui/core/Button";
 import PropTypes from "prop-types";
 import UploadIcon from "@material-ui/icons/CloudUpload";
 import Typography from "@material-ui/core/Typography";
-
+import nanoid from "nanoid";
 const UploadButton = React.memo(
   ({
     hasSelectedFile,
@@ -14,6 +14,9 @@ const UploadButton = React.memo(
     labelText,
     ...rest
   }) => {
+    console.log(">>UploadButton/index::", "multiple", accept); //TRACE
+    const [id] = React.useState(`upload-button@${labelText}-${nanoid()}`);
+
     return (
       <div
         style={{
@@ -25,33 +28,11 @@ const UploadButton = React.memo(
           onChange={handleUpload}
           accept={accept}
           style={{ display: "none" }}
-          id="contained-upload-button"
+          id={id}
           multiple={multiple}
           type="file"
         />
-        <label htmlFor="contained-upload-button">
-          {/* {!file && !url && (
-            <Card
-              style={{
-                height: 360,
-                display: 'grid',
-                cursor: 'pointer',
-                justifyContent: 'center',
-                alignContent: 'center',
-              }}
-              {...rest}
-              component="span"
-            >
-              <Typography variant="body1">
-                <UploadIcon
-                  fontSize="small"
-                  style={{ marginRight: 10, marginBottom: -5 }}
-                />
-                Upload video
-              </Typography>
-            </Card>
-          )}
-          {(url || file) && ( */}
+        <label htmlFor={id}>
           <Button
             {...rest}
             component="span"
@@ -75,7 +56,9 @@ const UploadButton = React.memo(
             onClick={() => handleUpload(null)}
             style={{ marginBottom: 10, marginLeft: 5 }}
           >
-            <Typography variant="body1">Remove</Typography>
+            <Typography variant="body1">
+              Remove{multiple ? " All" : ""}
+            </Typography>
           </Button>
         )}
       </div>

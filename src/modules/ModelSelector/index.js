@@ -37,7 +37,7 @@ export default function ModelSelector(props) {
   const modelFlatFields = modelSchema.basicFieldsString;
   if (!modelFlatFields) throw `Flat Field for "${name}" not found`;
   const { queryKey, query } = React.useMemo(() => {
-    const queryKey = "LIST_" + upperCase(`${name}`);
+    const queryKey = "LIST_" + upperCase(`${name}`).replace(/ /g, "_");
     return {
       query: gql`
     query ${queryKey} ($limit: Int, $filter: Model${name}FilterInput, $nextToken: String){
