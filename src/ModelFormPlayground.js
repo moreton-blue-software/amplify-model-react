@@ -7,6 +7,7 @@ import ModelFieldTextSelector from "./modules/ModelFieldTextSelector";
 import ModelFieldDateTime from "./modules/ModelFieldDateTime";
 import ModelFieldDate from "./modules/ModelFieldDate";
 import ModelFieldFile from "./modules/ModelFieldFile";
+import ModelSelector from "./modules/ModelSelector";
 import ReactPlayer from "react-player";
 import get from "lodash/get";
 import range from "lodash/range";
@@ -187,8 +188,34 @@ const extraProps = `
 `;
 
 export default function ModelFormPlayground(props) {
+  const [state, setState] = React.useState({
+    client: null
+  });
+
+  const handleClientSelectorChange = React.useCallback(item => {
+    console.log(">>src/ModelFormPlayground::", "item", item); //TRACE
+    setState(oldState => ({ ...oldState, client: item.id }));
+  }, []);
   return (
     <div>
+      <h2>Components</h2>
+      <div>
+        <ModelSelector
+          name="Client"
+          // readOnly={readOnly}
+          // onLabelClick={onLabelClick}
+          // disabled={disabled}
+          // renderLabel={renderLabel}
+          value={state.client}
+          onChange={handleClientSelectorChange}
+          label={"Test Client"}
+          // placeholder={"Client Placeholder"}
+          // queryOpts={queryOpts}
+          // sorter={sorter}
+          // filter={filter}
+        />
+      </div>
+      <h2>Form</h2>
       <ModelForm
         name="Vacancy"
         modelId={"10009c7f-f77c-4389-b480-19cc3675e109"}
