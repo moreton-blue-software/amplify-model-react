@@ -88,6 +88,15 @@ Object.defineProperty(exports, "ModelFieldSelector", {
   }
 });
 
+var _ModelSelector = require("./ModelSelector");
+
+Object.defineProperty(exports, "ModelSelector", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_ModelSelector).default;
+  }
+});
+
 var _ModelFieldTextSelector = require("./ModelFieldTextSelector");
 
 Object.defineProperty(exports, "ModelFieldTextSelector", {
