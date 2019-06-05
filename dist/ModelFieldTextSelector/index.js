@@ -1,21 +1,21 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = ModelFieldTextSelector;
 
-var _react = require('react');
+var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ModelForm = require('../ModelForm');
+var _ModelForm = require("../ModelForm");
 
-var _startCase = require('lodash/startCase');
+var _startCase = require("lodash/startCase");
 
 var _startCase2 = _interopRequireDefault(_startCase);
 
-var _Select = require('../Select');
+var _Select = require("../Select");
 
 var _Select2 = _interopRequireDefault(_Select);
 
@@ -34,21 +34,22 @@ function ModelFieldTextSelector(props) {
       handlers = _React$useContext.handlers;
 
   var handleChange = _react2.default.useCallback(function (item) {
-    handlers.setFieldValue(field, item.value);
+    handlers.setFieldValue(field, item ? item.value : null);
   }, [handlers]);
   return _react2.default.createElement(
-    'div',
+    "div",
     { style: { marginTop: 10 } },
     _react2.default.createElement(
-      'label',
+      "label",
       null,
       labelText
     ),
     _react2.default.createElement(_Select2.default, {
       isDisabled: disabled,
       value: handlers.getFieldValue(field),
+      isClearable: true,
       onChange: handleChange,
-      placeholder: placeholder ? placeholder : 'Select the ' + labelText,
+      placeholder: placeholder ? placeholder : "Select the " + labelText,
       options: options
     })
   );

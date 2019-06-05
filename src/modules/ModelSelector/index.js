@@ -135,7 +135,7 @@ export default function ModelSelector(props) {
 
   const handleModelInputChange = React.useCallback(
     e => {
-      onChange && onChange(e.value);
+      onChange && onChange(e ? e.value : null);
     },
     [onChange]
   );
@@ -195,6 +195,7 @@ export default function ModelSelector(props) {
           cacheOptions
           isLoading={loading}
           options={theOpts}
+          isClearable
           placeholder={ph}
           defaultOptions
           // onSelectedModelChange={handleSelectedModelChange}

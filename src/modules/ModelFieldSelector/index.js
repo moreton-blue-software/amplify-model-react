@@ -19,7 +19,7 @@ export default function ModelFieldSelector(props) {
   const { handlers } = React.useContext(ModelFormContext);
   const handleChange = React.useCallback(
     item => {
-      handlers.setFieldValue(field, item.id);
+      handlers.setFieldValue(field, item ? item.id : null);
     },
     [handlers]
   );

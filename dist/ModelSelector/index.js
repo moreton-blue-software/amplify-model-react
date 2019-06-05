@@ -223,7 +223,7 @@ function ModelSelector(props) {
   }, [data]);
 
   var handleModelInputChange = _react2.default.useCallback(function (e) {
-    onChange && onChange(e.value);
+    onChange && onChange(e ? e.value : null);
   }, [onChange]);
 
   var theOpts = _react2.default.useMemo(function () {
@@ -287,6 +287,7 @@ function ModelSelector(props) {
       cacheOptions: true,
       isLoading: loading,
       options: theOpts,
+      isClearable: true,
       placeholder: ph,
       defaultOptions: true
       // onSelectedModelChange={handleSelectedModelChange}

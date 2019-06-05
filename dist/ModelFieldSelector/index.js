@@ -34,7 +34,7 @@ function ModelFieldSelector(props) {
       handlers = _React$useContext.handlers;
 
   var handleChange = _react2.default.useCallback(function (item) {
-    handlers.setFieldValue(field, item.id);
+    handlers.setFieldValue(field, item ? item.id : null);
   }, [handlers]);
   return _react2.default.createElement(_ModelSelector2.default, {
     name: name,
