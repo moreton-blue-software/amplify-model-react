@@ -288,7 +288,7 @@ var ModelForm = _react2.default.memo(function (props) {
       detachBeforeSave: function detachBeforeSave(fn) {
         return setBeforeSaveHandlers(function (oldState) {
           var idx = oldState.findIndex(function (obj) {
-            return obj === fn;
+            return obj.fn === fn;
           });
           return oldState.delete(idx);
         });
@@ -354,7 +354,7 @@ var ModelForm = _react2.default.memo(function (props) {
 
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-          var refetchQueries, savedParentId, noRefetch, formDataJson, _ModelFormGlobalProvi2, formMap, thisForm, objFields, formDataClean, parentData, beforeSaveData, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, beforeSaveObj, beforeSaveDataTmp, input, mutation, ret, savedId, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, afterSaveObj;
+          var refetchQueries, savedParentId, noRefetch, formDataJson, _ModelFormGlobalProvi2, formMap, thisForm, objFields, formDataClean, parentData, beforeSaveData, beforeSavePassed, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, beforeSaveObj, beforeSaveDataTmp, input, mutation, ret, savedId, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, afterSaveObj;
 
           return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
@@ -364,9 +364,6 @@ var ModelForm = _react2.default.memo(function (props) {
                   formDataJson = formData;
                   _ModelFormGlobalProvi2 = _ModelFormController.ModelFormGlobalProvider.getGlobal(), formMap = _ModelFormGlobalProvi2.formMap;
                   thisForm = formMap[ctxId];
-
-
-                  console.log(">>ModelForm/index::", "thisForm", thisForm); //TRACE
                   objFields = (0, _get2.default)(query, "definitions.0.selectionSet.selections.0.selectionSet.selections", []).filter(function (f) {
                     return !f.selectionSet;
                   }).map(function (f) {
@@ -379,84 +376,94 @@ var ModelForm = _react2.default.memo(function (props) {
                   if (savedParentId) {
                     parentData.id = savedParentId;
                   }
-                  beforeSaveData = {};
+                  beforeSaveData = {}, beforeSavePassed = true;
                   _iteratorNormalCompletion = true;
                   _didIteratorError = false;
                   _iteratorError = undefined;
-                  _context3.prev = 13;
+                  _context3.prev = 12;
                   _iterator = beforeSaveHandlers.sortBy(function (o) {
                     return o.precedence;
                   }).toJS()[Symbol.iterator]();
 
-                case 15:
+                case 14:
                   if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                    _context3.next = 26;
+                    _context3.next = 23;
                     break;
                   }
 
                   beforeSaveObj = _step.value;
-                  _context3.next = 19;
+                  _context3.next = 18;
                   return _bluebird2.default.resolve(beforeSaveObj.fn({
                     context: { data: formDataClean },
                     parent: { data: parentData }
                   }));
 
-                case 19:
+                case 18:
                   beforeSaveDataTmp = _context3.sent;
 
-                  if (!(beforeSaveDataTmp === false)) {
-                    _context3.next = 22;
-                    break;
+                  if (beforeSaveDataTmp) {
+                    beforeSaveData = _extends({}, beforeSaveData, beforeSaveDataTmp);
+                  } else {
+                    beforeSavePassed = false;
                   }
 
-                  return _context3.abrupt("return");
-
-                case 22:
-                  beforeSaveData = _extends({}, beforeSaveData, beforeSaveDataTmp);
+                case 20:
+                  _iteratorNormalCompletion = true;
+                  _context3.next = 14;
+                  break;
 
                 case 23:
-                  _iteratorNormalCompletion = true;
-                  _context3.next = 15;
+                  _context3.next = 29;
                   break;
 
-                case 26:
-                  _context3.next = 32;
-                  break;
-
-                case 28:
-                  _context3.prev = 28;
-                  _context3.t0 = _context3["catch"](13);
+                case 25:
+                  _context3.prev = 25;
+                  _context3.t0 = _context3["catch"](12);
                   _didIteratorError = true;
                   _iteratorError = _context3.t0;
 
-                case 32:
-                  _context3.prev = 32;
-                  _context3.prev = 33;
+                case 29:
+                  _context3.prev = 29;
+                  _context3.prev = 30;
 
                   if (!_iteratorNormalCompletion && _iterator.return) {
                     _iterator.return();
                   }
 
-                case 35:
-                  _context3.prev = 35;
+                case 32:
+                  _context3.prev = 32;
 
                   if (!_didIteratorError) {
-                    _context3.next = 38;
+                    _context3.next = 35;
                     break;
                   }
 
                   throw _iteratorError;
 
-                case 38:
-                  return _context3.finish(35);
-
-                case 39:
+                case 35:
                   return _context3.finish(32);
 
-                case 40:
+                case 36:
+                  return _context3.finish(29);
+
+                case 37:
+                  if (!(beforeSavePassed === false)) {
+                    _context3.next = 39;
+                    break;
+                  }
+
+                  throw {
+                    ctxId: ctxId,
+                    dateId: (0, _get2.default)(formData, "id"),
+                    parentCtxId: (0, _get2.default)(parentModelContext, "ctxId"),
+                    parentDataId: (0, _get2.default)(parentData, "id"),
+                    error: new Error("Before save validation failed. Please check form errors")
+                  };
+
+                case 39:
                   input = _extends({}, formDataClean, beforeSaveData);
                   mutation = !!input.id ? (0, _Base.composeUpdateMutation)(name) : (0, _Base.composeCreateMutation)(name);
-                  _context3.next = 44;
+                  _context3.next = 43;
                   return apolloClient.mutate({
                     mutation: mutation,
                     variables: {
@@ -465,12 +472,15 @@ var ModelForm = _react2.default.memo(function (props) {
                     refetchQueries: refetchQueries
                   });
 
-                case 44:
+                case 43:
                   ret = _context3.sent;
+
+                  // const ret = { data: { model: { id: "hahaah" } } };
+
                   savedId = (0, _get2.default)(ret, "data.model.id");
                   //save children models
 
-                  _context3.next = 48;
+                  _context3.next = 47;
                   return _bluebird2.default.map(childContexts || [], function (childCtxKey) {
                     var childCtx = formMap[childCtxKey];
 
@@ -480,7 +490,7 @@ var ModelForm = _react2.default.memo(function (props) {
                     });
                   });
 
-                case 48:
+                case 47:
                   formDataClean.id = savedId;
                   // afterSave &&
                   //   (await afterSave({
@@ -490,81 +500,81 @@ var ModelForm = _react2.default.memo(function (props) {
                   _iteratorNormalCompletion2 = true;
                   _didIteratorError2 = false;
                   _iteratorError2 = undefined;
-                  _context3.prev = 52;
+                  _context3.prev = 51;
                   _iterator2 = afterSaveHandlers.sortBy(function (o) {
                     return o.precedence;
                   }).toJS()[Symbol.iterator]();
 
-                case 54:
+                case 53:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context3.next = 61;
+                    _context3.next = 60;
                     break;
                   }
 
                   afterSaveObj = _step2.value;
-                  _context3.next = 58;
+                  _context3.next = 57;
                   return _bluebird2.default.resolve(afterSaveObj.fn({
                     context: { data: formDataClean },
                     parent: { data: parentData }
                   }));
 
-                case 58:
+                case 57:
                   _iteratorNormalCompletion2 = true;
-                  _context3.next = 54;
+                  _context3.next = 53;
                   break;
 
-                case 61:
-                  _context3.next = 67;
+                case 60:
+                  _context3.next = 66;
                   break;
 
-                case 63:
-                  _context3.prev = 63;
-                  _context3.t1 = _context3["catch"](52);
+                case 62:
+                  _context3.prev = 62;
+                  _context3.t1 = _context3["catch"](51);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context3.t1;
 
-                case 67:
+                case 66:
+                  _context3.prev = 66;
                   _context3.prev = 67;
-                  _context3.prev = 68;
 
                   if (!_iteratorNormalCompletion2 && _iterator2.return) {
                     _iterator2.return();
                   }
 
-                case 70:
-                  _context3.prev = 70;
+                case 69:
+                  _context3.prev = 69;
 
                   if (!_didIteratorError2) {
-                    _context3.next = 73;
+                    _context3.next = 72;
                     break;
                   }
 
                   throw _iteratorError2;
 
+                case 72:
+                  return _context3.finish(69);
+
                 case 73:
-                  return _context3.finish(70);
+                  return _context3.finish(66);
 
                 case 74:
-                  return _context3.finish(67);
-
-                case 75:
                   if (noRefetch) {
-                    _context3.next = 78;
+                    _context3.next = 77;
                     break;
                   }
 
-                  _context3.next = 78;
+                  _context3.next = 77;
                   return refetch();
 
-                case 78:
+                case 77:
                   return _context3.abrupt("return", savedId);
 
-                case 79:
+                case 78:
                 case "end":
                   return _context3.stop();
               }
             }
-          }, _callee3, _this3, [[13, 28, 32, 40], [33,, 35, 39], [52, 63, 67, 75], [68,, 70, 74]]);
+          }, _callee3, _this3, [[12, 25, 29, 37], [30,, 32, 36], [51, 62, 66, 74], [67,, 69, 73]]);
         }))();
       },
       save: function save() {
@@ -577,28 +587,52 @@ var ModelForm = _react2.default.memo(function (props) {
             while (1) {
               switch (_context4.prev = _context4.next) {
                 case 0:
-                  _context4.next = 2;
+                  _context4.prev = 0;
+                  _context4.next = 3;
                   return setState((0, _set2.default)("saving", true));
 
-                case 2:
-                  _context4.next = 4;
+                case 3:
+                  _context4.next = 5;
                   return handlers._saveModel(options);
 
-                case 4:
+                case 5:
                   savedId = _context4.sent;
-                  _context4.next = 7;
+                  _context4.next = 8;
                   return setState((0, _set2.default)("saving", false));
 
-                case 7:
+                case 8:
                   onSave && onSave(savedId);
                   return _context4.abrupt("return", savedId);
 
-                case 9:
+                case 12:
+                  _context4.prev = 12;
+                  _context4.t0 = _context4["catch"](0);
+
+                  if (!((0, _get2.default)(_context4.t0, "parentCtxId") === ctxId)) {
+                    _context4.next = 17;
+                    break;
+                  }
+
+                  _context4.next = 17;
+                  return _setFormData(function (oldState) {
+                    return _extends({}, oldState, {
+                      id: (0, _get2.default)(_context4.t0, "parentDataId")
+                    });
+                  });
+
+                case 17:
+                  _context4.next = 19;
+                  return setState((0, _set2.default)("saving", false));
+
+                case 19:
+                  console.error(_context4.t0);
+
+                case 20:
                 case "end":
                   return _context4.stop();
               }
             }
-          }, _callee4, _this4);
+          }, _callee4, _this4, [[0, 12]]);
         }))();
       }
     };

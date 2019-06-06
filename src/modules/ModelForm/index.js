@@ -161,7 +161,7 @@ const ModelForm = React.memo(function(props) {
       },
       detachBeforeSave(fn) {
         return setBeforeSaveHandlers(oldState => {
-          const idx = oldState.findIndex(obj => obj === fn);
+          const idx = oldState.findIndex(obj => obj.fn === fn);
           return oldState.delete(idx);
         });
       },
@@ -192,7 +192,6 @@ const ModelForm = React.memo(function(props) {
         const { formMap } = ModelFormGlobalProvider.getGlobal();
         const thisForm = formMap[ctxId];
 
-        console.log(">>ModelForm/index::", "thisForm", thisForm); //TRACE
         const objFields = get(
           query,
           "definitions.0.selectionSet.selections.0.selectionSet.selections",
@@ -210,7 +209,8 @@ const ModelForm = React.memo(function(props) {
         if (savedParentId) {
           parentData.id = savedParentId;
         }
-        let beforeSaveData = {};
+        let beforeSaveData = {},
+          beforeSavePassed = true;
         for (let beforeSaveObj of beforeSaveHandlers
           .sortBy(o => o.precedence)
           .toJS()) {
@@ -220,12 +220,24 @@ const ModelForm = React.memo(function(props) {
               parent: { data: parentData }
             })
           );
-          if (beforeSaveDataTmp === false) {
-            // console.log("saving canceled"); //TRACE
-            return;
+          if (beforeSaveDataTmp) {
+            beforeSaveData = { ...beforeSaveData, ...beforeSaveDataTmp };
+          } else {
+            beforeSavePassed = false;
           }
-          beforeSaveData = { ...beforeSaveData, ...beforeSaveDataTmp };
         }
+        if (beforeSavePassed === false) {
+          throw {
+            ctxId,
+            dateId: get(formData, "id"),
+            parentCtxId: get(parentModelContext, "ctxId"),
+            parentDataId: get(parentData, "id"),
+            error: new Error(
+              "Before save validation failed. Please check form errors"
+            )
+          };
+        }
+
         const input = { ...formDataClean, ...beforeSaveData };
         const mutation = !!input.id
           ? composeUpdateMutation(name)
@@ -237,6 +249,7 @@ const ModelForm = React.memo(function(props) {
           },
           refetchQueries
         });
+        // const ret = { data: { model: { id: "hahaah" } } };
 
         const savedId = get(ret, "data.model.id");
         //save children models
@@ -272,11 +285,22 @@ const ModelForm = React.memo(function(props) {
         return savedId;
       },
       async save(options = {}) {
-        await setState(set("saving", true));
-        const savedId = await handlers._saveModel(options);
-        await setState(set("saving", false));
-        onSave && onSave(savedId);
-        return savedId;
+        try {
+          await setState(set("saving", true));
+          const savedId = await handlers._saveModel(options);
+          await setState(set("saving", false));
+          onSave && onSave(savedId);
+          return savedId;
+        } catch (err) {
+          if (get(err, "parentCtxId") === ctxId) {
+            await setFormData(oldState => ({
+              ...oldState,
+              id: get(err, "parentDataId")
+            }));
+          }
+          await setState(set("saving", false));
+          console.error(err);
+        }
       }
     }),
     [

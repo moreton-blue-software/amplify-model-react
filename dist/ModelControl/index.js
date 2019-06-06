@@ -21,11 +21,11 @@ var _get = require("lodash/get");
 
 var _get2 = _interopRequireDefault(_get);
 
+var _groupBy = require("lodash/groupBy");
+
+var _groupBy2 = _interopRequireDefault(_groupBy);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var ModelControlContext = exports.ModelControlContext = _react2.default.createContext();
 
@@ -54,9 +54,8 @@ function ModelControl(_ref) {
       touched = _React$useState6[0],
       setTouched = _React$useState6[1];
 
-  _react2.default.useEffect(function () {
-    if (!touched) return;
-    //validations
+  function validate() {
+    var errors = [];
     Object.entries(fields).forEach(function (_ref2) {
       var _ref3 = _slicedToArray(_ref2, 2),
           fieldName = _ref3[0],
@@ -64,31 +63,59 @@ function ModelControl(_ref) {
 
       if (flag) {
         var fieldValue = (0, _get2.default)(formData, fieldName);
-        console.log(">>ModelControl/index::", "fieldValue", fieldValue); //TRACE
-        setErrors(function (oldErrors) {
-          if (!fieldValue && required) {
-            var error = "\"" + fieldName + "\" should not be empty";
-            if (oldErrors.indexOf(error) < 0) {
-              var newErrors = [].concat(_toConsumableArray(oldErrors), [error]);
-              form.handlers.setFieldErrors(function (oldState) {
-                return _extends({}, oldState, _defineProperty({}, fieldName, newErrors));
-              });
-              return newErrors;
-            }
-            return oldErrors;
-          } else {
-            form.handlers.setFieldErrors(function (oldState) {
-              delete oldState[fieldName];
-              return oldState;
-            });
-            return [];
-          }
-        });
+        if (!fieldValue && required) {
+          var error = "\"" + fieldName + "\" should not be empty";
+          errors.push({ field: fieldName, message: error });
+        }
       }
+    });
+    return { errors: errors };
+  }
+
+  _react2.default.useEffect(function () {
+    var checkValid = function checkValid() {
+      var _validate = validate(),
+          errors = _validate.errors;
+
+      setTouched(true);
+      return !(errors.length > 0);
+    };
+    form.handlers.attachBeforeSave(checkValid, 4);
+    return function () {
+      form.handlers.detachBeforeSave(checkValid);
+    };
+  }, [fields, formData]);
+
+  _react2.default.useEffect(function () {
+    if (!touched) return;
+    //validations
+
+    var _validate2 = validate(),
+        errors = _validate2.errors;
+
+    var errorsByKey = (0, _groupBy2.default)(errors, "field");
+    var errorMsgs = [];
+    var errorFields = {};
+    Object.entries(errorsByKey).map(function (entry) {
+      var _entry = _slicedToArray(entry, 2),
+          field = _entry[0],
+          errors = _entry[1];
+
+      var errList = [];
+      errors.forEach(function (_ref4) {
+        var message = _ref4.message;
+
+        errorMsgs.push(message);
+        errList.push(message);
+      });
+      errorFields[field] = errList;
+    });
+    setErrors(errorMsgs);
+    form.handlers.setFieldErrors(function (oldState) {
+      return _extends({}, oldState, errorFields);
     });
   }, [formData, required, touched]);
 
-  console.log(">>ModelControl/index::", "fields", errors, state, fields); //TRACE
   var contextState = _react2.default.useMemo(function () {
     var hasErrors = errors.length > 0;
     return {

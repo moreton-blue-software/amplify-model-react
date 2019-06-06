@@ -1,6 +1,7 @@
 import React from "react";
 import { ModelFormContext } from "../ModelForm";
 import get from "lodash/get";
+import groupBy from "lodash/groupBy";
 
 export const ModelControlContext = React.createContext();
 
@@ -11,38 +12,52 @@ export default function ModelControl({ required = false, children }) {
   const { data: formData, state } = form;
   const [touched, setTouched] = React.useState(false);
 
-  React.useEffect(() => {
-    if (!touched) return;
-    //validations
+  function validate() {
+    const errors = [];
     Object.entries(fields).forEach(([fieldName, flag]) => {
       if (flag) {
         const fieldValue = get(formData, fieldName);
-        console.log(">>ModelControl/index::", "fieldValue", fieldValue); //TRACE
-        setErrors(oldErrors => {
-          if (!fieldValue && required) {
-            const error = `"${fieldName}" should not be empty`;
-            if (oldErrors.indexOf(error) < 0) {
-              const newErrors = [...oldErrors, error];
-              form.handlers.setFieldErrors(oldState => ({
-                ...oldState,
-                [fieldName]: newErrors
-              }));
-              return newErrors;
-            }
-            return oldErrors;
-          } else {
-            form.handlers.setFieldErrors(oldState => {
-              delete oldState[fieldName];
-              return oldState;
-            });
-            return [];
-          }
-        });
+        if (!fieldValue && required) {
+          const error = `"${fieldName}" should not be empty`;
+          errors.push({ field: fieldName, message: error });
+        }
       }
     });
+    return { errors };
+  }
+
+  React.useEffect(() => {
+    const checkValid = () => {
+      const { errors } = validate();
+      setTouched(true);
+      return !(errors.length > 0);
+    };
+    form.handlers.attachBeforeSave(checkValid, 4);
+    return () => {
+      form.handlers.detachBeforeSave(checkValid);
+    };
+  }, [fields, formData]);
+
+  React.useEffect(() => {
+    if (!touched) return;
+    //validations
+    const { errors } = validate();
+    const errorsByKey = groupBy(errors, "field");
+    const errorMsgs = [];
+    const errorFields = {};
+    Object.entries(errorsByKey).map(entry => {
+      const [field, errors] = entry;
+      const errList = [];
+      errors.forEach(({ message }) => {
+        errorMsgs.push(message);
+        errList.push(message);
+      });
+      errorFields[field] = errList;
+    });
+    setErrors(errorMsgs);
+    form.handlers.setFieldErrors(oldState => ({ ...oldState, ...errorFields }));
   }, [formData, required, touched]);
 
-  console.log(">>ModelControl/index::", "fields", errors, state, fields); //TRACE
   const contextState = React.useMemo(() => {
     const hasErrors = errors.length > 0;
     return {

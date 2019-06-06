@@ -18,12 +18,17 @@ const Fields = props => {
   const { data } = React.useContext(ModelFormContext);
   console.log(">>src/ModelFormPlayground::", "model", data); //TRACE
   return (
-    <ModelFieldSelector
-      name="Question"
-      field="vacancyQuestionQuestionId"
-      label={`Question ..`}
-      renderLabel={q => q.text}
-    />
+    <>
+      <ModelControl required>
+        <ModelFieldInput field="description" />
+      </ModelControl>
+      <ModelFieldSelector
+        name="Question"
+        field="vacancyQuestionQuestionId"
+        label={`Question ..`}
+        renderLabel={q => q.text}
+      />
+    </>
   );
 };
 const VacancyQuestion = props => {
@@ -35,18 +40,20 @@ const VacancyQuestion = props => {
   }, []);
   console.log(">>src/ModelFormPlayground::", "vq", vq); //TRACE
   return (
-    <ModelForm
-      key={index}
-      onChange={e => {
-        console.log(">>src/ModelFormPlayground::", "formData onChange", e); //TRACE
-      }}
-      name="VacancyQuestion"
-      defaultModelValue={vq}
-      beforeSave={beforeSave}
-      // afterSave={afterSave}
-    >
-      <Fields />
-    </ModelForm>
+    <>
+      <ModelForm
+        key={index}
+        onChange={e => {
+          console.log(">>src/ModelFormPlayground::", "formData onChange", e); //TRACE
+        }}
+        name="VacancyQuestion"
+        defaultModelValue={vq}
+        beforeSave={beforeSave}
+        // afterSave={afterSave}
+      >
+        <Fields />
+      </ModelForm>
+    </>
   );
 };
 
@@ -78,6 +85,7 @@ const FormBody = props => {
 
   return (
     <div>
+      id:{formData.id}
       <ModelFieldSelector
         name="Client"
         field="vacancyClientId"
@@ -128,18 +136,18 @@ const FormBody = props => {
           views: ["year", "month", "date"]
         }}
       />
+      {/* <ModelControl required> */}
+      <ModelFieldDate
+        field="startDate"
+        label="Start Date(date only, strict)"
+        pickerProps={{
+          format: "dd/MM/yyyy",
+          views: ["year", "month", "date"]
+        }}
+      />
+      {/* </ModelControl> */}
       <ModelControl required>
-        <ModelFieldDate
-          field="startDate"
-          label="Start Date(date only, strict)"
-          pickerProps={{
-            format: "dd/MM/yyyy",
-            views: ["year", "month", "date"]
-          }}
-        />
-      </ModelControl>
-      <ModelControl required>
-        <ModelFieldInput field="description" />
+      <ModelFieldInput field="description" />
       </ModelControl>
       <ModelFieldInput field="description" />
       {/* <ModelFieldFile
@@ -224,7 +232,8 @@ export default function ModelFormPlayground(props) {
       <h2>Form</h2>
       <ModelForm
         name="Vacancy"
-        // modelId={"10009c7f-f77c-4389-b480-19cc3675e109"}
+        // modelId={"4d8ec785-c737-4a7f-a4c3-bff330e38a29"}
+        modelId={"52b7a079-bb7b-4ed2-ac69-464ea7c3b520"}
         // onSave={onSave}
         additionalFields={extraProps}
         onChange={e => {
