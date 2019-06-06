@@ -18,10 +18,25 @@ import remove from "lodash/fp/remove";
 import set from "lodash/fp/set";
 import pick from "lodash/pick";
 import omit from "lodash/fp/omit";
+import { ModelControlContext } from "./../ModelControl";
 
 // const NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
 export const ModelFormContext = React.createContext();
+
+export function useModelForm({ field } = {}) {
+  const form = React.useContext(ModelFormContext);
+  const control = React.useContext(ModelControlContext);
+  React.useEffect(() => {
+    if (control && field) {
+      control.setFields(oldFields => ({ ...oldFields, [field]: true }));
+    }
+  }, [field]);
+  return {
+    form,
+    control: control || { setTouched() {} }
+  };
+}
 
 function getChildContextsById(parentId) {
   const { formMap } = ModelFormGlobalProvider.getGlobal();
@@ -45,6 +60,7 @@ const ModelForm = React.memo(function(props) {
   } = props;
   const [ctxId] = React.useState(`${name}-${nanoid()}`);
   const [state, setState] = React.useState({});
+  const [fieldErrors, setFieldErrors] = React.useState({});
   const [formData, setFormData] = React.useState(defaultModelValue || {});
   const [childrenMap, setChildrenMap] = React.useState({});
   const [childContexts, setChildContexts] = React.useState([]);
@@ -134,6 +150,7 @@ const ModelForm = React.memo(function(props) {
   const handlers = React.useMemo(
     () => ({
       setChildrenMap,
+      setFieldErrors,
       getChildContexts() {
         return getChildContextsById(ctxId);
       },
@@ -172,6 +189,10 @@ const ModelForm = React.memo(function(props) {
         const { refetchQueries, savedParentId, noRefetch } = options;
         const formDataJson = formData;
 
+        const { formMap } = ModelFormGlobalProvider.getGlobal();
+        const thisForm = formMap[ctxId];
+
+        console.log(">>ModelForm/index::", "thisForm", thisForm); //TRACE
         const objFields = get(
           query,
           "definitions.0.selectionSet.selections.0.selectionSet.selections",
@@ -218,7 +239,6 @@ const ModelForm = React.memo(function(props) {
         });
 
         const savedId = get(ret, "data.model.id");
-        const { formMap } = ModelFormGlobalProvider.getGlobal();
         //save children models
         await Promise.map(childContexts || [], childCtxKey => {
           const childCtx = formMap[childCtxKey];
@@ -269,11 +289,24 @@ const ModelForm = React.memo(function(props) {
   );
   // console.log("childContexts", childContexts); //TRACE
   const formDataJS = formData;
-  const stateJS = React.useMemo(() => ({ ...state, loading, editMode }), [
-    state,
-    loading,
-    editMode
-  ]);
+  const stateJS = React.useMemo(() => {
+    const errors = [];
+    Object.entries(fieldErrors).forEach(entry => {
+      const [fieldName, errorList] = entry;
+      if (errorList && errorList.length > 0) {
+        errorList.forEach(err => {
+          errors.push({ fieldName, err });
+        });
+      }
+    });
+    return {
+      ...state,
+      errors,
+      hasErrors: errors.length > 0,
+      loading,
+      editMode
+    };
+  }, [state, loading, editMode, fieldErrors]);
   const childrenMapJS = childrenMap;
   const contextState = React.useMemo(() => {
     return {

@@ -27,6 +27,12 @@ Object.defineProperty(exports, "ModelFormContext", {
     return _ModelForm.ModelFormContext;
   }
 });
+Object.defineProperty(exports, "useModelForm", {
+  enumerable: true,
+  get: function get() {
+    return _ModelForm.useModelForm;
+  }
+});
 
 var _ModelFormController = require("./ModelFormController");
 

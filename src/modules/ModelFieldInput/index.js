@@ -1,12 +1,31 @@
 import React from "react";
-import { ModelFormContext } from "../ModelForm";
+import { ModelFormContext, useModelForm } from "../ModelForm";
 import capitalize from "lodash/capitalize";
 import debounce from "lodash/debounce";
 import TextField from "@material-ui/core/TextField";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControl from "@material-ui/core/FormControl";
+import { makeStyles } from "@material-ui/core/styles";
+import RequiredTag from "./../common/RequiredTag";
 
+const useStyle = makeStyles(theme => ({
+  root: {
+    color: props => (props.hasErrors ? theme.palette.error.main : "inherit"),
+    "& > p": {
+      color: "inherit"
+    }
+  }
+}));
 export default function ModelFieldInput(props) {
   const { field, label, disabled, format } = props;
-  const { state, handlers } = React.useContext(ModelFormContext);
+  const { form, control } = useModelForm({ field });
+  const { state, handlers } = form;
+
+  console.log(">>ModelFieldInput/index::", "control", control); //TRACE
+  const { errors, hasErrors } = control;
+
+  const classes = useStyle({ hasErrors });
+
   const [txt, setTxt] = React.useState("");
 
   const defaultValue = handlers.getFieldValue(field, "");
@@ -17,11 +36,15 @@ export default function ModelFieldInput(props) {
   }, [defaultValue]);
 
   const updateField = debounce(targetValue => {
-    handlers.setFieldValue(targetValue.id, targetValue.value);
+    handlers.setFieldValue(
+      targetValue.id,
+      targetValue.value === "" ? null : targetValue.value
+    );
   }, 200);
 
   const handleInputChange = React.useCallback(e => {
     const { id, value } = e.target;
+    control && control.setTouched(true);
     setTxt(value);
     updateField({ id, value });
   }, []);
@@ -32,24 +55,45 @@ export default function ModelFieldInput(props) {
     return txtValue;
   }, [format, txt]);
 
+  const onBlur = React.useCallback(() => {
+    control && control.setTouched(true);
+  }, []);
+
+  // const Wrapper = React.useMemo(()=>{
+
+  // },[
+  //   hasErrors
+  // ]);
+
   return (
-    <div>
-      <label>{label || capitalize(field)}</label>
+    <div className={classes.root}>
+      <label>
+        {label || capitalize(field)}
+        <RequiredTag />
+      </label>
       <TextField
         // success={this.state.requiredState === 'success'}
         // error={this.state.requiredState === 'error'}
-
+        error={hasErrors}
         id={field}
         key={inputId}
         fullWidth
         inputProps={{
           id: field,
           key: inputId,
+          onBlur: onBlur,
           disabled,
           onChange: handleInputChange,
           value: formattedValue
         }}
       />
+      {hasErrors && (
+        <FormHelperText>
+          {errors.map(error => {
+            return error;
+          })}
+        </FormHelperText>
+      )}
     </div>
   );
 }

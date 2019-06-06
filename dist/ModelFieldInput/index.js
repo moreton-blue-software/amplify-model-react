@@ -26,17 +26,54 @@ var _TextField = require("@material-ui/core/TextField");
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
+var _FormHelperText = require("@material-ui/core/FormHelperText");
+
+var _FormHelperText2 = _interopRequireDefault(_FormHelperText);
+
+var _FormControl = require("@material-ui/core/FormControl");
+
+var _FormControl2 = _interopRequireDefault(_FormControl);
+
+var _styles = require("@material-ui/core/styles");
+
+var _RequiredTag = require("./../common/RequiredTag");
+
+var _RequiredTag2 = _interopRequireDefault(_RequiredTag);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var useStyle = (0, _styles.makeStyles)(function (theme) {
+  return {
+    root: {
+      color: function color(props) {
+        return props.hasErrors ? theme.palette.error.main : "inherit";
+      },
+      "& > p": {
+        color: "inherit"
+      }
+    }
+  };
+});
 function ModelFieldInput(props) {
   var field = props.field,
       label = props.label,
       disabled = props.disabled,
       format = props.format;
 
-  var _React$useContext = _react2.default.useContext(_ModelForm.ModelFormContext),
-      state = _React$useContext.state,
-      handlers = _React$useContext.handlers;
+  var _useModelForm = (0, _ModelForm.useModelForm)({ field: field }),
+      form = _useModelForm.form,
+      control = _useModelForm.control;
+
+  var state = form.state,
+      handlers = form.handlers;
+
+
+  console.log(">>ModelFieldInput/index::", "control", control); //TRACE
+  var errors = control.errors,
+      hasErrors = control.hasErrors;
+
+
+  var classes = useStyle({ hasErrors: hasErrors });
 
   var _React$useState = _react2.default.useState(""),
       _React$useState2 = _slicedToArray(_React$useState, 2),
@@ -51,7 +88,7 @@ function ModelFieldInput(props) {
   }, [defaultValue]);
 
   var updateField = (0, _debounce2.default)(function (targetValue) {
-    handlers.setFieldValue(targetValue.id, targetValue.value);
+    handlers.setFieldValue(targetValue.id, targetValue.value === "" ? null : targetValue.value);
   }, 200);
 
   var handleInputChange = _react2.default.useCallback(function (e) {
@@ -59,6 +96,7 @@ function ModelFieldInput(props) {
         id = _e$target.id,
         value = _e$target.value;
 
+    control && control.setTouched(true);
     setTxt(value);
     updateField({ id: id, value: value });
   }, []);
@@ -69,28 +107,47 @@ function ModelFieldInput(props) {
     return txtValue;
   }, [format, txt]);
 
+  var onBlur = _react2.default.useCallback(function () {
+    control && control.setTouched(true);
+  }, []);
+
+  // const Wrapper = React.useMemo(()=>{
+
+  // },[
+  //   hasErrors
+  // ]);
+
   return _react2.default.createElement(
     "div",
-    null,
+    { className: classes.root },
     _react2.default.createElement(
       "label",
       null,
-      label || (0, _capitalize2.default)(field)
+      label || (0, _capitalize2.default)(field),
+      _react2.default.createElement(_RequiredTag2.default, null)
     ),
     _react2.default.createElement(_TextField2.default
     // success={this.state.requiredState === 'success'}
     // error={this.state.requiredState === 'error'}
-
-    , { id: field,
+    , { error: hasErrors,
+      id: field,
       key: inputId,
       fullWidth: true,
       inputProps: {
         id: field,
         key: inputId,
+        onBlur: onBlur,
         disabled: disabled,
         onChange: handleInputChange,
         value: formattedValue
       }
-    })
+    }),
+    hasErrors && _react2.default.createElement(
+      _FormHelperText2.default,
+      null,
+      errors.map(function (error) {
+        return error;
+      })
+    )
   );
 }

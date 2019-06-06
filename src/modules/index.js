@@ -1,5 +1,9 @@
 export { default as TestButton } from "./Button";
-export { default as ModelForm, ModelFormContext } from "./ModelForm";
+export {
+  default as ModelForm,
+  ModelFormContext,
+  useModelForm
+} from "./ModelForm";
 export {
   default as AmplifyModelContext,
   ModelFormControllerProvider as AmplifyModelProvider

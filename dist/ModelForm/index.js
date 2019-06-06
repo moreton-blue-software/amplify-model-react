@@ -5,19 +5,21 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ModelFormContext = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _templateObject = _taggedTemplateLiteral(["\n    query ", "{\n      model:get", "(id:\"", "\"){\n        ", "\n        ", "\n      }\n    }\n  "], ["\n    query ", "{\n      model:get", "(id:\"", "\"){\n        ", "\n        ", "\n      }\n    }\n  "]);
+
+exports.useModelForm = useModelForm;
 
 exports.default = function (props) {
   var name = props.name;
 
-  var _React$useState17 = _react2.default.useState(),
-      _React$useState18 = _slicedToArray(_React$useState17, 2),
-      schemaInfo = _React$useState18[0],
-      setSchemaInfo = _React$useState18[1];
+  var _React$useState19 = _react2.default.useState(),
+      _React$useState20 = _slicedToArray(_React$useState19, 2),
+      schemaInfo = _React$useState20[0],
+      setSchemaInfo = _React$useState20[1];
 
   var _React$useContext2 = _react2.default.useContext(_ModelFormController2.default),
       schema = _React$useContext2.schema,
@@ -84,9 +86,9 @@ var _omit = require("lodash/fp/omit");
 
 var _omit2 = _interopRequireDefault(_omit);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _ModelControl = require("./../ModelControl");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -94,9 +96,32 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 // const NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
 var ModelFormContext = exports.ModelFormContext = _react2.default.createContext();
+
+function useModelForm() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      field = _ref.field;
+
+  var form = _react2.default.useContext(ModelFormContext);
+  var control = _react2.default.useContext(_ModelControl.ModelControlContext);
+  _react2.default.useEffect(function () {
+    if (control && field) {
+      control.setFields(function (oldFields) {
+        return _extends({}, oldFields, _defineProperty({}, field, true));
+      });
+    }
+  }, [field]);
+  return {
+    form: form,
+    control: control || {
+      setTouched: function setTouched() {}
+    }
+  };
+}
 
 function getChildContextsById(parentId) {
   var _ModelFormGlobalProvi = _ModelFormController.ModelFormGlobalProvider.getGlobal(),
@@ -129,30 +154,35 @@ var ModelForm = _react2.default.memo(function (props) {
       state = _React$useState4[0],
       setState = _React$useState4[1];
 
-  var _React$useState5 = _react2.default.useState(defaultModelValue || {}),
+  var _React$useState5 = _react2.default.useState({}),
       _React$useState6 = _slicedToArray(_React$useState5, 2),
-      formData = _React$useState6[0],
-      _setFormData = _React$useState6[1];
+      fieldErrors = _React$useState6[0],
+      setFieldErrors = _React$useState6[1];
 
-  var _React$useState7 = _react2.default.useState({}),
+  var _React$useState7 = _react2.default.useState(defaultModelValue || {}),
       _React$useState8 = _slicedToArray(_React$useState7, 2),
-      childrenMap = _React$useState8[0],
-      setChildrenMap = _React$useState8[1];
+      formData = _React$useState8[0],
+      _setFormData = _React$useState8[1];
 
-  var _React$useState9 = _react2.default.useState([]),
+  var _React$useState9 = _react2.default.useState({}),
       _React$useState10 = _slicedToArray(_React$useState9, 2),
-      childContexts = _React$useState10[0],
-      setChildContexts = _React$useState10[1];
+      childrenMap = _React$useState10[0],
+      setChildrenMap = _React$useState10[1];
 
-  var _React$useState11 = _react2.default.useState((0, _immutable.List)([])),
+  var _React$useState11 = _react2.default.useState([]),
       _React$useState12 = _slicedToArray(_React$useState11, 2),
-      beforeSaveHandlers = _React$useState12[0],
-      setBeforeSaveHandlers = _React$useState12[1];
+      childContexts = _React$useState12[0],
+      setChildContexts = _React$useState12[1];
 
   var _React$useState13 = _react2.default.useState((0, _immutable.List)([])),
       _React$useState14 = _slicedToArray(_React$useState13, 2),
-      afterSaveHandlers = _React$useState14[0],
-      setAfterSaveHandlers = _React$useState14[1];
+      beforeSaveHandlers = _React$useState14[0],
+      setBeforeSaveHandlers = _React$useState14[1];
+
+  var _React$useState15 = _react2.default.useState((0, _immutable.List)([])),
+      _React$useState16 = _slicedToArray(_React$useState15, 2),
+      afterSaveHandlers = _React$useState16[0],
+      setAfterSaveHandlers = _React$useState16[1];
 
   _react2.default.useEffect(function () {
     onChange && onChange(formData);
@@ -246,6 +276,7 @@ var ModelForm = _react2.default.memo(function (props) {
   var handlers = _react2.default.useMemo(function () {
     return {
       setChildrenMap: setChildrenMap,
+      setFieldErrors: setFieldErrors,
       getChildContexts: function getChildContexts() {
         return getChildContextsById(ctxId);
       },
@@ -323,7 +354,7 @@ var ModelForm = _react2.default.memo(function (props) {
 
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-          var refetchQueries, savedParentId, noRefetch, formDataJson, objFields, formDataClean, parentData, beforeSaveData, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, beforeSaveObj, beforeSaveDataTmp, input, mutation, ret, savedId, _ModelFormGlobalProvi2, formMap, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, afterSaveObj;
+          var refetchQueries, savedParentId, noRefetch, formDataJson, _ModelFormGlobalProvi2, formMap, thisForm, objFields, formDataClean, parentData, beforeSaveData, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, beforeSaveObj, beforeSaveDataTmp, input, mutation, ret, savedId, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, afterSaveObj;
 
           return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
@@ -331,6 +362,11 @@ var ModelForm = _react2.default.memo(function (props) {
                 case 0:
                   refetchQueries = options.refetchQueries, savedParentId = options.savedParentId, noRefetch = options.noRefetch;
                   formDataJson = formData;
+                  _ModelFormGlobalProvi2 = _ModelFormController.ModelFormGlobalProvider.getGlobal(), formMap = _ModelFormGlobalProvi2.formMap;
+                  thisForm = formMap[ctxId];
+
+
+                  console.log(">>ModelForm/index::", "thisForm", thisForm); //TRACE
                   objFields = (0, _get2.default)(query, "definitions.0.selectionSet.selections.0.selectionSet.selections", []).filter(function (f) {
                     return !f.selectionSet;
                   }).map(function (f) {
@@ -347,80 +383,80 @@ var ModelForm = _react2.default.memo(function (props) {
                   _iteratorNormalCompletion = true;
                   _didIteratorError = false;
                   _iteratorError = undefined;
-                  _context3.prev = 10;
+                  _context3.prev = 13;
                   _iterator = beforeSaveHandlers.sortBy(function (o) {
                     return o.precedence;
                   }).toJS()[Symbol.iterator]();
 
-                case 12:
+                case 15:
                   if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                    _context3.next = 23;
+                    _context3.next = 26;
                     break;
                   }
 
                   beforeSaveObj = _step.value;
-                  _context3.next = 16;
+                  _context3.next = 19;
                   return _bluebird2.default.resolve(beforeSaveObj.fn({
                     context: { data: formDataClean },
                     parent: { data: parentData }
                   }));
 
-                case 16:
+                case 19:
                   beforeSaveDataTmp = _context3.sent;
 
                   if (!(beforeSaveDataTmp === false)) {
-                    _context3.next = 19;
+                    _context3.next = 22;
                     break;
                   }
 
                   return _context3.abrupt("return");
 
-                case 19:
+                case 22:
                   beforeSaveData = _extends({}, beforeSaveData, beforeSaveDataTmp);
 
-                case 20:
-                  _iteratorNormalCompletion = true;
-                  _context3.next = 12;
-                  break;
-
                 case 23:
-                  _context3.next = 29;
+                  _iteratorNormalCompletion = true;
+                  _context3.next = 15;
                   break;
 
-                case 25:
-                  _context3.prev = 25;
-                  _context3.t0 = _context3["catch"](10);
+                case 26:
+                  _context3.next = 32;
+                  break;
+
+                case 28:
+                  _context3.prev = 28;
+                  _context3.t0 = _context3["catch"](13);
                   _didIteratorError = true;
                   _iteratorError = _context3.t0;
 
-                case 29:
-                  _context3.prev = 29;
-                  _context3.prev = 30;
+                case 32:
+                  _context3.prev = 32;
+                  _context3.prev = 33;
 
                   if (!_iteratorNormalCompletion && _iterator.return) {
                     _iterator.return();
                   }
 
-                case 32:
-                  _context3.prev = 32;
+                case 35:
+                  _context3.prev = 35;
 
                   if (!_didIteratorError) {
-                    _context3.next = 35;
+                    _context3.next = 38;
                     break;
                   }
 
                   throw _iteratorError;
 
-                case 35:
+                case 38:
+                  return _context3.finish(35);
+
+                case 39:
                   return _context3.finish(32);
 
-                case 36:
-                  return _context3.finish(29);
-
-                case 37:
+                case 40:
                   input = _extends({}, formDataClean, beforeSaveData);
                   mutation = !!input.id ? (0, _Base.composeUpdateMutation)(name) : (0, _Base.composeCreateMutation)(name);
-                  _context3.next = 41;
+                  _context3.next = 44;
                   return apolloClient.mutate({
                     mutation: mutation,
                     variables: {
@@ -429,13 +465,12 @@ var ModelForm = _react2.default.memo(function (props) {
                     refetchQueries: refetchQueries
                   });
 
-                case 41:
+                case 44:
                   ret = _context3.sent;
                   savedId = (0, _get2.default)(ret, "data.model.id");
-                  _ModelFormGlobalProvi2 = _ModelFormController.ModelFormGlobalProvider.getGlobal(), formMap = _ModelFormGlobalProvi2.formMap;
                   //save children models
 
-                  _context3.next = 46;
+                  _context3.next = 48;
                   return _bluebird2.default.map(childContexts || [], function (childCtxKey) {
                     var childCtx = formMap[childCtxKey];
 
@@ -445,7 +480,7 @@ var ModelForm = _react2.default.memo(function (props) {
                     });
                   });
 
-                case 46:
+                case 48:
                   formDataClean.id = savedId;
                   // afterSave &&
                   //   (await afterSave({
@@ -455,81 +490,81 @@ var ModelForm = _react2.default.memo(function (props) {
                   _iteratorNormalCompletion2 = true;
                   _didIteratorError2 = false;
                   _iteratorError2 = undefined;
-                  _context3.prev = 50;
+                  _context3.prev = 52;
                   _iterator2 = afterSaveHandlers.sortBy(function (o) {
                     return o.precedence;
                   }).toJS()[Symbol.iterator]();
 
-                case 52:
+                case 54:
                   if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-                    _context3.next = 59;
+                    _context3.next = 61;
                     break;
                   }
 
                   afterSaveObj = _step2.value;
-                  _context3.next = 56;
+                  _context3.next = 58;
                   return _bluebird2.default.resolve(afterSaveObj.fn({
                     context: { data: formDataClean },
                     parent: { data: parentData }
                   }));
 
-                case 56:
+                case 58:
                   _iteratorNormalCompletion2 = true;
-                  _context3.next = 52;
-                  break;
-
-                case 59:
-                  _context3.next = 65;
+                  _context3.next = 54;
                   break;
 
                 case 61:
-                  _context3.prev = 61;
-                  _context3.t1 = _context3["catch"](50);
+                  _context3.next = 67;
+                  break;
+
+                case 63:
+                  _context3.prev = 63;
+                  _context3.t1 = _context3["catch"](52);
                   _didIteratorError2 = true;
                   _iteratorError2 = _context3.t1;
 
-                case 65:
-                  _context3.prev = 65;
-                  _context3.prev = 66;
+                case 67:
+                  _context3.prev = 67;
+                  _context3.prev = 68;
 
                   if (!_iteratorNormalCompletion2 && _iterator2.return) {
                     _iterator2.return();
                   }
 
-                case 68:
-                  _context3.prev = 68;
+                case 70:
+                  _context3.prev = 70;
 
                   if (!_didIteratorError2) {
-                    _context3.next = 71;
+                    _context3.next = 73;
                     break;
                   }
 
                   throw _iteratorError2;
 
-                case 71:
-                  return _context3.finish(68);
-
-                case 72:
-                  return _context3.finish(65);
-
                 case 73:
+                  return _context3.finish(70);
+
+                case 74:
+                  return _context3.finish(67);
+
+                case 75:
                   if (noRefetch) {
-                    _context3.next = 76;
+                    _context3.next = 78;
                     break;
                   }
 
-                  _context3.next = 76;
+                  _context3.next = 78;
                   return refetch();
 
-                case 76:
+                case 78:
                   return _context3.abrupt("return", savedId);
 
-                case 77:
+                case 79:
                 case "end":
                   return _context3.stop();
               }
             }
-          }, _callee3, _this3, [[10, 25, 29, 37], [30,, 32, 36], [50, 61, 65, 73], [66,, 68, 72]]);
+          }, _callee3, _this3, [[13, 28, 32, 40], [33,, 35, 39], [52, 63, 67, 75], [68,, 70, 74]]);
         }))();
       },
       save: function save() {
@@ -571,8 +606,25 @@ var ModelForm = _react2.default.memo(function (props) {
   // console.log("childContexts", childContexts); //TRACE
   var formDataJS = formData;
   var stateJS = _react2.default.useMemo(function () {
-    return _extends({}, state, { loading: loading, editMode: editMode });
-  }, [state, loading, editMode]);
+    var errors = [];
+    Object.entries(fieldErrors).forEach(function (entry) {
+      var _entry = _slicedToArray(entry, 2),
+          fieldName = _entry[0],
+          errorList = _entry[1];
+
+      if (errorList && errorList.length > 0) {
+        errorList.forEach(function (err) {
+          errors.push({ fieldName: fieldName, err: err });
+        });
+      }
+    });
+    return _extends({}, state, {
+      errors: errors,
+      hasErrors: errors.length > 0,
+      loading: loading,
+      editMode: editMode
+    });
+  }, [state, loading, editMode, fieldErrors]);
   var childrenMapJS = childrenMap;
   var contextState = _react2.default.useMemo(function () {
     return {
@@ -629,17 +681,17 @@ function ControllerWatcher(props) {
       setFormMap = _React$useContext.setFormMap,
       getFormMap = _React$useContext.getFormMap;
 
-  var _React$useState15 = _react2.default.useState({ childContexts: null }),
-      _React$useState16 = _slicedToArray(_React$useState15, 2),
-      state = _React$useState16[0],
-      setState = _React$useState16[1];
+  var _React$useState17 = _react2.default.useState({ childContexts: null }),
+      _React$useState18 = _slicedToArray(_React$useState17, 2),
+      state = _React$useState18[0],
+      setState = _React$useState18[1];
   //Add this context to controller map
 
 
   _react2.default.useEffect(function () {
-    var _ref = contextState || {},
-        parent = _ref.parent,
-        ctxId = _ref.ctxId;
+    var _ref2 = contextState || {},
+        parent = _ref2.parent,
+        ctxId = _ref2.ctxId;
 
     if (parent) setFormMap(_defineProperty({}, ctxId, contextState));
     // remove

@@ -26,7 +26,15 @@ var _padStart = require("lodash/padStart");
 
 var _padStart2 = _interopRequireDefault(_padStart);
 
+var _FormHelperText = require("@material-ui/core/FormHelperText");
+
+var _FormHelperText2 = _interopRequireDefault(_FormHelperText);
+
 var _pickers = require("@material-ui/pickers");
+
+var _RequiredTag = require("../common/RequiredTag");
+
+var _RequiredTag2 = _interopRequireDefault(_RequiredTag);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42,14 +50,18 @@ function ModelFieldDateTime(props) {
 
   var labelText = label || (0, _startCase2.default)(field);
 
-  var _React$useContext = _react2.default.useContext(_ModelForm.ModelFormContext),
-      handlers = _React$useContext.handlers;
+  var _useModelForm = (0, _ModelForm.useModelForm)({ field: field }),
+      form = _useModelForm.form,
+      control = _useModelForm.control;
+
+  var handlers = form.handlers;
 
   var rawValue = handlers.getFieldValue(field);
   var dateOnly = strictDate || dateOnlyTmp;
   var Picker = dateOnly ? _pickers.DatePicker : _pickers.DateTimePicker;
   var value = rawValue ? new Date(rawValue) : "";
   var checkDate = _react2.default.useCallback(function (mDate) {
+    control && control.setTouched(true);
     // if (!mDate || !mDate._d) return;
     var minuteOffset = mDate.getTimezoneOffset();
     var date = new Date(mDate.getTime());
@@ -73,8 +85,16 @@ function ModelFieldDateTime(props) {
       _react2.default.createElement(Picker, _extends({}, pickerProps, {
         value: value === "" ? null : value,
         onChange: checkDate,
-        label: labelText
-      }))
+        label: labelText + (control.required ? (0, _RequiredTag.requiredTagText)() : ""),
+        error: control.hasError
+      })),
+      control.hasErrors && _react2.default.createElement(
+        _FormHelperText2.default,
+        null,
+        control.errors.map(function (error) {
+          return error;
+        })
+      )
     )
   );
 }

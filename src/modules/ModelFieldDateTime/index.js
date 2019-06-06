@@ -1,9 +1,11 @@
 import React from "react";
-import { ModelFormContext } from "../ModelForm";
+import { ModelFormContext, useModelForm } from "../ModelForm";
 import startCase from "lodash/startCase";
 import FormControl from "@material-ui/core/FormControl";
 import padStart from "lodash/padStart";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import { DateTimePicker, DatePicker } from "@material-ui/pickers";
+import RequiredTag, { requiredTagText } from "../common/RequiredTag";
 
 export default function ModelFieldDateTime(props) {
   const {
@@ -14,13 +16,15 @@ export default function ModelFieldDateTime(props) {
     pickerProps = {}
   } = props;
   const labelText = label || startCase(field);
-  const { handlers } = React.useContext(ModelFormContext);
+  const { form, control } = useModelForm({ field });
+  const { handlers } = form;
   const rawValue = handlers.getFieldValue(field);
   const dateOnly = strictDate || dateOnlyTmp;
   const Picker = dateOnly ? DatePicker : DateTimePicker;
   const value = rawValue ? new Date(rawValue) : "";
   const checkDate = React.useCallback(
     mDate => {
+      control && control.setTouched(true);
       // if (!mDate || !mDate._d) return;
       const minuteOffset = mDate.getTimezoneOffset();
       let date = new Date(mDate.getTime());
@@ -44,8 +48,16 @@ export default function ModelFieldDateTime(props) {
           {...pickerProps}
           value={value === "" ? null : value}
           onChange={checkDate}
-          label={labelText}
+          label={labelText + (control.required ? requiredTagText() : "")}
+          error={control.hasError}
         />
+        {control.hasErrors && (
+          <FormHelperText>
+            {control.errors.map(error => {
+              return error;
+            })}
+          </FormHelperText>
+        )}
       </FormControl>
     </div>
   );

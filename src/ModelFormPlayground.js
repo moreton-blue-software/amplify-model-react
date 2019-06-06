@@ -12,6 +12,7 @@ import ReactPlayer from "react-player";
 import get from "lodash/get";
 import range from "lodash/range";
 import Promise from "bluebird";
+import ModelControl from "./modules/ModelControl";
 
 const Fields = props => {
   const { data } = React.useContext(ModelFormContext);
@@ -127,14 +128,19 @@ const FormBody = props => {
           views: ["year", "month", "date"]
         }}
       />
-      <ModelFieldDate
-        field="startDate"
-        label="Start Date(date only, strict)"
-        pickerProps={{
-          format: "dd/MM/yyyy",
-          views: ["year", "month", "date"]
-        }}
-      />
+      <ModelControl required>
+        <ModelFieldDate
+          field="startDate"
+          label="Start Date(date only, strict)"
+          pickerProps={{
+            format: "dd/MM/yyyy",
+            views: ["year", "month", "date"]
+          }}
+        />
+      </ModelControl>
+      <ModelControl required>
+        <ModelFieldInput field="description" />
+      </ModelControl>
       <ModelFieldInput field="description" />
       {/* <ModelFieldFile
         label="hello"
@@ -218,7 +224,7 @@ export default function ModelFormPlayground(props) {
       <h2>Form</h2>
       <ModelForm
         name="Vacancy"
-        modelId={"10009c7f-f77c-4389-b480-19cc3675e109"}
+        // modelId={"10009c7f-f77c-4389-b480-19cc3675e109"}
         // onSave={onSave}
         additionalFields={extraProps}
         onChange={e => {
