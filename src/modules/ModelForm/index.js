@@ -19,6 +19,7 @@ import set from "lodash/fp/set";
 import pick from "lodash/pick";
 import omit from "lodash/fp/omit";
 import { ModelControlContext } from "./../ModelControl";
+import { useSnackbar } from "notistack";
 
 // const NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
@@ -66,6 +67,7 @@ const ModelForm = React.memo(function(props) {
   const [childContexts, setChildContexts] = React.useState([]);
   const [beforeSaveHandlers, setBeforeSaveHandlers] = React.useState(List([]));
   const [afterSaveHandlers, setAfterSaveHandlers] = React.useState(List([]));
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   React.useEffect(() => {
     onChange && onChange(formData);
@@ -299,6 +301,9 @@ const ModelForm = React.memo(function(props) {
             }));
           }
           await setState(set("saving", false));
+          enqueueSnackbar(get(err, "error.message", "Something went wrong!"), {
+            variant: "error"
+          });
           console.error(err);
         }
       }

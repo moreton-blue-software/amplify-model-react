@@ -88,6 +88,8 @@ var _omit2 = _interopRequireDefault(_omit);
 
 var _ModelControl = require("./../ModelControl");
 
+var _notistack = require("notistack");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -183,6 +185,10 @@ var ModelForm = _react2.default.memo(function (props) {
       _React$useState16 = _slicedToArray(_React$useState15, 2),
       afterSaveHandlers = _React$useState16[0],
       setAfterSaveHandlers = _React$useState16[1];
+
+  var _useSnackbar = (0, _notistack.useSnackbar)(),
+      enqueueSnackbar = _useSnackbar.enqueueSnackbar,
+      closeSnackbar = _useSnackbar.closeSnackbar;
 
   _react2.default.useEffect(function () {
     onChange && onChange(formData);
@@ -625,9 +631,12 @@ var ModelForm = _react2.default.memo(function (props) {
                   return setState((0, _set2.default)("saving", false));
 
                 case 19:
+                  enqueueSnackbar((0, _get2.default)(_context4.t0, "error.message", "Something went wrong!"), {
+                    variant: "error"
+                  });
                   console.error(_context4.t0);
 
-                case 20:
+                case 21:
                 case "end":
                   return _context4.stop();
               }
