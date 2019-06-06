@@ -49,6 +49,15 @@ Object.defineProperty(exports, "AmplifyModelProvider", {
   }
 });
 
+var _ModelControl = require("./ModelControl");
+
+Object.defineProperty(exports, "ModelFieldControl", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_ModelControl).default;
+  }
+});
+
 var _ModelFieldDateTime = require("./ModelFieldDateTime");
 
 Object.defineProperty(exports, "ModelFieldDateTime", {

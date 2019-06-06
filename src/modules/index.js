@@ -9,6 +9,7 @@ export {
   ModelFormControllerProvider as AmplifyModelProvider
 } from "./ModelFormController";
 
+export { default as ModelFieldControl } from "./ModelControl";
 export { default as ModelFieldDateTime } from "./ModelFieldDateTime";
 export { default as ModelFieldDate } from "./ModelFieldDate";
 export { default as ModelFieldFile } from "./ModelFieldFile";
