@@ -57,6 +57,10 @@ var _Typography = require("@material-ui/core/Typography");
 
 var _Typography2 = _interopRequireDefault(_Typography);
 
+var _RequiredTag = require("./../common/RequiredTag");
+
+var _RequiredTag2 = _interopRequireDefault(_RequiredTag);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -274,7 +278,8 @@ function ModelSelector(props) {
     _react2.default.createElement(
       "label",
       null,
-      labelText
+      labelText,
+      _react2.default.createElement(_RequiredTag2.default, null)
     ),
     readOnly ? _react2.default.createElement(
       _Typography2.default,

@@ -29,7 +29,7 @@ export default function ModelFieldSelector(props) {
     [handlers]
   );
   return (
-    <>
+    <div>
       <ModelSelector
         name={name}
         readOnly={readOnly}
@@ -51,6 +51,6 @@ export default function ModelFieldSelector(props) {
           })}
         </FormHelperText>
       )}
-    </>
+    </div>
   );
 }

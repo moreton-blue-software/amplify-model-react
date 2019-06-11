@@ -90,7 +90,7 @@ function ModelFieldDateTime(props) {
       })),
       control.hasErrors && _react2.default.createElement(
         _FormHelperText2.default,
-        null,
+        { style: { color: "red" } },
         control.errors.map(function (error) {
           return error;
         })
