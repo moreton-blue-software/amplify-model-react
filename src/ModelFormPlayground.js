@@ -109,22 +109,24 @@ const FormBody = props => {
           }
         }}
       />
-      <ModelFieldSelector
-        name="Employee"
-        // disabled={!!agencyId}
-        label="Account Manager"
-        field="clientAccountManagerId"
-        renderLabel={employee => `${employee.firstName} ${employee.surname}`}
-        sorter={(a, b) => {
-          if (a.label.toLowerCase() < b.label.toLowerCase()) return -1;
-          if (a.label.toLowerCase() > b.label.toLowerCase()) return 1;
-          return 0;
-        }}
-        filter={f => {
-          console.log(">>src/ModelFormPlayground::", "f", f); //TRACE
-          return true;
-        }}
-      />
+      <ModelControl required>
+        <ModelFieldSelector
+          name="Employee"
+          // disabled={!!agencyId}
+          label="Account Manager"
+          field="clientAccountManagerId"
+          renderLabel={employee => `${employee.firstName} ${employee.surname}`}
+          sorter={(a, b) => {
+            if (a.label.toLowerCase() < b.label.toLowerCase()) return -1;
+            if (a.label.toLowerCase() > b.label.toLowerCase()) return 1;
+            return 0;
+          }}
+          filter={f => {
+            console.log(">>src/ModelFormPlayground::", "f", f); //TRACE
+            return true;
+          }}
+        />
+      </ModelControl>
       <ModelFieldDateTime field="startDate" />
       <ModelFieldDateTime
         field="startDate"
@@ -136,7 +138,7 @@ const FormBody = props => {
           views: ["year", "month", "date"]
         }}
       />
-      {/* <ModelControl required> */}
+      <ModelControl required>
       <ModelFieldDate
         field="startDate"
         label="Start Date(date only, strict)"
@@ -145,9 +147,9 @@ const FormBody = props => {
           views: ["year", "month", "date"]
         }}
       />
-      {/* </ModelControl> */}
+      </ModelControl>
       <ModelControl required>
-      <ModelFieldInput field="description" />
+        <ModelFieldInput field="description" />
       </ModelControl>
       <ModelFieldInput field="description" />
       {/* <ModelFieldFile

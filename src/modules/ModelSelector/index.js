@@ -10,6 +10,7 @@ import { Map } from "immutable";
 import ControllerContext from "../ModelFormController";
 import merge from "lodash/fp/merge";
 import Typography from "@material-ui/core/Typography";
+import RequiredTag from "./../common/RequiredTag";
 
 export default function ModelSelector(props) {
   const {
@@ -184,7 +185,10 @@ export default function ModelSelector(props) {
 
   return (
     <div style={{ marginTop: 10 }}>
-      <label>{labelText}</label>
+      <label>
+        {labelText}
+        <RequiredTag />
+      </label>
       {readOnly ? (
         <Typography>{readOnlyLabel}</Typography>
       ) : (

@@ -52,7 +52,7 @@ export default function ModelFieldDateTime(props) {
           error={control.hasError}
         />
         {control.hasErrors && (
-          <FormHelperText>
+          <FormHelperText style={{ color: "red" }}>
             {control.errors.map(error => {
               return error;
             })}
