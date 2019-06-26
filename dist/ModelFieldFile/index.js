@@ -256,7 +256,7 @@ var Uploader = function Uploader(props) {
               case 19:
                 storeData = _context2.sent;
 
-                enqueueSnackbar("Attchments saved.", { variant: "success" });
+                enqueueSnackbar("Attachments saved.", { variant: "success" });
                 retFields[field] = { filename: storeData.key };
                 _context2.next = 25;
                 break;
