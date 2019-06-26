@@ -119,7 +119,7 @@ const Uploader = props => {
             console.log(">>ModelFieldFile/index::", "filesUpls", filesUpls); //TRACE
           } else if (file) {
             const storeData = await uploadFile(file);
-            enqueueSnackbar("Attchments saved.", { variant: "success" });
+            enqueueSnackbar("Attachments saved.", { variant: "success" });
             retFields[field] = { filename: storeData.key };
           } else {
             retFields[field] = null;
