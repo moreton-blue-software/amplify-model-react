@@ -13,7 +13,7 @@ export default function UtilLoader(props) {
   return (
     <React.Suspense fallback={<div />}>
       {allUtils.map((util, ii) => {
-        const UtilComponent = util.default || util;
+        const UtilComponent = util && util.default ? util.default : util;
         return <UtilComponent key={ii} />;
       })}
     </React.Suspense>

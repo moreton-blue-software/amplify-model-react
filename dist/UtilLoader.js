@@ -30,7 +30,7 @@ function UtilLoader(props) {
     _react2.default.Suspense,
     { fallback: _react2.default.createElement("div", null) },
     allUtils.map(function (util, ii) {
-      var UtilComponent = util.default || util;
+      var UtilComponent = util && util.default ? util.default : util;
       return _react2.default.createElement(UtilComponent, { key: ii });
     })
   );
