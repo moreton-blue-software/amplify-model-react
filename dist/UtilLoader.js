@@ -9,13 +9,15 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _index = require("./index");
+var _Alerts = require("./Utils/Alerts");
+
+var _Alerts2 = _interopRequireDefault(_Alerts);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var defaultUtils = [_index.Alerts];
+var defaultUtils = [_Alerts2.default];
 
 function UtilLoader(props) {
   var _props$utils = props.utils,
@@ -30,7 +32,7 @@ function UtilLoader(props) {
     _react2.default.Suspense,
     { fallback: _react2.default.createElement("div", null) },
     allUtils.map(function (util, ii) {
-      var UtilComponent = util && util.default ? util.default : util;
+      var UtilComponent = util.default ? util.default : util;
       return _react2.default.createElement(UtilComponent, { key: ii });
     })
   );
