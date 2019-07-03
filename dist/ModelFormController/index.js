@@ -21,6 +21,10 @@ var _merge = require("lodash/fp/merge");
 
 var _merge2 = _interopRequireDefault(_merge);
 
+var _UtilLoader = require("../UtilLoader");
+
+var _UtilLoader2 = _interopRequireDefault(_UtilLoader);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var ModelFormGlobalProvider = exports.ModelFormGlobalProvider = (0, _reactn.createProvider)({
@@ -80,7 +84,8 @@ function ModelFormControllerProvider(props) {
   return _reactn2.default.createElement(
     ModelFormControllerContext.Provider,
     { value: contextState },
-    props.children
+    props.children,
+    _reactn2.default.createElement(_UtilLoader2.default, null)
   );
 }
 exports.default = ModelFormControllerContext;
