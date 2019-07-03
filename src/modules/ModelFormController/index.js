@@ -1,6 +1,7 @@
 import React, { createProvider } from "reactn";
 import get from "lodash/get";
 import merge from "lodash/fp/merge";
+import UtilLoader from "../UtilLoader";
 
 export const ModelFormGlobalProvider = createProvider({
   formMap: {}
@@ -56,6 +57,7 @@ export function ModelFormControllerProvider(props) {
   return (
     <ModelFormControllerContext.Provider value={contextState}>
       {props.children}
+      <UtilLoader />
     </ModelFormControllerContext.Provider>
   );
 }

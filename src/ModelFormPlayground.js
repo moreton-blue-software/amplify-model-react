@@ -12,7 +12,7 @@ import ReactPlayer from "react-player";
 import get from "lodash/get";
 import range from "lodash/range";
 import Promise from "bluebird";
-import ModelControl from "./modules/ModelControl";
+import { Alerts, ModelFieldControl as ModelControl } from "./modules";
 
 const Fields = props => {
   const { data } = React.useContext(ModelFormContext);
@@ -62,6 +62,12 @@ const FormBody = props => {
     ModelFormContext
   );
   console.log("state", state, formData); //TRACE
+
+  const confirm = Alerts.useConfirmAync({
+    content: "hello",
+    title: "erjwierjwermwei"
+  });
+
   React.useEffect(() => {
     Promise.delay(3000).then(() => {
       const ctxs = handlers.getChildContexts();
@@ -138,16 +144,16 @@ const FormBody = props => {
           views: ["year", "month", "date"]
         }}
       />
-      <ModelControl required>
-      <ModelFieldDate
-        field="startDate"
-        label="Start Date(date only, strict)"
-        pickerProps={{
-          format: "dd/MM/yyyy",
-          views: ["year", "month", "date"]
-        }}
-      />
-      </ModelControl>
+      {/* <ModelControl required>
+        <ModelFieldDate
+          field="startDate"
+          label="Start Date(date only, strict)"
+          pickerProps={{
+            format: "dd/MM/yyyy",
+            views: ["year", "month", "date"]
+          }}
+        />
+      </ModelControl> */}
       <ModelControl required>
         <ModelFieldInput field="description" />
       </ModelControl>
@@ -178,7 +184,18 @@ const FormBody = props => {
           <VacancyQuestion key={i} vq={get(formData, "questions.items.0")} />
         );
       })}
-      <Button disabled={state.saving} color="primary" onClick={handlers.save}>
+      <Button
+        disabled={state.saving}
+        color="primary"
+        onClick={async () => {
+          const ret = await confirm({
+            content: "confirm save?",
+            title: "confirmation"
+          });
+          if (!ret) return;
+          handlers.save();
+        }}
+      >
         {state.editMode ? "Update" : "Create"}
       </Button>
       <Button disabled={state.saving}>Cancel</Button>
