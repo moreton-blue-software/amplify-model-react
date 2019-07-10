@@ -645,7 +645,7 @@ var ModelForm = _react2.default.memo(function (props) {
         }))();
       }
     };
-  }, [(0, _get2.default)(parentModelContext, "data"), formData, childContexts, beforeSaveHandlers, afterSave]);
+  }, [(0, _get2.default)(parentModelContext, "data"), formData, childContexts, beforeSaveHandlers, afterSaveHandlers]);
   // console.log("childContexts", childContexts); //TRACE
   var formDataJS = formData;
   var stateJS = _react2.default.useMemo(function () {
