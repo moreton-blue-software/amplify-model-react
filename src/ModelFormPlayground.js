@@ -87,6 +87,16 @@ const FormBody = props => {
     return null;
   }, []);
 
+  React.useEffect(() => {
+    const afterSave = async () => {
+      console.log(">>src/ModelFormPlayground::", "calling after save"); //TRACE
+    };
+    handlers.attachAfterSave(afterSave, 1);
+    return () => {
+      handlers.detachAfterSave(afterSave);
+    };
+  }, []);
+
   if (state.loading) return <div>loading...</div>;
 
   return (

@@ -313,7 +313,7 @@ const ModelForm = React.memo(function(props) {
       formData,
       childContexts,
       beforeSaveHandlers,
-      afterSave
+      afterSaveHandlers
     ]
   );
   // console.log("childContexts", childContexts); //TRACE
