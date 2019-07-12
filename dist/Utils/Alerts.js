@@ -9,7 +9,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-exports.useConfirmAync = useConfirmAync;
+exports.useConfirmAsync = useConfirmAsync;
 exports.useConfirm = useConfirm;
 exports.default = Modal;
 
@@ -49,7 +49,7 @@ var AlertProvider = exports.AlertProvider = (0, _reactn.createProvider)({
   confirm: { opened: false }
 });
 
-function useConfirmAync() {
+function useConfirmAsync() {
   var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
       content = _ref.content,
       title = _ref.title;
@@ -67,8 +67,8 @@ function useConfirmAync() {
         content: content,
         title: title
       }, opts, {
-        onOk: function onOk() {
-          return resolve(true);
+        onOk: function onOk(contentState) {
+          return resolve(contentState || true);
         },
         onCancel: function onCancel() {
           return resolve(false);
@@ -113,16 +113,25 @@ function Modal(props) {
 
   var _useConfirm = useConfirm(),
       opened = _useConfirm.opened,
-      content = _useConfirm.content,
+      Content = _useConfirm.content,
       title = _useConfirm.title,
       close = _useConfirm.close,
       _onOk = _useConfirm.onOk,
       _onCancel = _useConfirm.onCancel;
 
+  var _React$useState = _reactn2.default.useState(null),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      contentState = _React$useState2[0],
+      setContentState = _React$useState2[1];
+
+  _reactn2.default.useEffect(function () {
+    if (opened) setContentState(null);
+  }, [opened]);
+
   var handlers = _reactn2.default.useMemo(function () {
     return {
       onOk: function onOk() {
-        _onOk && _onOk();
+        _onOk && _onOk(contentState);
         close();
       },
       onCancel: function onCancel() {
@@ -130,7 +139,10 @@ function Modal(props) {
         close();
       }
     };
-  }, [_onOk, _onCancel, close]);
+  }, [_onOk, _onCancel, close, contentState]);
+
+  var isContentComponent = Content instanceof Function;
+
   return _reactn2.default.createElement(
     _Dialog2.default,
     {
@@ -150,7 +162,7 @@ function Modal(props) {
       _reactn2.default.createElement(
         _DialogContentText2.default,
         { id: "alert-dialog-description" },
-        content
+        isContentComponent ? _reactn2.default.createElement(Content, { state: contentState, setState: setContentState }) : Content
       )
     ),
     _reactn2.default.createElement(

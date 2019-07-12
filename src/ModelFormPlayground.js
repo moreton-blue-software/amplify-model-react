@@ -63,7 +63,7 @@ const FormBody = props => {
   );
   console.log("state", state, formData); //TRACE
 
-  const confirm = Alerts.useConfirmAync({
+  const confirm = Alerts.useConfirmAsync({
     content: "hello",
     title: "erjwierjwermwei"
   });
@@ -199,9 +199,20 @@ const FormBody = props => {
         color="primary"
         onClick={async () => {
           const ret = await confirm({
-            content: "confirm save?",
+            content: ({ state, setState }) => {
+              return (
+                <span
+                  onClick={() => {
+                    setState("hehe");
+                  }}
+                >
+                  hello{state}
+                </span>
+              );
+            },
             title: "confirmation"
           });
+          // throw ret;
           if (!ret) return;
           handlers.save();
         }}

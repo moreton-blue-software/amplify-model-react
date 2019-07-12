@@ -10,7 +10,7 @@ export const AlertProvider = createProvider({
   confirm: { opened: false }
 });
 
-export function useConfirmAync({ content, title } = {}) {
+export function useConfirmAsync({ content, title } = {}) {
   const [, setConfirm] = AlertProvider.useGlobal("confirm");
 
   const fn = React.useCallback((opts = {}) => {
@@ -20,7 +20,7 @@ export function useConfirmAync({ content, title } = {}) {
         content,
         title,
         ...opts,
-        onOk: () => resolve(true),
+        onOk: contentState => resolve(contentState || true),
         onCancel: () => resolve(false),
         opened: true
       });
@@ -49,12 +49,25 @@ export function useConfirm({ content, title, onOk, onCancel } = {}) {
 
 export default function Modal(props) {
   const {} = props;
-  const { opened, content, title, close, onOk, onCancel } = useConfirm();
+  const {
+    opened,
+    content: Content,
+    title,
+    close,
+    onOk,
+    onCancel
+  } = useConfirm();
+
+  const [contentState, setContentState] = React.useState(null);
+
+  React.useEffect(() => {
+    if (opened) setContentState(null);
+  }, [opened]);
 
   const handlers = React.useMemo(
     () => ({
       onOk() {
-        onOk && onOk();
+        onOk && onOk(contentState);
         close();
       },
       onCancel() {
@@ -62,8 +75,11 @@ export default function Modal(props) {
         close();
       }
     }),
-    [onOk, onCancel, close]
+    [onOk, onCancel, close, contentState]
   );
+
+  const isContentComponent = Content instanceof Function;
+
   return (
     <Dialog
       open={opened}
@@ -74,7 +90,11 @@ export default function Modal(props) {
       <DialogTitle id="alert-dialog-title">{title || "Alert"}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {content}
+          {isContentComponent ? (
+            <Content state={contentState} setState={setContentState} />
+          ) : (
+            Content
+          )}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
