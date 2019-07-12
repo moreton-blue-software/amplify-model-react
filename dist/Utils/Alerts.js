@@ -159,11 +159,7 @@ function Modal(props) {
     _reactn2.default.createElement(
       _DialogContent2.default,
       null,
-      _reactn2.default.createElement(
-        _DialogContentText2.default,
-        { id: "alert-dialog-description" },
-        isContentComponent ? _reactn2.default.createElement(Content, { state: contentState, setState: setContentState }) : Content
-      )
+      isContentComponent ? _reactn2.default.createElement(Content, { state: contentState, setState: setContentState }) : Content
     ),
     _reactn2.default.createElement(
       _DialogActions2.default,

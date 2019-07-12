@@ -89,13 +89,11 @@ export default function Modal(props) {
     >
       <DialogTitle id="alert-dialog-title">{title || "Alert"}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {isContentComponent ? (
-            <Content state={contentState} setState={setContentState} />
-          ) : (
-            Content
-          )}
-        </DialogContentText>
+        {isContentComponent ? (
+          <Content state={contentState} setState={setContentState} />
+        ) : (
+          Content
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handlers.onOk} color="primary">
