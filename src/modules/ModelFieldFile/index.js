@@ -61,7 +61,7 @@ const Uploader = props => {
   } = props;
   const [fileData, setFileData] = React.useState({
     url: null,
-    file: null
+    file: undefined
   });
   const classes = useUploaderStyles();
   const [fileListData, setFileListData] = React.useState([]);
@@ -130,8 +130,11 @@ const Uploader = props => {
           } else if (file) {
             const storeData = await uploadFile(file);
             enqueueSnackbar("Attachments saved.", { variant: "success" });
-            retFields[field] = { filename: storeData.key };
-          } else {
+            console.log(">>ModelFieldFile/index::", "upl storeData", storeData); //TRACE
+            retFields[field] = {
+              filename: storeData.key
+            };
+          } else if (file === null) {
             retFields[field] = null;
           }
 
@@ -151,6 +154,7 @@ const Uploader = props => {
           console.log("1234: before saving delay done");
           // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
           // closeSnackbar(uploadSnackbar);
+          // throw Error(JSON.stringify(retFields));
           return retFields;
         }
       }
@@ -253,14 +257,13 @@ export default function ModelFieldFile(props) {
     ModelFormContext
   );
   // const [state, setState] = React.useState(Map({ defaultValue: null }));
-
   const defaultValue = React.useMemo(() => {
     return { [field]: modelData[field], id: modelData.id };
   }, [modelData]);
 
   return (
     <ModelForm
-      key={modelData.id} //added this so it reloads the form with the default value
+      // key={modelData.id} //added this so it reloads the form with the default value
       name={name}
       defaultModelValue={defaultValue}
     >

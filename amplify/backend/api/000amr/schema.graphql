@@ -10,7 +10,7 @@ type Vacancy @model {
   id: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
-  position: String!
+  position: String
   description: String
   video: File
   questions: [VacancyQuestion]

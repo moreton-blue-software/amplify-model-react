@@ -145,7 +145,8 @@ var ModelForm = _react2.default.memo(function (props) {
       afterSave = props.afterSave,
       _props$additionalFiel = props.additionalFields,
       additionalFields = _props$additionalFiel === undefined ? "" : _props$additionalFiel,
-      schemaInfo = props.schemaInfo;
+      schemaInfo = props.schemaInfo,
+      fetchPolicy = props.fetchPolicy;
 
   var _React$useState = _react2.default.useState(name + "-" + (0, _nanoid2.default)()),
       _React$useState2 = _slicedToArray(_React$useState, 1),
@@ -261,12 +262,12 @@ var ModelForm = _react2.default.memo(function (props) {
     skip: !modelId,
     variables: {
       modelId: modelId
-    }
+    },
+    fetchPolicy: fetchPolicy
   }),
       data = _useQuery.data,
       loading = _useQuery.loading,
       refetch = _useQuery.refetch;
-
   // console.log("formData.toJS()", formData.toJS()); //TRACE
 
   //Fetch model data for editting
@@ -287,6 +288,7 @@ var ModelForm = _react2.default.memo(function (props) {
 
   var handlers = _react2.default.useMemo(function () {
     return {
+      refetch: refetch,
       setChildrenMap: setChildrenMap,
       setFieldErrors: setFieldErrors,
       getChildContexts: function getChildContexts() {

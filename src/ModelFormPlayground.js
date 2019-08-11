@@ -63,6 +63,7 @@ const FormBody = props => {
   );
   console.log("state", state, formData); //TRACE
 
+  React.useEffect(() => {}, []);
   const confirm = Alerts.useConfirmAsync({
     content: "hello",
     title: "erjwierjwermwei"
@@ -102,7 +103,7 @@ const FormBody = props => {
   return (
     <div>
       id:{formData.id}
-      <ModelFieldSelector
+      {/* <ModelFieldSelector
         name="Client"
         field="vacancyClientId"
         onLabelClick={e => {
@@ -123,7 +124,7 @@ const FormBody = props => {
             }
           }
         }}
-      />
+      /> */}
       <ModelFieldDateTime field="startDate" />
       <ModelFieldDateTime
         field="startDate"
@@ -241,8 +242,9 @@ export default function ModelFormPlayground(props) {
       <h2>Form</h2>
       <ModelForm
         name="Vacancy"
+        fetchPolicy="network-only"
         // modelId={"4d8ec785-c737-4a7f-a4c3-bff330e38a29"}
-        // modelId={"52b7a079-bb7b-4ed2-ac69-464ea7c3b520"}
+        modelId={"92d38361-1e60-4c76-9742-baea255e7f23"}
         // onSave={onSave}
         additionalFields={extraProps}
         onChange={e => {

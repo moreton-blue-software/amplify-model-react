@@ -57,7 +57,8 @@ const ModelForm = React.memo(function(props) {
     beforeSave,
     afterSave,
     additionalFields = "",
-    schemaInfo
+    schemaInfo,
+    fetchPolicy
   } = props;
   const [ctxId] = React.useState(`${name}-${nanoid()}`);
   const [state, setState] = React.useState({});
@@ -138,9 +139,9 @@ const ModelForm = React.memo(function(props) {
     skip: !modelId,
     variables: {
       modelId
-    }
+    },
+    fetchPolicy
   });
-
   // console.log("formData.toJS()", formData.toJS()); //TRACE
 
   //Fetch model data for editting
@@ -157,6 +158,7 @@ const ModelForm = React.memo(function(props) {
 
   const handlers = React.useMemo(
     () => ({
+      refetch,
       setChildrenMap,
       setFieldErrors,
       getChildContexts() {

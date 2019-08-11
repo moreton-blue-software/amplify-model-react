@@ -126,7 +126,7 @@ var Uploader = function Uploader(props) {
 
   var _React$useState3 = _react2.default.useState({
     url: null,
-    file: null
+    file: undefined
   }),
       _React$useState4 = _slicedToArray(_React$useState3, 2),
       fileData = _React$useState4[0],
@@ -225,7 +225,7 @@ var Uploader = function Uploader(props) {
                 retFields = {};
 
                 if (!field) {
-                  _context2.next = 39;
+                  _context2.next = 40;
                   break;
                 }
 
@@ -260,12 +260,12 @@ var Uploader = function Uploader(props) {
                 filesUpls = _context2.sent;
 
                 console.log(">>ModelFieldFile/index::", "filesUpls", filesUpls); //TRACE
-                _context2.next = 25;
+                _context2.next = 26;
                 break;
 
               case 16:
                 if (!file) {
-                  _context2.next = 24;
+                  _context2.next = 25;
                   break;
                 }
 
@@ -276,15 +276,19 @@ var Uploader = function Uploader(props) {
                 storeData = _context2.sent;
 
                 enqueueSnackbar("Attachments saved.", { variant: "success" });
-                retFields[field] = { filename: storeData.key };
-                _context2.next = 25;
+                console.log(">>ModelFieldFile/index::", "upl storeData", storeData); //TRACE
+                retFields[field] = {
+                  filename: storeData.key
+                };
+                _context2.next = 26;
                 break;
 
-              case 24:
-                retFields[field] = null;
-
               case 25:
+                if (file === null) {
+                  retFields[field] = null;
+                }
 
+              case 26:
                 //omit all fields except file field and id
                 rest = _objectWithoutProperties(contextData, []);
 
@@ -292,11 +296,11 @@ var Uploader = function Uploader(props) {
                   retFields[k] = undefined;
                 });
                 retFields.id = parentData.id;
-                _context2.next = 35;
+                _context2.next = 36;
                 break;
 
-              case 30:
-                _context2.prev = 30;
+              case 31:
+                _context2.prev = 31;
                 _context2.t0 = _context2["catch"](3);
 
                 enqueueSnackbar("Something went wrong with saving video", {
@@ -305,23 +309,24 @@ var Uploader = function Uploader(props) {
                 console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", _context2.t0);
                 return _context2.abrupt("return", false);
 
-              case 35:
-                _context2.prev = 35;
+              case 36:
+                _context2.prev = 36;
 
                 console.log("1234: before saving delay done");
                 // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
                 // closeSnackbar(uploadSnackbar);
+                // throw Error(JSON.stringify(retFields));
                 return _context2.abrupt("return", retFields);
 
-              case 39:
+              case 40:
                 return _context2.abrupt("return", false);
 
-              case 40:
+              case 41:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, undefined, [[3, 30, 35, 39]]);
+        }, _callee2, undefined, [[3, 31, 36, 40]]);
       }));
 
       return function beforeSave(_x) {
@@ -434,6 +439,7 @@ function ModelFieldFile(props) {
       handlers = _React$useContext2.handlers;
   // const [state, setState] = React.useState(Map({ defaultValue: null }));
 
+
   var defaultValue = _react2.default.useMemo(function () {
     var _ref5;
 
@@ -441,10 +447,10 @@ function ModelFieldFile(props) {
   }, [modelData]);
 
   return _react2.default.createElement(
-    _ModelForm2.default,
-    {
-      key: modelData.id //added this so it reloads the form with the default value
-      , name: name,
+    _ModelForm2.default
+    // key={modelData.id} //added this so it reloads the form with the default value
+    ,
+    { name: name,
       defaultModelValue: defaultValue
     },
     _react2.default.createElement(
