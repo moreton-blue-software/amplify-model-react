@@ -121,7 +121,8 @@ var Uploader = function Uploader(props) {
       multiple = props.multiple,
       field = props.field,
       render = props.render,
-      storageOpts = props.storageOpts;
+      storageOpts = props.storageOpts,
+      beforeFileUpload = props.beforeFileUpload;
 
   var _React$useState3 = _react2.default.useState({
     url: null,
@@ -154,14 +155,32 @@ var Uploader = function Uploader(props) {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(_ref3) {
         // console.log("1234: before saving delay", contextData, parentData);
         var uploadFile = function () {
-          var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(file) {
-            var filepath, uploadSnackbar, storeDataPromise, storeData;
+          var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(rawFile) {
+            var filepath, uploadSnackbar, file, newFile, storeDataPromise, storeData;
             return regeneratorRuntime.wrap(function _callee$(_context) {
               while (1) {
                 switch (_context.prev = _context.next) {
                   case 0:
-                    filepath = parentData.id + "/" + file.name;
+                    filepath = parentData.id + "/" + rawFile.name;
                     uploadSnackbar = void 0;
+                    file = rawFile;
+
+                    if (!beforeFileUpload) {
+                      _context.next = 8;
+                      break;
+                    }
+
+                    _context.next = 6;
+                    return beforeFileUpload(rawFile);
+
+                  case 6:
+                    newFile = _context.sent;
+
+                    if (newFile) {
+                      file = newFile;
+                    }
+
+                  case 8:
                     storeDataPromise = new _bluebird2.default(function (resolve, reject) {
                       uploadSnackbar = enqueueSnackbar(
                       // `Uploading attachments.. ${progressPercentage}%`,
@@ -173,16 +192,16 @@ var Uploader = function Uploader(props) {
                         persist: true
                       });
                     });
-                    _context.next = 5;
+                    _context.next = 11;
                     return storeDataPromise;
 
-                  case 5:
+                  case 11:
                     storeData = _context.sent;
 
                     closeSnackbar(uploadSnackbar);
                     return _context.abrupt("return", storeData);
 
-                  case 8:
+                  case 14:
                   case "end":
                     return _context.stop();
                 }
@@ -406,7 +425,8 @@ function ModelFieldFile(props) {
       buttonLabel = props.buttonLabel,
       multiple = props.multiple,
       _props$storageOpts = props.storageOpts,
-      storageOpts = _props$storageOpts === undefined ? {} : _props$storageOpts;
+      storageOpts = _props$storageOpts === undefined ? {} : _props$storageOpts,
+      beforeFileUpload = props.beforeFileUpload;
 
   var _React$useContext2 = _react2.default.useContext(_ModelForm.ModelFormContext),
       name = _React$useContext2.name,
@@ -441,7 +461,8 @@ function ModelFieldFile(props) {
         field: field,
         render: render,
         multiple: multiple,
-        storageOpts: storageOpts
+        storageOpts: storageOpts,
+        beforeFileUpload: beforeFileUpload
       })
     )
   );

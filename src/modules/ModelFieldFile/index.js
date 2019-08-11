@@ -56,7 +56,8 @@ const Uploader = props => {
     multiple,
     field,
     render,
-    storageOpts
+    storageOpts,
+    beforeFileUpload
   } = props;
   const [fileData, setFileData] = React.useState({
     url: null,
@@ -76,9 +77,18 @@ const Uploader = props => {
       parent: { data: parentData }
     }) => {
       // console.log("1234: before saving delay", contextData, parentData);
-      async function uploadFile(file) {
-        const filepath = `${parentData.id}/${file.name}`;
+      async function uploadFile(rawFile) {
+        const filepath = `${parentData.id}/${rawFile.name}`;
         let uploadSnackbar;
+        let file = rawFile;
+
+        if (beforeFileUpload) {
+          const newFile = await beforeFileUpload(rawFile);
+          if (newFile) {
+            file = newFile;
+          }
+        }
+
         const storeDataPromise = new Promise(function(resolve, reject) {
           uploadSnackbar = enqueueSnackbar(
             // `Uploading attachments.. ${progressPercentage}%`,
@@ -236,7 +246,8 @@ export default function ModelFieldFile(props) {
     label = "File",
     buttonLabel,
     multiple,
-    storageOpts = {}
+    storageOpts = {},
+    beforeFileUpload
   } = props;
   const { name, data: modelData, handlers } = React.useContext(
     ModelFormContext
@@ -262,6 +273,7 @@ export default function ModelFieldFile(props) {
           render={render}
           multiple={multiple}
           storageOpts={storageOpts}
+          beforeFileUpload={beforeFileUpload}
         />
       </div>
     </ModelForm>

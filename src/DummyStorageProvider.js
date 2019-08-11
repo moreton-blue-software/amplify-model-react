@@ -19,7 +19,7 @@ export default class DummyStorageProvider {
   // upload storage object
   async put(key, object, options) {
     for (let index = 0; index < 10; index++) {
-      await Promise.delay(1000);
+      await Promise.delay(150);
       options.progressCallback({ loaded: index * 10, total: 100 });
     }
     return { key: "http://techslides.com/demos/sample-videos/small.webm" };

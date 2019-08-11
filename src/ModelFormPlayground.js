@@ -149,14 +149,17 @@ const FormBody = props => {
         <ModelFieldInput field="position" />
       </ModelControl>
       <ModelFieldInput field="description" />
-      {/* <ModelFieldFile
+      <ModelFieldFile
         label="hello"
         buttonLabel="world"
         field="video"
         render={videoRender}
+        beforeFileUpload={file => {
+          console.log(">>src/ModelFormPlayground::", "file", file); //TRACE
+        }}
         storageOpts={{ provider: "DummyStorageProvider" }}
-      /> */}
-      <ModelFieldFile
+      />
+      {/* <ModelFieldFile
         label="hello multiple"
         buttonLabel="world"
         field="video"
@@ -164,7 +167,7 @@ const FormBody = props => {
         accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, text/plain, application/pdf, image/*"
         render={multipleRender}
         storageOpts={{ provider: "DummyStorageProvider" }}
-      />
+      /> */}
       <ModelFieldTextSelector
         field="award"
         placeholder="Change to Pathway Outcome"
