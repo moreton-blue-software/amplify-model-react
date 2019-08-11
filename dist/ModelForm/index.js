@@ -9,7 +9,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _templateObject = _taggedTemplateLiteral(["\n    query ", "{\n      model:get", "(id:\"", "\"){\n        ", "\n        ", "\n      }\n    }\n  "], ["\n    query ", "{\n      model:get", "(id:\"", "\"){\n        ", "\n        ", "\n      }\n    }\n  "]);
+var _templateObject = _taggedTemplateLiteral(["\n    query ", " ($modelId: ID!){\n      model:get", "(id:$modelId){\n        ", "\n        ", "\n      }\n    }\n  "], ["\n    query ", " ($modelId: ID!){\n      model:get", "(id:$modelId){\n        ", "\n        ", "\n      }\n    }\n  "]);
 
 exports.useModelForm = useModelForm;
 
@@ -231,7 +231,7 @@ var ModelForm = _react2.default.memo(function (props) {
   }, [afterSave]);
 
   var modelId = (0, _get2.default)(defaultModelValue, "id", modelIdTmp);
-  var editMode = !!modelId;
+  // const editMode = !!modelId;
   // const mutation = editMode
   //   ? composeUpdateMutation(name)
   //   : composeCreateMutation(name);
@@ -250,19 +250,23 @@ var ModelForm = _react2.default.memo(function (props) {
     var queryKey = "GET_" + (0, _Base.toKey)(name);
     // console.log("queryKey", queryKey); //TRACE
     return {
-      query: (0, _graphqlTag2.default)(_templateObject, queryKey, name, modelId, basicFieldsString, additionalFields),
+      query: (0, _graphqlTag2.default)(_templateObject, queryKey, name, basicFieldsString, additionalFields),
       queryKey: queryKey
     };
-  }, [name, modelId]),
+  }, [name]),
       queryKey = _React$useMemo.queryKey,
       query = _React$useMemo.query;
 
   var _useQuery = (0, _reactApolloHooks.useQuery)(query, {
-    skip: !editMode // || (modelId && defaultModelValue),
+    skip: !modelId,
+    variables: {
+      modelId: modelId
+    }
   }),
       data = _useQuery.data,
       loading = _useQuery.loading,
       refetch = _useQuery.refetch;
+
   // console.log("formData.toJS()", formData.toJS()); //TRACE
 
   //Fetch model data for editting
@@ -273,7 +277,9 @@ var ModelForm = _react2.default.memo(function (props) {
     _setFormData(function (oldModelData) {
       return _extends({}, oldModelData, modelData);
     });
-  }, [data, editMode]);
+  }, [data]);
+
+  var editMode = !!(0, _get2.default)(formData, "id");
 
   _react2.default.useEffect(function () {
     console.log(">>ModelForm/index::", "ctx childContexts", childContexts); //TRACE
@@ -570,7 +576,9 @@ var ModelForm = _react2.default.memo(function (props) {
                   }
 
                   _context3.next = 77;
-                  return refetch();
+                  return refetch({
+                    modelId: savedId
+                  });
 
                 case 77:
                   return _context3.abrupt("return", savedId);

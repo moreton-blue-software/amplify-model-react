@@ -42,6 +42,7 @@ export function ModelFormControllerProvider(props) {
           const kind = get(f, "type.ofType.kind") || get(f, "type.kind");
           return kind !== "OBJECT";
         });
+        if (!objectType) throw new Error(`Model with name "${name}" is not found.`);
         return {
           model: objectType,
           flatFields,

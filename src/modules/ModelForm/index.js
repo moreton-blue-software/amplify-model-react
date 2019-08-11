@@ -105,7 +105,7 @@ const ModelForm = React.memo(function(props) {
   }, [afterSave]);
 
   const modelId = get(defaultModelValue, "id", modelIdTmp);
-  const editMode = !!modelId;
+  // const editMode = !!modelId;
   // const mutation = editMode
   //   ? composeUpdateMutation(name)
   //   : composeCreateMutation(name);
@@ -123,8 +123,8 @@ const ModelForm = React.memo(function(props) {
     // console.log("queryKey", queryKey); //TRACE
     return {
       query: gql`
-    query ${queryKey}{
-      model:get${name}(id:"${modelId}"){
+    query ${queryKey} ($modelId: ID!){
+      model:get${name}(id:$modelId){
         ${basicFieldsString}
         ${additionalFields}
       }
@@ -132,18 +132,24 @@ const ModelForm = React.memo(function(props) {
   `,
       queryKey
     };
-  }, [name, modelId]);
+  }, [name]);
 
   const { data, loading, refetch } = useQuery(query, {
-    skip: !editMode // || (modelId && defaultModelValue),
+    skip: !modelId,
+    variables: {
+      modelId
+    }
   });
+
   // console.log("formData.toJS()", formData.toJS()); //TRACE
 
   //Fetch model data for editting
   React.useEffect(() => {
     const modelData = get(data, "model", {});
     setFormData(oldModelData => ({ ...oldModelData, ...modelData }));
-  }, [data, editMode]);
+  }, [data]);
+
+  const editMode = !!get(formData, "id");
 
   React.useEffect(() => {
     console.log(">>ModelForm/index::", "ctx childContexts", childContexts); //TRACE
@@ -280,7 +286,10 @@ const ModelForm = React.memo(function(props) {
           );
         }
 
-        if (!noRefetch) await refetch();
+        if (!noRefetch)
+          await refetch({
+            modelId: savedId
+          });
         // await apolloClient.queryManager.ref.refetchQueryByName(queryKey);
 
         // console.log("ret", ret); //TRACE

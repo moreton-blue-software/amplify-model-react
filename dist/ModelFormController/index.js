@@ -71,6 +71,7 @@ function ModelFormControllerProvider(props) {
           var kind = (0, _get2.default)(f, "type.ofType.kind") || (0, _get2.default)(f, "type.kind");
           return kind !== "OBJECT";
         });
+        if (!objectType) throw new Error("Model with name \"" + name + "\" is not found.");
         return {
           model: objectType,
           flatFields: flatFields,

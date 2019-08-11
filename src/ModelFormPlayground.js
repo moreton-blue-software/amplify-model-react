@@ -19,9 +19,9 @@ const Fields = props => {
   console.log(">>src/ModelFormPlayground::", "model", data); //TRACE
   return (
     <>
-      <ModelControl required>
+      {/* <ModelControl required>
         <ModelFieldInput field="description" />
-      </ModelControl>
+      </ModelControl> */}
       <ModelFieldSelector
         name="Question"
         field="vacancyQuestionQuestionId"
@@ -105,7 +105,6 @@ const FormBody = props => {
       <ModelFieldSelector
         name="Client"
         field="vacancyClientId"
-        readOnly
         onLabelClick={e => {
           alert("hello");
         }}
@@ -125,24 +124,6 @@ const FormBody = props => {
           }
         }}
       />
-      <ModelControl required>
-        <ModelFieldSelector
-          name="Employee"
-          // disabled={!!agencyId}
-          label="Account Manager"
-          field="clientAccountManagerId"
-          renderLabel={employee => `${employee.firstName} ${employee.surname}`}
-          sorter={(a, b) => {
-            if (a.label.toLowerCase() < b.label.toLowerCase()) return -1;
-            if (a.label.toLowerCase() > b.label.toLowerCase()) return 1;
-            return 0;
-          }}
-          filter={f => {
-            console.log(">>src/ModelFormPlayground::", "f", f); //TRACE
-            return true;
-          }}
-        />
-      </ModelControl>
       <ModelFieldDateTime field="startDate" />
       <ModelFieldDateTime
         field="startDate"
@@ -165,7 +146,7 @@ const FormBody = props => {
         />
       </ModelControl> */}
       <ModelControl required>
-        <ModelFieldInput field="description" />
+        <ModelFieldInput field="position" />
       </ModelControl>
       <ModelFieldInput field="description" />
       {/* <ModelFieldFile
@@ -189,11 +170,11 @@ const FormBody = props => {
         placeholder="Change to Pathway Outcome"
         options={[{ value: true, label: "Yes" }, { value: false, label: "No" }]}
       />
-      {range(1).map(i => {
+      {/* {range(1).map(i => {
         return (
           <VacancyQuestion key={i} vq={get(formData, "questions.items.0")} />
         );
-      })}
+      })} */}
       <Button
         disabled={state.saving}
         color="primary"
@@ -250,30 +231,15 @@ export default function ModelFormPlayground(props) {
     console.log(">>src/ModelFormPlayground::", "item", item); //TRACE
     setState(oldState => ({ ...oldState, client: item.id }));
   }, []);
+
   return (
     <div>
       <h2>Components</h2>
-      <div>
-        <ModelSelector
-          name="Client"
-          // readOnly={readOnly}
-          // onLabelClick={onLabelClick}
-          // disabled={disabled}
-          // renderLabel={renderLabel}
-          value={state.client}
-          onChange={handleClientSelectorChange}
-          label={"Test Client"}
-          // placeholder={"Client Placeholder"}
-          // queryOpts={queryOpts}
-          // sorter={sorter}
-          // filter={filter}
-        />
-      </div>
       <h2>Form</h2>
       <ModelForm
         name="Vacancy"
         // modelId={"4d8ec785-c737-4a7f-a4c3-bff330e38a29"}
-        modelId={"52b7a079-bb7b-4ed2-ac69-464ea7c3b520"}
+        // modelId={"52b7a079-bb7b-4ed2-ac69-464ea7c3b520"}
         // onSave={onSave}
         additionalFields={extraProps}
         onChange={e => {
