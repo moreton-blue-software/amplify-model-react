@@ -1,0 +1,53 @@
+type Client @model {
+  id: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  name: String
+  vacancys: [Vacancy] @connection(name: "VacancyClient", sortField: "createdAt")
+}
+
+type Vacancy @model {
+  id: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  position: String!
+  description: String
+  video: File
+  questions: [VacancyQuestion]
+    @connection(name: "VacancyQuestionVacancy", sortField: "createdAt")
+  client: Client @connection(name: "VacancyClient", sortField: "createdAt")
+  vacancyClientId: ID
+}
+
+type VacancyQuestion @model {
+  id: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  indexNo: Int
+  vacancy: Vacancy
+    @connection(name: "VacancyQuestionVacancy", sortField: "createdAt")
+  vacancyQuestionVacancyId: ID
+  question: Question
+    @connection(name: "VacancyQuestionQuestion", sortField: "createdAt")
+  vacancyQuestionQuestionId: ID
+  archived: Boolean
+}
+
+type Question @model {
+  id: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  text: String
+  mandatory: Boolean
+  archived: Boolean
+  vacancies: [VacancyQuestion]
+    @connection(name: "VacancyQuestionQuestion", sortField: "createdAt")
+}
+
+type File {
+  id: String!
+  filename: String!
+  uploader: String
+  uploadDate: AWSDateTime
+  hash: String
+}
