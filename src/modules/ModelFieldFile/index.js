@@ -8,7 +8,8 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import { Storage } from "aws-amplify";
-import set from "lodash/fp/set";
+import setFp from "lodash/fp/set";
+import set from "lodash/set";
 import get from "lodash/get";
 
 // const Renderer = React.memo(props=>{
@@ -57,6 +58,7 @@ const Uploader = props => {
     field,
     render,
     storageOpts,
+    defaultModelValue,
     beforeFileUpload
   } = props;
   const [fileData, setFileData] = React.useState({
@@ -110,12 +112,13 @@ const Uploader = props => {
       const { file } = fileData;
       let retFields = {};
       if (field) {
+        const fieldRoot = field.split(".")[0];
         try {
           if (!parentData.id) {
             console.log("1234: no parent data id found!.");
             return {};
           }
-          await Promise.delay(1000);
+          await Promise.delay(500);
           if (fileListData && fileListData.length > 0) {
             const filesUpls = await Promise.map(
               fileListData,
@@ -127,21 +130,39 @@ const Uploader = props => {
               { concurrency: 4 }
             );
             console.log(">>ModelFieldFile/index::", "filesUpls", filesUpls); //TRACE
-          } else if (file) {
-            const storeData = await uploadFile(file);
-            enqueueSnackbar("Attachments saved.", { variant: "success" });
-            console.log(">>ModelFieldFile/index::", "upl storeData", storeData); //TRACE
-            retFields[field] = {
-              filename: storeData.key
-            };
-          } else if (file === null) {
-            retFields[field] = null;
+          } else {
+            retFields = { [fieldRoot]: parentData[fieldRoot] };
+            if (file) {
+              const storeData = await uploadFile(file);
+              console.log(
+                ">>ModelFieldFile/index::" + field,
+                "xxretFields",
+                retFields
+              ); //TRACE
+
+              set(retFields, field, {
+                filename: storeData.key
+              });
+            } else if (file === null) {
+              set(retFields, field, null);
+            }
           }
 
           //omit all fields except file field and id
-          const { ...rest } = contextData;
-          Object.keys(rest).forEach(k => {
-            retFields[k] = undefined;
+          Object.keys(retFields).forEach(k => {
+            if (fieldRoot !== k) {
+              retFields[k] = undefined;
+            } else {
+              if (!!get(retFields, [k, "length"])) {
+                // an array
+                retFields[k].forEach(retFieldItem => {
+                  if (retFieldItem) retFieldItem["__typename"] = undefined;
+                });
+              } else if (!!retFields[k]) {
+                // an object
+                retFields[k]["__typename"] = undefined;
+              }
+            }
           });
           retFields.id = parentData.id;
         } catch (e) {
@@ -155,6 +176,11 @@ const Uploader = props => {
           // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
           // closeSnackbar(uploadSnackbar);
           // throw Error(JSON.stringify(retFields));
+          console.log(
+            ">>ModelFieldFile/index::" + field,
+            "retFields",
+            retFields
+          ); //TRACE
           return retFields;
         }
       }
@@ -175,7 +201,7 @@ const Uploader = props => {
       Storage.get(filename, { ...storageOpts })
         .then(result => {
           // console.log(">>ModelFieldFile/index::", "result", result); //TRACE
-          if (!hasCancelled) setFileData(set("url", result));
+          if (!hasCancelled) setFileData(setFp("url", result));
         })
         .catch(err => console.error(err));
     }
@@ -258,9 +284,11 @@ export default function ModelFieldFile(props) {
   );
   // const [state, setState] = React.useState(Map({ defaultValue: null }));
   const defaultValue = React.useMemo(() => {
-    return { [field]: modelData[field], id: modelData.id };
+    // const m = { id: modelData.id };
+    // set(m, field, get(modelData, field));
+    return modelData;
   }, [modelData]);
-
+  console.log(">>ModelFieldFile/index::" + field, "defaultValue", defaultValue); //TRACE
   return (
     <ModelForm
       // key={modelData.id} //added this so it reloads the form with the default value
@@ -277,6 +305,7 @@ export default function ModelFieldFile(props) {
           multiple={multiple}
           storageOpts={storageOpts}
           beforeFileUpload={beforeFileUpload}
+          defaultModelValue={defaultValue}
         />
       </div>
     </ModelForm>

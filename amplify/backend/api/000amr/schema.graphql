@@ -13,6 +13,7 @@ type Vacancy @model {
   position: String
   description: String
   video: File
+  agreements: [File]
   questions: [VacancyQuestion]
     @connection(name: "VacancyQuestionVacancy", sortField: "createdAt")
   client: Client @connection(name: "VacancyClient", sortField: "createdAt")

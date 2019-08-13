@@ -43,6 +43,13 @@ export const getVacancy = `query GetVacancy($id: ID!) {
       uploadDate
       hash
     }
+    agreements {
+      id
+      filename
+      uploader
+      uploadDate
+      hash
+    }
     questions {
       nextToken
     }

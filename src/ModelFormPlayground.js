@@ -160,6 +160,26 @@ const FormBody = props => {
         }}
         storageOpts={{ provider: "DummyStorageProvider" }}
       />
+      <ModelFieldFile
+        label="Videos"
+        buttonLabel="world"
+        field="agreements.0"
+        render={videoRender}
+        beforeFileUpload={file => {
+          console.log(">>src/ModelFormPlayground::", "file", file); //TRACE
+        }}
+        storageOpts={{ provider: "DummyStorageProvider" }}
+      />
+      <ModelFieldFile
+        label="Videos"
+        buttonLabel="world"
+        field="agreements.1"
+        render={videoRender}
+        beforeFileUpload={file => {
+          console.log(">>src/ModelFormPlayground::", "file", file); //TRACE
+        }}
+        storageOpts={{ provider: "DummyStorageProvider" }}
+      />
       {/* <ModelFieldFile
         label="hello multiple"
         buttonLabel="world"
@@ -211,6 +231,9 @@ const FormBody = props => {
 
 const extraProps = `
   video {
+    filename
+  }
+  agreements {
     filename
   }
   questions (filter:{

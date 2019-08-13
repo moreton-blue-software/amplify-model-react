@@ -51,6 +51,13 @@ export const onCreateVacancy = `subscription OnCreateVacancy {
       uploadDate
       hash
     }
+    agreements {
+      id
+      filename
+      uploader
+      uploadDate
+      hash
+    }
     questions {
       nextToken
     }
@@ -78,6 +85,13 @@ export const onUpdateVacancy = `subscription OnUpdateVacancy {
       uploadDate
       hash
     }
+    agreements {
+      id
+      filename
+      uploader
+      uploadDate
+      hash
+    }
     questions {
       nextToken
     }
@@ -99,6 +113,13 @@ export const onDeleteVacancy = `subscription OnDeleteVacancy {
     position
     description
     video {
+      id
+      filename
+      uploader
+      uploadDate
+      hash
+    }
+    agreements {
       id
       filename
       uploader

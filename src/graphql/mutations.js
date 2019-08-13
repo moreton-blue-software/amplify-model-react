@@ -51,6 +51,13 @@ export const createVacancy = `mutation CreateVacancy($input: CreateVacancyInput!
       uploadDate
       hash
     }
+    agreements {
+      id
+      filename
+      uploader
+      uploadDate
+      hash
+    }
     questions {
       nextToken
     }
@@ -78,6 +85,13 @@ export const updateVacancy = `mutation UpdateVacancy($input: UpdateVacancyInput!
       uploadDate
       hash
     }
+    agreements {
+      id
+      filename
+      uploader
+      uploadDate
+      hash
+    }
     questions {
       nextToken
     }
@@ -99,6 +113,13 @@ export const deleteVacancy = `mutation DeleteVacancy($input: DeleteVacancyInput!
     position
     description
     video {
+      id
+      filename
+      uploader
+      uploadDate
+      hash
+    }
+    agreements {
       id
       filename
       uploader
