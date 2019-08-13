@@ -48,17 +48,19 @@ var _set = require("lodash/fp/set");
 
 var _set2 = _interopRequireDefault(_set);
 
+var _set3 = require("lodash/set");
+
+var _set4 = _interopRequireDefault(_set3);
+
 var _get = require("lodash/get");
 
 var _get2 = _interopRequireDefault(_get);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
@@ -122,6 +124,7 @@ var Uploader = function Uploader(props) {
       field = props.field,
       render = props.render,
       storageOpts = props.storageOpts,
+      defaultModelValue = props.defaultModelValue,
       beforeFileUpload = props.beforeFileUpload;
 
   var _React$useState3 = _react2.default.useState({
@@ -216,7 +219,7 @@ var Uploader = function Uploader(props) {
 
         var contextData = _ref3.context.data,
             parentData = _ref3.parent.data;
-        var file, retFields, filesUpls, storeData, rest;
+        var file, retFields, fieldRoot, filesUpls, storeData;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -225,75 +228,89 @@ var Uploader = function Uploader(props) {
                 retFields = {};
 
                 if (!field) {
-                  _context2.next = 40;
+                  _context2.next = 41;
                   break;
                 }
 
-                _context2.prev = 3;
+                fieldRoot = field.split(".")[0];
+                _context2.prev = 4;
 
                 if (parentData.id) {
-                  _context2.next = 7;
+                  _context2.next = 8;
                   break;
                 }
 
                 console.log("1234: no parent data id found!.");
                 return _context2.abrupt("return", {});
 
-              case 7:
-                _context2.next = 9;
-                return _bluebird2.default.delay(1000);
+              case 8:
+                _context2.next = 10;
+                return _bluebird2.default.delay(500);
 
-              case 9:
+              case 10:
                 if (!(fileListData && fileListData.length > 0)) {
-                  _context2.next = 16;
+                  _context2.next = 17;
                   break;
                 }
 
-                _context2.next = 12;
+                _context2.next = 13;
                 return _bluebird2.default.map(fileListData, function (fileData) {
                   if (fileData.file) return uploadFile(fileData.file);
 
                   // return {fileData.u}
                 }, { concurrency: 4 });
 
-              case 12:
+              case 13:
                 filesUpls = _context2.sent;
 
                 console.log(">>ModelFieldFile/index::", "filesUpls", filesUpls); //TRACE
-                _context2.next = 26;
+                _context2.next = 27;
                 break;
 
-              case 16:
+              case 17:
+                retFields = _defineProperty({}, fieldRoot, parentData[fieldRoot]);
+
                 if (!file) {
-                  _context2.next = 25;
+                  _context2.next = 26;
                   break;
                 }
 
-                _context2.next = 19;
+                _context2.next = 21;
                 return uploadFile(file);
 
-              case 19:
+              case 21:
                 storeData = _context2.sent;
 
-                enqueueSnackbar("Attachments saved.", { variant: "success" });
-                console.log(">>ModelFieldFile/index::", "upl storeData", storeData); //TRACE
-                retFields[field] = {
+                console.log(">>ModelFieldFile/index::" + field, "xxretFields", retFields); //TRACE
+
+                (0, _set4.default)(retFields, field, {
                   filename: storeData.key
-                };
-                _context2.next = 26;
+                });
+                _context2.next = 27;
                 break;
 
-              case 25:
+              case 26:
                 if (file === null) {
-                  retFields[field] = null;
+                  (0, _set4.default)(retFields, field, null);
                 }
 
-              case 26:
-                //omit all fields except file field and id
-                rest = _objectWithoutProperties(contextData, []);
+              case 27:
 
-                Object.keys(rest).forEach(function (k) {
-                  retFields[k] = undefined;
+                //omit all fields except file field and id
+                Object.keys(retFields).forEach(function (k) {
+                  if (fieldRoot !== k) {
+                    retFields[k] = undefined;
+                  } else {
+                    if (!!(0, _get2.default)(retFields, [k, "length"])) {
+                      // an array
+                      retFields[k].forEach(function (retFieldItem) {
+                        if (retFieldItem) retFieldItem["__typename"] = undefined;
+                      });
+                    } else if (!!retFields[k]) {
+                      // an object
+                      retFields[k]["__typename"] = undefined;
+                    }
+                  }
                 });
                 retFields.id = parentData.id;
                 _context2.next = 36;
@@ -301,7 +318,7 @@ var Uploader = function Uploader(props) {
 
               case 31:
                 _context2.prev = 31;
-                _context2.t0 = _context2["catch"](3);
+                _context2.t0 = _context2["catch"](4);
 
                 enqueueSnackbar("Something went wrong with saving video", {
                   variant: "error"
@@ -316,17 +333,18 @@ var Uploader = function Uploader(props) {
                 // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
                 // closeSnackbar(uploadSnackbar);
                 // throw Error(JSON.stringify(retFields));
+                console.log(">>ModelFieldFile/index::" + field, "retFields", retFields); //TRACE
                 return _context2.abrupt("return", retFields);
 
-              case 40:
+              case 41:
                 return _context2.abrupt("return", false);
 
-              case 41:
+              case 42:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, undefined, [[3, 31, 36, 40]]);
+        }, _callee2, undefined, [[4, 31, 36, 41]]);
       }));
 
       return function beforeSave(_x) {
@@ -441,11 +459,11 @@ function ModelFieldFile(props) {
 
 
   var defaultValue = _react2.default.useMemo(function () {
-    var _ref5;
-
-    return _ref5 = {}, _defineProperty(_ref5, field, modelData[field]), _defineProperty(_ref5, "id", modelData.id), _ref5;
+    // const m = { id: modelData.id };
+    // set(m, field, get(modelData, field));
+    return modelData;
   }, [modelData]);
-
+  console.log(">>ModelFieldFile/index::" + field, "defaultValue", defaultValue); //TRACE
   return _react2.default.createElement(
     _ModelForm2.default
     // key={modelData.id} //added this so it reloads the form with the default value
@@ -468,7 +486,8 @@ function ModelFieldFile(props) {
         render: render,
         multiple: multiple,
         storageOpts: storageOpts,
-        beforeFileUpload: beforeFileUpload
+        beforeFileUpload: beforeFileUpload,
+        defaultModelValue: defaultValue
       })
     )
   );
