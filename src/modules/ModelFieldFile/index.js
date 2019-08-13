@@ -59,7 +59,8 @@ const Uploader = props => {
     render,
     storageOpts,
     defaultModelValue,
-    beforeFileUpload
+    beforeFileUpload,
+    onChange
   } = props;
   const [fileData, setFileData] = React.useState({
     url: null,
@@ -235,6 +236,7 @@ const Uploader = props => {
               url: null
             }));
           }
+          onChange && onChange(fileList);
         }}
         accept={accept}
         hasSelectedFile={hasSelectedFile}
@@ -277,6 +279,7 @@ export default function ModelFieldFile(props) {
     buttonLabel,
     multiple,
     storageOpts = {},
+    onChange,
     beforeFileUpload
   } = props;
   const { name, data: modelData, handlers } = React.useContext(
@@ -303,6 +306,7 @@ export default function ModelFieldFile(props) {
           field={field}
           render={render}
           multiple={multiple}
+          onChange={onChange}
           storageOpts={storageOpts}
           beforeFileUpload={beforeFileUpload}
           defaultModelValue={defaultValue}

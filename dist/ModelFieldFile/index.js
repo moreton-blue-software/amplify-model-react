@@ -125,7 +125,8 @@ var Uploader = function Uploader(props) {
       render = props.render,
       storageOpts = props.storageOpts,
       defaultModelValue = props.defaultModelValue,
-      beforeFileUpload = props.beforeFileUpload;
+      beforeFileUpload = props.beforeFileUpload,
+      _onChange = props.onChange;
 
   var _React$useState3 = _react2.default.useState({
     url: null,
@@ -403,6 +404,7 @@ var Uploader = function Uploader(props) {
             });
           });
         }
+        _onChange && _onChange(fileList);
       },
       accept: accept,
       hasSelectedFile: hasSelectedFile
@@ -449,6 +451,7 @@ function ModelFieldFile(props) {
       multiple = props.multiple,
       _props$storageOpts = props.storageOpts,
       storageOpts = _props$storageOpts === undefined ? {} : _props$storageOpts,
+      onChange = props.onChange,
       beforeFileUpload = props.beforeFileUpload;
 
   var _React$useContext2 = _react2.default.useContext(_ModelForm.ModelFormContext),
@@ -485,6 +488,7 @@ function ModelFieldFile(props) {
         field: field,
         render: render,
         multiple: multiple,
+        onChange: onChange,
         storageOpts: storageOpts,
         beforeFileUpload: beforeFileUpload,
         defaultModelValue: defaultValue
