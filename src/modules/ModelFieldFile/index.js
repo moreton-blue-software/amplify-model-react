@@ -84,11 +84,23 @@ const Uploader = props => {
         const filepath = `${parentData.id}/${rawFile.name}`;
         let uploadSnackbar;
         let file = rawFile;
+        let metadata;
 
         if (beforeFileUpload) {
-          const newFile = await beforeFileUpload(rawFile);
-          if (newFile) {
-            file = newFile;
+          const beforeFileUploadData = await beforeFileUpload(rawFile);
+          if (beforeFileUploadData) {
+            if (beforeFileUploadData.metadata) {
+              const {
+                file: tmpFile,
+                metadata: tmpMetadata
+              } = beforeFileUploadData;
+              if (tmpFile !== undefined) {
+                file = tmpFile;
+              }
+              metadata = tmpMetadata;
+            } else {
+              file = beforeFileUploadData;
+            }
           }
         }
 
@@ -108,7 +120,10 @@ const Uploader = props => {
         });
         const storeData = await storeDataPromise;
         closeSnackbar(uploadSnackbar);
-        return storeData;
+        return {
+          filename: storeData.key,
+          ...(metadata || {})
+        };
       }
       const { file } = fileData;
       let retFields = {};
@@ -141,9 +156,7 @@ const Uploader = props => {
                 retFields
               ); //TRACE
 
-              set(retFields, field, {
-                filename: storeData.key
-              });
+              set(retFields, field, storeData);
             } else if (file === null) {
               set(retFields, field, null);
             }
@@ -214,7 +227,10 @@ const Uploader = props => {
   const hasSelectedFile = fileData.file || fileData.url;
 
   const renderFn = React.useMemo(() => {
-    return render && render({ file: fileData.file, url: fileData.url });
+    const metadata = handlers.getFieldValue(field);
+    return (
+      render && render({ file: fileData.file, url: fileData.url, metadata })
+    );
   }, [fileData, render]);
   console.log(">>ModelFieldFile/index::", "fileData", fileListData); //TRACE
   return (

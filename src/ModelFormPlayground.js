@@ -75,11 +75,14 @@ const FormBody = props => {
       console.log(">>src/ModelFormPlayground::", "ctxs", ctxs); //TRACE
     });
   }, [formData]);
-  const videoRender = React.useCallback(({ file, url }) => {
-    if (url) return <ReactPlayer controls url={url} />;
-    else if (file)
-      return <ReactPlayer controls url={URL.createObjectURL(file)} />;
-    return null;
+  const videoRender = React.useCallback(({ file, url, metadata }) => {
+    return (
+      <>
+        {file && <ReactPlayer controls url={URL.createObjectURL(file)} />}
+        {url && <ReactPlayer controls url={url} />}
+        <div>{JSON.stringify(metadata || {})}</div>
+      </>
+    );
   }, []);
 
   const multipleRender = React.useCallback(({ file, url }) => {
@@ -157,6 +160,12 @@ const FormBody = props => {
         render={videoRender}
         beforeFileUpload={file => {
           console.log(">>src/ModelFormPlayground::", "file", file); //TRACE
+          return {
+            metadata: {
+              uploader: "me",
+              uploadDate: new Date()
+            }
+          };
         }}
         storageOpts={{ provider: "DummyStorageProvider" }}
       />
@@ -232,6 +241,8 @@ const FormBody = props => {
 const extraProps = `
   video {
     filename
+    uploader
+    uploadDate
   }
   agreements {
     filename

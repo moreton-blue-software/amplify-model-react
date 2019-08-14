@@ -75,37 +75,31 @@ var UploadButton = _react2.default.memo(function (_ref) {
         _extends({}, rest, {
           component: "span",
           style: { marginBottom: 10 },
-          variant: "contained"
+          variant: "outlined",
+          size: "small"
         }),
-        _react2.default.createElement(
-          _Typography2.default,
-          { variant: "body1" },
-          _react2.default.createElement(_CloudUpload2.default, {
-            fontSize: "small",
-            style: { marginRight: 10, marginBottom: -5 }
-          }),
-          hasSelectedFile ? "Change" : "Upload",
-          " ",
-          labelText || "file"
-        )
+        _react2.default.createElement(_CloudUpload2.default, {
+          fontSize: "small",
+          style: { marginRight: 10, marginBottom: -5 }
+        }),
+        hasSelectedFile ? "Change" : "Upload",
+        " ",
+        labelText || "file"
       )
     ),
     hasSelectedFile && _react2.default.createElement(
       _Button2.default,
       {
-        variant: "contained",
+        variant: "outlined",
+        size: "small",
         component: "span",
         onClick: function onClick() {
           return handleUpload(null);
         },
         style: { marginBottom: 10, marginLeft: 5 }
       },
-      _react2.default.createElement(
-        _Typography2.default,
-        { variant: "body1" },
-        "Remove",
-        multiple ? " All" : ""
-      )
+      "\u2716 Remove",
+      multiple ? " All" : ""
     )
   );
 });

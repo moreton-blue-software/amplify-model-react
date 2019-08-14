@@ -160,7 +160,7 @@ var Uploader = function Uploader(props) {
         // console.log("1234: before saving delay", contextData, parentData);
         var uploadFile = function () {
           var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(rawFile) {
-            var filepath, uploadSnackbar, file, newFile, storeDataPromise, storeData;
+            var filepath, uploadSnackbar, file, metadata, beforeFileUploadData, tmpFile, tmpMetadata, storeDataPromise, storeData;
             return regeneratorRuntime.wrap(function _callee$(_context) {
               while (1) {
                 switch (_context.prev = _context.next) {
@@ -168,23 +168,33 @@ var Uploader = function Uploader(props) {
                     filepath = parentData.id + "/" + rawFile.name;
                     uploadSnackbar = void 0;
                     file = rawFile;
+                    metadata = void 0;
 
                     if (!beforeFileUpload) {
-                      _context.next = 8;
+                      _context.next = 9;
                       break;
                     }
 
-                    _context.next = 6;
+                    _context.next = 7;
                     return beforeFileUpload(rawFile);
 
-                  case 6:
-                    newFile = _context.sent;
+                  case 7:
+                    beforeFileUploadData = _context.sent;
 
-                    if (newFile) {
-                      file = newFile;
+                    if (beforeFileUploadData) {
+                      if (beforeFileUploadData.metadata) {
+                        tmpFile = beforeFileUploadData.file, tmpMetadata = beforeFileUploadData.metadata;
+
+                        if (tmpFile !== undefined) {
+                          file = tmpFile;
+                        }
+                        metadata = tmpMetadata;
+                      } else {
+                        file = beforeFileUploadData;
+                      }
                     }
 
-                  case 8:
+                  case 9:
                     storeDataPromise = new _bluebird2.default(function (resolve, reject) {
                       uploadSnackbar = enqueueSnackbar(
                       // `Uploading attachments.. ${progressPercentage}%`,
@@ -196,16 +206,18 @@ var Uploader = function Uploader(props) {
                         persist: true
                       });
                     });
-                    _context.next = 11;
+                    _context.next = 12;
                     return storeDataPromise;
 
-                  case 11:
+                  case 12:
                     storeData = _context.sent;
 
                     closeSnackbar(uploadSnackbar);
-                    return _context.abrupt("return", storeData);
+                    return _context.abrupt("return", _extends({
+                      filename: storeData.key
+                    }, metadata || {}));
 
-                  case 14:
+                  case 15:
                   case "end":
                     return _context.stop();
                 }
@@ -284,9 +296,7 @@ var Uploader = function Uploader(props) {
 
                 console.log(">>ModelFieldFile/index::" + field, "xxretFields", retFields); //TRACE
 
-                (0, _set4.default)(retFields, field, {
-                  filename: storeData.key
-                });
+                (0, _set4.default)(retFields, field, storeData);
                 _context2.next = 27;
                 break;
 
@@ -379,7 +389,8 @@ var Uploader = function Uploader(props) {
   var hasSelectedFile = fileData.file || fileData.url;
 
   var renderFn = _react2.default.useMemo(function () {
-    return render && render({ file: fileData.file, url: fileData.url });
+    var metadata = handlers.getFieldValue(field);
+    return render && render({ file: fileData.file, url: fileData.url, metadata: metadata });
   }, [fileData, render]);
   console.log(">>ModelFieldFile/index::", "fileData", fileListData); //TRACE
   return _react2.default.createElement(

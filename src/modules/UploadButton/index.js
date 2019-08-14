@@ -37,28 +37,26 @@ const UploadButton = React.memo(
             {...rest}
             component="span"
             style={{ marginBottom: 10 }}
-            variant="contained"
+            variant="outlined"
+            size="small"
           >
-            <Typography variant="body1">
-              <UploadIcon
-                fontSize="small"
-                style={{ marginRight: 10, marginBottom: -5 }}
-              />
-              {hasSelectedFile ? "Change" : "Upload"} {labelText || "file"}
-            </Typography>
+            <UploadIcon
+              fontSize="small"
+              style={{ marginRight: 10, marginBottom: -5 }}
+            />
+            {hasSelectedFile ? "Change" : "Upload"} {labelText || "file"}
           </Button>
           {/* )} */}
         </label>
         {hasSelectedFile && (
           <Button
-            variant="contained"
+            variant="outlined"
+            size="small"
             component="span"
             onClick={() => handleUpload(null)}
             style={{ marginBottom: 10, marginLeft: 5 }}
           >
-            <Typography variant="body1">
-              Remove{multiple ? " All" : ""}
-            </Typography>
+            ✖ Remove{multiple ? " All" : ""}
           </Button>
         )}
       </div>
