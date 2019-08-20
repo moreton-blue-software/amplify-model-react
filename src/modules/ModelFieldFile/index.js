@@ -178,6 +178,12 @@ const Uploader = props => {
               }
             }
           });
+          const { ...rest } = contextData;
+          Object.keys(rest).forEach(k => {
+            if (!retFields.hasOwnProperty(k)) {
+              retFields[k] = undefined;
+            }
+          });
           retFields.id = parentData.id;
         } catch (e) {
           enqueueSnackbar("Something went wrong with saving video", {

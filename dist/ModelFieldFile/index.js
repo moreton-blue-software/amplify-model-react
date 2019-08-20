@@ -60,6 +60,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -232,7 +234,7 @@ var Uploader = function Uploader(props) {
 
         var contextData = _ref3.context.data,
             parentData = _ref3.parent.data;
-        var file, retFields, fieldRoot, filesUpls, storeData;
+        var file, retFields, fieldRoot, filesUpls, storeData, rest;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -241,7 +243,7 @@ var Uploader = function Uploader(props) {
                 retFields = {};
 
                 if (!field) {
-                  _context2.next = 41;
+                  _context2.next = 43;
                   break;
                 }
 
@@ -323,12 +325,19 @@ var Uploader = function Uploader(props) {
                     }
                   }
                 });
+                rest = _objectWithoutProperties(contextData, []);
+
+                Object.keys(rest).forEach(function (k) {
+                  if (!retFields.hasOwnProperty(k)) {
+                    retFields[k] = undefined;
+                  }
+                });
                 retFields.id = parentData.id;
-                _context2.next = 36;
+                _context2.next = 38;
                 break;
 
-              case 31:
-                _context2.prev = 31;
+              case 33:
+                _context2.prev = 33;
                 _context2.t0 = _context2["catch"](4);
 
                 enqueueSnackbar("Something went wrong with saving video", {
@@ -337,8 +346,8 @@ var Uploader = function Uploader(props) {
                 console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", _context2.t0);
                 return _context2.abrupt("return", false);
 
-              case 36:
-                _context2.prev = 36;
+              case 38:
+                _context2.prev = 38;
 
                 console.log("1234: before saving delay done");
                 // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
@@ -347,15 +356,15 @@ var Uploader = function Uploader(props) {
                 console.log(">>ModelFieldFile/index::" + field, "retFields", retFields); //TRACE
                 return _context2.abrupt("return", retFields);
 
-              case 41:
+              case 43:
                 return _context2.abrupt("return", false);
 
-              case 42:
+              case 44:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, undefined, [[4, 31, 36, 41]]);
+        }, _callee2, undefined, [[4, 33, 38, 43]]);
       }));
 
       return function beforeSave(_x) {
