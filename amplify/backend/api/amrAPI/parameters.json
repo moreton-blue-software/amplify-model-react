@@ -1,5 +1,5 @@
 {
-    "AppSyncApiName": "000amr",
+    "AppSyncApiName": "amrAPI",
     "DynamoDBBillingMode": "PAY_PER_REQUEST",
     "DynamoDBEnableServerSideEncryption": "false"
 }

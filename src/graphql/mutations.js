@@ -8,6 +8,14 @@ export const createClient = `mutation CreateClient($input: CreateClientInput!) {
     updatedAt
     name
     vacancys {
+      items {
+        id
+        createdAt
+        updatedAt
+        position
+        description
+        vacancyClientId
+      }
       nextToken
     }
   }
@@ -20,6 +28,14 @@ export const updateClient = `mutation UpdateClient($input: UpdateClientInput!) {
     updatedAt
     name
     vacancys {
+      items {
+        id
+        createdAt
+        updatedAt
+        position
+        description
+        vacancyClientId
+      }
       nextToken
     }
   }
@@ -32,6 +48,14 @@ export const deleteClient = `mutation DeleteClient($input: DeleteClientInput!) {
     updatedAt
     name
     vacancys {
+      items {
+        id
+        createdAt
+        updatedAt
+        position
+        description
+        vacancyClientId
+      }
       nextToken
     }
   }
@@ -59,6 +83,15 @@ export const createVacancy = `mutation CreateVacancy($input: CreateVacancyInput!
       hash
     }
     questions {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
     client {
@@ -66,6 +99,9 @@ export const createVacancy = `mutation CreateVacancy($input: CreateVacancyInput!
       createdAt
       updatedAt
       name
+      vacancys {
+        nextToken
+      }
     }
     vacancyClientId
   }
@@ -93,6 +129,15 @@ export const updateVacancy = `mutation UpdateVacancy($input: UpdateVacancyInput!
       hash
     }
     questions {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
     client {
@@ -100,6 +145,9 @@ export const updateVacancy = `mutation UpdateVacancy($input: UpdateVacancyInput!
       createdAt
       updatedAt
       name
+      vacancys {
+        nextToken
+      }
     }
     vacancyClientId
   }
@@ -127,6 +175,15 @@ export const deleteVacancy = `mutation DeleteVacancy($input: DeleteVacancyInput!
       hash
     }
     questions {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
     client {
@@ -134,6 +191,9 @@ export const deleteVacancy = `mutation DeleteVacancy($input: DeleteVacancyInput!
       createdAt
       updatedAt
       name
+      vacancys {
+        nextToken
+      }
     }
     vacancyClientId
   }
@@ -151,6 +211,29 @@ export const createVacancyQuestion = `mutation CreateVacancyQuestion($input: Cre
       updatedAt
       position
       description
+      video {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      agreements {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      questions {
+        nextToken
+      }
+      client {
+        id
+        createdAt
+        updatedAt
+        name
+      }
       vacancyClientId
     }
     vacancyQuestionVacancyId
@@ -161,6 +244,9 @@ export const createVacancyQuestion = `mutation CreateVacancyQuestion($input: Cre
       text
       mandatory
       archived
+      vacancies {
+        nextToken
+      }
     }
     vacancyQuestionQuestionId
     archived
@@ -179,6 +265,29 @@ export const updateVacancyQuestion = `mutation UpdateVacancyQuestion($input: Upd
       updatedAt
       position
       description
+      video {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      agreements {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      questions {
+        nextToken
+      }
+      client {
+        id
+        createdAt
+        updatedAt
+        name
+      }
       vacancyClientId
     }
     vacancyQuestionVacancyId
@@ -189,6 +298,9 @@ export const updateVacancyQuestion = `mutation UpdateVacancyQuestion($input: Upd
       text
       mandatory
       archived
+      vacancies {
+        nextToken
+      }
     }
     vacancyQuestionQuestionId
     archived
@@ -207,6 +319,29 @@ export const deleteVacancyQuestion = `mutation DeleteVacancyQuestion($input: Del
       updatedAt
       position
       description
+      video {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      agreements {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      questions {
+        nextToken
+      }
+      client {
+        id
+        createdAt
+        updatedAt
+        name
+      }
       vacancyClientId
     }
     vacancyQuestionVacancyId
@@ -217,6 +352,9 @@ export const deleteVacancyQuestion = `mutation DeleteVacancyQuestion($input: Del
       text
       mandatory
       archived
+      vacancies {
+        nextToken
+      }
     }
     vacancyQuestionQuestionId
     archived
@@ -232,6 +370,15 @@ export const createQuestion = `mutation CreateQuestion($input: CreateQuestionInp
     mandatory
     archived
     vacancies {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
   }
@@ -246,6 +393,15 @@ export const updateQuestion = `mutation UpdateQuestion($input: UpdateQuestionInp
     mandatory
     archived
     vacancies {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
   }
@@ -260,6 +416,15 @@ export const deleteQuestion = `mutation DeleteQuestion($input: DeleteQuestionInp
     mandatory
     archived
     vacancies {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
   }

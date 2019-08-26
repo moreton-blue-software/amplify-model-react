@@ -1,6 +1,6 @@
 {
 	"api": {
-		"000amr": {
+		"amrAPI": {
 			"service": "AppSync",
 			"providerPlugin": "awscloudformation",
 			"output": {

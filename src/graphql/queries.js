@@ -8,6 +8,14 @@ export const getClient = `query GetClient($id: ID!) {
     updatedAt
     name
     vacancys {
+      items {
+        id
+        createdAt
+        updatedAt
+        position
+        description
+        vacancyClientId
+      }
       nextToken
     }
   }
@@ -24,6 +32,9 @@ export const listClients = `query ListClients(
       createdAt
       updatedAt
       name
+      vacancys {
+        nextToken
+      }
     }
     nextToken
   }
@@ -51,6 +62,15 @@ export const getVacancy = `query GetVacancy($id: ID!) {
       hash
     }
     questions {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
     client {
@@ -58,6 +78,9 @@ export const getVacancy = `query GetVacancy($id: ID!) {
       createdAt
       updatedAt
       name
+      vacancys {
+        nextToken
+      }
     }
     vacancyClientId
   }
@@ -75,6 +98,29 @@ export const listVacancys = `query ListVacancys(
       updatedAt
       position
       description
+      video {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      agreements {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      questions {
+        nextToken
+      }
+      client {
+        id
+        createdAt
+        updatedAt
+        name
+      }
       vacancyClientId
     }
     nextToken
@@ -93,6 +139,29 @@ export const getVacancyQuestion = `query GetVacancyQuestion($id: ID!) {
       updatedAt
       position
       description
+      video {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      agreements {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      questions {
+        nextToken
+      }
+      client {
+        id
+        createdAt
+        updatedAt
+        name
+      }
       vacancyClientId
     }
     vacancyQuestionVacancyId
@@ -103,6 +172,9 @@ export const getVacancyQuestion = `query GetVacancyQuestion($id: ID!) {
       text
       mandatory
       archived
+      vacancies {
+        nextToken
+      }
     }
     vacancyQuestionQuestionId
     archived
@@ -120,7 +192,23 @@ export const listVacancyQuestions = `query ListVacancyQuestions(
       createdAt
       updatedAt
       indexNo
+      vacancy {
+        id
+        createdAt
+        updatedAt
+        position
+        description
+        vacancyClientId
+      }
       vacancyQuestionVacancyId
+      question {
+        id
+        createdAt
+        updatedAt
+        text
+        mandatory
+        archived
+      }
       vacancyQuestionQuestionId
       archived
     }
@@ -137,6 +225,15 @@ export const getQuestion = `query GetQuestion($id: ID!) {
     mandatory
     archived
     vacancies {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
   }
@@ -155,6 +252,9 @@ export const listQuestions = `query ListQuestions(
       text
       mandatory
       archived
+      vacancies {
+        nextToken
+      }
     }
     nextToken
   }

@@ -8,6 +8,14 @@ export const onCreateClient = `subscription OnCreateClient {
     updatedAt
     name
     vacancys {
+      items {
+        id
+        createdAt
+        updatedAt
+        position
+        description
+        vacancyClientId
+      }
       nextToken
     }
   }
@@ -20,6 +28,14 @@ export const onUpdateClient = `subscription OnUpdateClient {
     updatedAt
     name
     vacancys {
+      items {
+        id
+        createdAt
+        updatedAt
+        position
+        description
+        vacancyClientId
+      }
       nextToken
     }
   }
@@ -32,6 +48,14 @@ export const onDeleteClient = `subscription OnDeleteClient {
     updatedAt
     name
     vacancys {
+      items {
+        id
+        createdAt
+        updatedAt
+        position
+        description
+        vacancyClientId
+      }
       nextToken
     }
   }
@@ -59,6 +83,15 @@ export const onCreateVacancy = `subscription OnCreateVacancy {
       hash
     }
     questions {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
     client {
@@ -66,6 +99,9 @@ export const onCreateVacancy = `subscription OnCreateVacancy {
       createdAt
       updatedAt
       name
+      vacancys {
+        nextToken
+      }
     }
     vacancyClientId
   }
@@ -93,6 +129,15 @@ export const onUpdateVacancy = `subscription OnUpdateVacancy {
       hash
     }
     questions {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
     client {
@@ -100,6 +145,9 @@ export const onUpdateVacancy = `subscription OnUpdateVacancy {
       createdAt
       updatedAt
       name
+      vacancys {
+        nextToken
+      }
     }
     vacancyClientId
   }
@@ -127,6 +175,15 @@ export const onDeleteVacancy = `subscription OnDeleteVacancy {
       hash
     }
     questions {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
     client {
@@ -134,6 +191,9 @@ export const onDeleteVacancy = `subscription OnDeleteVacancy {
       createdAt
       updatedAt
       name
+      vacancys {
+        nextToken
+      }
     }
     vacancyClientId
   }
@@ -151,6 +211,29 @@ export const onCreateVacancyQuestion = `subscription OnCreateVacancyQuestion {
       updatedAt
       position
       description
+      video {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      agreements {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      questions {
+        nextToken
+      }
+      client {
+        id
+        createdAt
+        updatedAt
+        name
+      }
       vacancyClientId
     }
     vacancyQuestionVacancyId
@@ -161,6 +244,9 @@ export const onCreateVacancyQuestion = `subscription OnCreateVacancyQuestion {
       text
       mandatory
       archived
+      vacancies {
+        nextToken
+      }
     }
     vacancyQuestionQuestionId
     archived
@@ -179,6 +265,29 @@ export const onUpdateVacancyQuestion = `subscription OnUpdateVacancyQuestion {
       updatedAt
       position
       description
+      video {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      agreements {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      questions {
+        nextToken
+      }
+      client {
+        id
+        createdAt
+        updatedAt
+        name
+      }
       vacancyClientId
     }
     vacancyQuestionVacancyId
@@ -189,6 +298,9 @@ export const onUpdateVacancyQuestion = `subscription OnUpdateVacancyQuestion {
       text
       mandatory
       archived
+      vacancies {
+        nextToken
+      }
     }
     vacancyQuestionQuestionId
     archived
@@ -207,6 +319,29 @@ export const onDeleteVacancyQuestion = `subscription OnDeleteVacancyQuestion {
       updatedAt
       position
       description
+      video {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      agreements {
+        id
+        filename
+        uploader
+        uploadDate
+        hash
+      }
+      questions {
+        nextToken
+      }
+      client {
+        id
+        createdAt
+        updatedAt
+        name
+      }
       vacancyClientId
     }
     vacancyQuestionVacancyId
@@ -217,6 +352,9 @@ export const onDeleteVacancyQuestion = `subscription OnDeleteVacancyQuestion {
       text
       mandatory
       archived
+      vacancies {
+        nextToken
+      }
     }
     vacancyQuestionQuestionId
     archived
@@ -232,6 +370,15 @@ export const onCreateQuestion = `subscription OnCreateQuestion {
     mandatory
     archived
     vacancies {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
   }
@@ -246,6 +393,15 @@ export const onUpdateQuestion = `subscription OnUpdateQuestion {
     mandatory
     archived
     vacancies {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
   }
@@ -260,6 +416,15 @@ export const onDeleteQuestion = `subscription OnDeleteQuestion {
     mandatory
     archived
     vacancies {
+      items {
+        id
+        createdAt
+        updatedAt
+        indexNo
+        vacancyQuestionVacancyId
+        vacancyQuestionQuestionId
+        archived
+      }
       nextToken
     }
   }
