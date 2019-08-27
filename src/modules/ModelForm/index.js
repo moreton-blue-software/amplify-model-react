@@ -1,25 +1,23 @@
-import React from "react";
+import React from 'react';
+import Promise from 'bluebird';
+import { List } from 'immutable';
+import { useApolloClient, useQuery } from 'react-apollo-hooks';
+import get from 'lodash/get';
+import gql from 'graphql-tag';
+import nanoid from 'nanoid';
+import set from 'lodash/fp/set';
+import pick from 'lodash/pick';
+import omit from 'lodash/fp/omit';
+import { useSnackbar } from 'notistack';
+import ModelFormControllerContext, {
+  ModelFormGlobalProvider
+} from '../ModelFormController';
+import { ModelControlContext } from './../ModelControl';
 import {
   toKey,
   composeCreateMutation,
-  composeUpdateMutation,
-  composeDeleteMutation
-} from "../common/graphql/Base";
-import Promise from "bluebird";
-import { Map, List } from "immutable";
-import { useApolloClient, useMutation, useQuery } from "react-apollo-hooks";
-import get from "lodash/get";
-import gql from "graphql-tag";
-import nanoid from "nanoid";
-import ModelFormControllerContext, {
-  ModelFormGlobalProvider
-} from "../ModelFormController";
-import remove from "lodash/fp/remove";
-import set from "lodash/fp/set";
-import pick from "lodash/pick";
-import omit from "lodash/fp/omit";
-import { ModelControlContext } from "./../ModelControl";
-import { useSnackbar } from "notistack";
+  composeUpdateMutation
+} from '../common/graphql/Base';
 
 // const NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
@@ -32,7 +30,7 @@ export function useModelForm({ field } = {}) {
     if (control && field) {
       control.setFields(oldFields => ({ ...oldFields, [field]: true }));
     }
-  }, [field]);
+  }, [field, control]);
   return {
     form,
     control: control || { setTouched() {} }
@@ -42,12 +40,12 @@ export function useModelForm({ field } = {}) {
 function getChildContextsById(parentId) {
   const { formMap } = ModelFormGlobalProvider.getGlobal();
   return Object.values(formMap).filter(ctx => {
-    const parentCtxId = get(ctx, "parent.ctxId");
+    const parentCtxId = get(ctx, 'parent.ctxId');
     return parentCtxId === parentId;
   });
 }
 
-const ModelForm = React.memo(function(props) {
+const ModelForm = React.memo(props => {
   const {
     name,
     modelId: modelIdTmp,
@@ -56,7 +54,7 @@ const ModelForm = React.memo(function(props) {
     defaultModelValue,
     beforeSave,
     afterSave,
-    additionalFields = "",
+    additionalFields = '',
     schemaInfo,
     fetchPolicy
   } = props;
@@ -68,18 +66,18 @@ const ModelForm = React.memo(function(props) {
   const [childContexts, setChildContexts] = React.useState([]);
   const [beforeSaveHandlers, setBeforeSaveHandlers] = React.useState(List([]));
   const [afterSaveHandlers, setAfterSaveHandlers] = React.useState(List([]));
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
+  const self = React.useRef({});
 
   React.useEffect(() => {
     onChange && onChange(formData);
-  }, [formData]);
+  }, [formData, onChange]);
 
   //attach before save
   React.useEffect(() => {
     const beforeSaveObj = { precedence: Infinity, fn: beforeSave }; //precedence Infinity = it will execute last
     // add
-    beforeSave &&
-      setBeforeSaveHandlers(oldState => oldState.push(beforeSaveObj));
+    beforeSave && setBeforeSaveHandlers(oldState => oldState.push(beforeSaveObj));
     return () => {
       //remove
       beforeSave &&
@@ -105,7 +103,7 @@ const ModelForm = React.memo(function(props) {
     };
   }, [afterSave]);
 
-  const modelId = get(defaultModelValue, "id", modelIdTmp);
+  const modelId = get(defaultModelValue, 'id', modelIdTmp);
   // const editMode = !!modelId;
   // const mutation = editMode
   //   ? composeUpdateMutation(name)
@@ -119,8 +117,8 @@ const ModelForm = React.memo(function(props) {
 
   const { basicFieldsString } = schemaInfo;
   if (!basicFieldsString) throw `Flat Field for "${name}" not found`;
-  const { queryKey, query } = React.useMemo(() => {
-    const queryKey = "GET_" + toKey(name);
+  const { query } = React.useMemo(() => {
+    const queryKey = 'GET_' + toKey(name);
     // console.log("queryKey", queryKey); //TRACE
     return {
       query: gql`
@@ -133,7 +131,7 @@ const ModelForm = React.memo(function(props) {
   `,
       queryKey
     };
-  }, [name]);
+  }, [name, additionalFields, basicFieldsString]);
 
   const { data, loading, refetch } = useQuery(query, {
     skip: !modelId,
@@ -142,19 +140,18 @@ const ModelForm = React.memo(function(props) {
     },
     fetchPolicy
   });
-  // console.log("formData.toJS()", formData.toJS()); //TRACE
 
   //Fetch model data for editting
   React.useEffect(() => {
-    const modelData = get(data, "model", {});
+    const modelData = get(data, 'model', {});
     setFormData(oldModelData => ({ ...oldModelData, ...modelData }));
   }, [data]);
 
-  const editMode = !!get(formData, "id");
+  const editMode = !!get(formData, 'id');
 
-  React.useEffect(() => {
-    console.log(">>ModelForm/index::", "ctx childContexts", childContexts); //TRACE
-  }, [childContexts]);
+  // React.useEffect(() => {
+  //   console.log('>>ModelForm/index::', 'ctx childContexts', childContexts); //TRACE
+  // }, [childContexts]);
 
   const handlers = React.useMemo(
     () => ({
@@ -162,12 +159,10 @@ const ModelForm = React.memo(function(props) {
       setChildrenMap,
       setFieldErrors,
       getChildContexts() {
-        return getChildContextsById(ctxId);
+        return getChildContextsById(self.current.ctxId);
       },
       attachBeforeSave(fn, precedence) {
-        return setBeforeSaveHandlers(oldState =>
-          oldState.push({ fn, precedence })
-        );
+        return setBeforeSaveHandlers(oldState => oldState.push({ fn, precedence }));
       },
       detachBeforeSave(fn) {
         return setBeforeSaveHandlers(oldState => {
@@ -176,9 +171,7 @@ const ModelForm = React.memo(function(props) {
         });
       },
       attachAfterSave(fn, precedence) {
-        return setAfterSaveHandlers(oldState =>
-          oldState.push({ fn, precedence })
-        );
+        return setAfterSaveHandlers(oldState => oldState.push({ fn, precedence }));
       },
       detachAfterSave(fn) {
         return setAfterSaveHandlers(oldState => {
@@ -193,41 +186,39 @@ const ModelForm = React.memo(function(props) {
         return setFormData(set(fieldPath, value));
       },
       getFieldValue(fieldPath, ...args) {
-        return get(formData, fieldPath, ...args);
+        return get(self.current.formData, fieldPath, ...args);
       },
       async _saveModel(options = {}) {
         const { refetchQueries, savedParentId, noRefetch } = options;
-        const formDataJson = formData;
+        const formDataJson = self.current.formData;
 
         const { formMap } = ModelFormGlobalProvider.getGlobal();
-        const thisForm = formMap[ctxId];
 
         const objFields = get(
           query,
-          "definitions.0.selectionSet.selections.0.selectionSet.selections",
+          'definitions.0.selectionSet.selections.0.selectionSet.selections',
           []
         )
           .filter(f => {
             return !f.selectionSet;
           })
-          .map(f => get(f, "name.value"));
+          .map(f => get(f, 'name.value'));
 
         const formDataClean = pick(formDataJson, [...objFields]);
 
-        let parentData = get(parentModelContext, "data", {});
         // update parent data id from saved model
         if (savedParentId) {
-          parentData.id = savedParentId;
+          self.current.parentData.id = savedParentId;
         }
         let beforeSaveData = {},
           beforeSavePassed = true;
-        for (let beforeSaveObj of beforeSaveHandlers
+        for (const beforeSaveObj of self.current.beforeSaveHandlers
           .sortBy(o => o.precedence)
           .toJS()) {
           const beforeSaveDataTmp = await Promise.resolve(
             beforeSaveObj.fn({
               context: { data: formDataClean },
-              parent: { data: parentData }
+              parent: { data: self.current.parentData }
             })
           );
           if (beforeSaveDataTmp) {
@@ -238,20 +229,19 @@ const ModelForm = React.memo(function(props) {
         }
         if (beforeSavePassed === false) {
           throw {
-            ctxId,
-            dateId: get(formData, "id"),
-            parentCtxId: get(parentModelContext, "ctxId"),
-            parentDataId: get(parentData, "id"),
-            error: new Error(
-              "Before save validation failed. Please check form errors"
-            )
+            ctxId: self.current.ctxId,
+            dateId: get(self.current.formData, 'id'),
+            parentCtxId: self.current.parentCtxId,
+            parentDataId: get(self.current, 'parentData.id'),
+            error: new Error('Before save validation failed. Please check form errors')
           };
         }
 
         const input = { ...formDataClean, ...beforeSaveData };
-        const mutation = !!input.id
-          ? composeUpdateMutation(name)
-          : composeCreateMutation(name);
+        const mutation =
+          !!input.id === true
+            ? composeUpdateMutation(self.current.name)
+            : composeCreateMutation(self.current.name);
         const ret = await apolloClient.mutate({
           mutation,
           variables: {
@@ -261,9 +251,9 @@ const ModelForm = React.memo(function(props) {
         });
         // const ret = { data: { model: { id: "hahaah" } } };
 
-        const savedId = get(ret, "data.model.id");
+        const savedId = get(ret, 'data.model.id');
         //save children models
-        await Promise.map(childContexts || [], childCtxKey => {
+        await Promise.map(self.current.childContexts || [], childCtxKey => {
           const childCtx = formMap[childCtxKey];
 
           return childCtx.handlers._saveModel({
@@ -277,13 +267,13 @@ const ModelForm = React.memo(function(props) {
         //     context: { data: formDataClean },
         //     parent: { data: parentData }
         //   }));
-        for (let afterSaveObj of afterSaveHandlers
+        for (const afterSaveObj of self.current.afterSaveHandlers
           .sortBy(o => o.precedence)
           .toJS()) {
           await Promise.resolve(
             afterSaveObj.fn({
               context: { data: formDataClean },
-              parent: { data: parentData }
+              parent: { data: self.current.parentData }
             })
           );
         }
@@ -299,34 +289,53 @@ const ModelForm = React.memo(function(props) {
       },
       async save(options = {}) {
         try {
-          await setState(set("saving", true));
+          await setState(set('saving', true));
           const savedId = await handlers._saveModel(options);
-          await setState(set("saving", false));
-          onSave && onSave(savedId);
+          await setState(set('saving', false));
+          self.current.onSave && self.current.onSave(savedId);
           return savedId;
         } catch (err) {
-          if (get(err, "parentCtxId") === ctxId) {
+          if (get(err, 'parentCtxId') === self.current.ctxId) {
             await setFormData(oldState => ({
               ...oldState,
-              id: get(err, "parentDataId")
+              id: get(err, 'parentDataId')
             }));
           }
-          await setState(set("saving", false));
-          enqueueSnackbar(get(err, "error.message", "Something went wrong!"), {
-            variant: "error"
+          await setState(set('saving', false));
+          enqueueSnackbar(get(err, 'error.message', 'Something went wrong!'), {
+            variant: 'error'
           });
+          // eslint-disable-next-line no-console
           console.error(err);
         }
       }
     }),
-    [
-      get(parentModelContext, "data"),
+    [apolloClient, enqueueSnackbar, refetch, query]
+  );
+
+  React.useEffect(() => {
+    self.current = {
+      ctxId,
+      name,
+      parentModelContext,
+      parentCtxId: get(parentModelContext, 'ctxId'),
+      parentData: get(parentModelContext, 'data'),
       formData,
       childContexts,
       beforeSaveHandlers,
-      afterSaveHandlers
-    ]
-  );
+      afterSaveHandlers,
+      onSave
+    };
+  }, [
+    ctxId,
+    name,
+    onSave,
+    parentModelContext,
+    formData,
+    childContexts,
+    beforeSaveHandlers,
+    afterSaveHandlers
+  ]);
   // console.log("childContexts", childContexts); //TRACE
   const formDataJS = formData;
   const stateJS = React.useMemo(() => {
@@ -350,26 +359,28 @@ const ModelForm = React.memo(function(props) {
   const childrenMapJS = childrenMap;
   const contextState = React.useMemo(() => {
     return {
-      ctxId,
+      ctxId: self.current.ctxId,
       name,
       data: formDataJS,
       state: stateJS,
-      parent: parentModelContext,
+      parent: self.current.parentModelContext,
       childrenMap: childrenMapJS,
       handlers
     };
-  }, [formDataJS, stateJS, childrenMapJS, handlers]);
+  }, [name, formDataJS, stateJS, childrenMapJS, handlers]);
 
   //Add this context to parent context's children
   React.useEffect(() => {
     // console.log("parentModelContext", parentModelContext); //TRACE
+    const parentModelContext = self.current.parentModelContext;
+
     parentModelContext &&
-      parentModelContext.handlers.setChildrenMap(set(ctxId, true));
+      parentModelContext.handlers.setChildrenMap(set(self.current.ctxId, true));
     // remove
     return () => {
-      console.log(">>ModelForm/index::", "unmounted", ctxId); //TRACE
+      // console.log('>>ModelForm/index::', 'unmounted', ctxId); //TRACE
       parentModelContext &&
-        parentModelContext.handlers.setChildrenMap(omit([ctxId]));
+        parentModelContext.handlers.setChildrenMap(omit([self.current.ctxId]));
     };
   }, []);
   // console.log("contextState", contextState); //TRACE
@@ -395,11 +406,9 @@ const ModelForm = React.memo(function(props) {
 
 function ControllerWatcher(props) {
   const { contextState, onChildContextsChange } = props;
-  const { setFormMap, getFormMap } = React.useContext(
-    ModelFormControllerContext
-  );
-  const [state, setState] = React.useState({ childContexts: null });
-  //Add this context to controller map
+  const { setFormMap, getFormMap } = React.useContext(ModelFormControllerContext);
+  // const [] = React.useState({ childContexts: null });
+  // Add this context to controller map
   React.useEffect(() => {
     const { parent, ctxId } = contextState || {};
     if (parent) setFormMap({ [ctxId]: contextState });
@@ -409,7 +418,7 @@ function ControllerWatcher(props) {
     };
   }, [contextState]);
 
-  const childrenMap = get(contextState, "childrenMap");
+  const childrenMap = get(contextState, 'childrenMap');
 
   React.useEffect(() => {
     const keys = Object.keys(childrenMap || []).sort();
@@ -422,15 +431,19 @@ function ControllerWatcher(props) {
 export default function(props) {
   const { name } = props;
   const [schemaInfo, setSchemaInfo] = React.useState();
-  const { schema, getModelSchema } = React.useContext(
-    ModelFormControllerContext
-  );
+  const { schema, getModelSchema } = React.useContext(ModelFormControllerContext);
 
   React.useEffect(() => {
     const info = getModelSchema(name);
     setSchemaInfo(info);
   }, [schema, name]);
 
-  if (!schemaInfo) return <div>Loading model ${name}..</div>;
+  if (!schemaInfo)
+    return (
+      <div>
+        Loading model ${name}
+        ..
+      </div>
+    );
   return <ModelForm {...props} schemaInfo={schemaInfo} />;
 }
