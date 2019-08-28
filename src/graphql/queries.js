@@ -9,7 +9,7 @@ export const getThread = `query GetThread($id: ID!) {
       items {
         id
         userId
-        commentThreadId
+        threadCommentThreadId
         seen
         body
         createdAt
@@ -39,8 +39,8 @@ export const listThreads = `query ListThreads(
   }
 }
 `;
-export const getComment = `query GetComment($id: ID!) {
-  getComment(id: $id) {
+export const getThreadComment = `query GetThreadComment($id: ID!) {
+  getThreadComment(id: $id) {
     id
     userId
     thread {
@@ -51,7 +51,7 @@ export const getComment = `query GetComment($id: ID!) {
       }
       createdAt
     }
-    commentThreadId
+    threadCommentThreadId
     seen
     body
     createdAt
@@ -59,12 +59,12 @@ export const getComment = `query GetComment($id: ID!) {
   }
 }
 `;
-export const listComments = `query ListComments(
-  $filter: ModelCommentFilterInput
+export const listThreadComments = `query ListThreadComments(
+  $filter: ModelThreadCommentFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listThreadComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       userId
@@ -73,7 +73,7 @@ export const listComments = `query ListComments(
         name
         createdAt
       }
-      commentThreadId
+      threadCommentThreadId
       seen
       body
       createdAt
@@ -343,14 +343,14 @@ export const listQuestions = `query ListQuestions(
 }
 `;
 export const commentByThreadId = `query CommentByThreadId(
-  $commentThreadId: ID
+  $threadCommentThreadId: ID
   $createdAt: ModelStringKeyConditionInput
-  $filter: ModelCommentFilterInput
+  $filter: ModelThreadCommentFilterInput
   $limit: Int
   $nextToken: String
 ) {
   commentByThreadId(
-    commentThreadId: $commentThreadId
+    threadCommentThreadId: $threadCommentThreadId
     createdAt: $createdAt
     filter: $filter
     limit: $limit
@@ -364,7 +364,7 @@ export const commentByThreadId = `query CommentByThreadId(
         name
         createdAt
       }
-      commentThreadId
+      threadCommentThreadId
       seen
       body
       createdAt
@@ -376,14 +376,14 @@ export const commentByThreadId = `query CommentByThreadId(
 `;
 export const commentByUserIdThreadId = `query CommentByUserIdThreadId(
   $userId: String
-  $commentThreadId: ModelIDKeyConditionInput
-  $filter: ModelCommentFilterInput
+  $threadCommentThreadId: ModelIDKeyConditionInput
+  $filter: ModelThreadCommentFilterInput
   $limit: Int
   $nextToken: String
 ) {
   commentByUserIdThreadId(
     userId: $userId
-    commentThreadId: $commentThreadId
+    threadCommentThreadId: $threadCommentThreadId
     filter: $filter
     limit: $limit
     nextToken: $nextToken
@@ -396,7 +396,7 @@ export const commentByUserIdThreadId = `query CommentByUserIdThreadId(
         name
         createdAt
       }
-      commentThreadId
+      threadCommentThreadId
       seen
       body
       createdAt
@@ -407,14 +407,14 @@ export const commentByUserIdThreadId = `query CommentByUserIdThreadId(
 }
 `;
 export const commentByThreadIdUserId = `query CommentByThreadIdUserId(
-  $commentThreadId: ID
+  $threadCommentThreadId: ID
   $userId: ModelStringKeyConditionInput
-  $filter: ModelCommentFilterInput
+  $filter: ModelThreadCommentFilterInput
   $limit: Int
   $nextToken: String
 ) {
   commentByThreadIdUserId(
-    commentThreadId: $commentThreadId
+    threadCommentThreadId: $threadCommentThreadId
     userId: $userId
     filter: $filter
     limit: $limit
@@ -428,7 +428,7 @@ export const commentByThreadIdUserId = `query CommentByThreadIdUserId(
         name
         createdAt
       }
-      commentThreadId
+      threadCommentThreadId
       seen
       body
       createdAt

@@ -3,31 +3,31 @@
 type Thread @model {
   id: ID!
   name: String
-  comments: [Comment] @connection(name: "ThreadComments", sortField: "createdAt")
+  comments: [ThreadComment] @connection(name: "ThreadComments", sortField: "createdAt")
   createdAt: AWSDateTime
 }
 
-type Comment
+type ThreadComment
   @model
   @key(
     name: "ByThreadId"
-    fields: ["commentThreadId", "createdAt"]
+    fields: ["threadCommentThreadId", "createdAt"]
     queryField: "commentByThreadId"
   )
   @key(
     name: "ByUserId"
-    fields: ["userId", "commentThreadId"]
+    fields: ["userId", "threadCommentThreadId"]
     queryField: "commentByUserIdThreadId"
   )
   @key(
     name: "ByThreadIdUserId"
-    fields: ["commentThreadId", "userId"]
+    fields: ["threadCommentThreadId", "userId"]
     queryField: "commentByThreadIdUserId"
   ) {
   id: ID!
   userId: String! # cognito user id
   thread: Thread @connection(name: "ThreadComments", sortField: "createdAt")
-  commentThreadId: ID!
+  threadCommentThreadId: ID!
   # authorName: String
   # commenter: ID!
   seen: Boolean # statelogs?

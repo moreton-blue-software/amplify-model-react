@@ -78,7 +78,7 @@ export default function Talk({
   const mainSubject = subjects[0];
 
   const { getModelSchema } = React.useContext(ModelFormControllerContext);
-  const { basicFieldsString } = React.useMemo(() => getModelSchema('Comment'), [
+  const { basicFieldsString } = React.useMemo(() => getModelSchema('ThreadComment'), [
     getModelSchema
   ]);
 
@@ -145,7 +145,7 @@ export default function Talk({
       }
     });
     if (!comment) return;
-    const subject = comment.commentThreadId;
+    const subject = comment.threadCommentThreadId;
     console.log('>>Utils/Thread::', 'comment', comment); //TRACE
     setState(oldState => {
       const listIds = oldState.listIds || [];
@@ -185,6 +185,7 @@ export default function Talk({
       subjectComments: {},
       listIds: []
     }));
+    self.current = {};
     fetch5Comments();
   }, [fetch5Comments]);
 
@@ -205,15 +206,15 @@ export default function Talk({
     const id = mainSubject + '::' + currentUserId + '::' + nanoid();
     const input = {
       id,
-      commentThreadId: mainSubject,
+      threadCommentThreadId: mainSubject,
       userId: currentUserId,
       body: self.current.comment
     };
     console.log('>>Utils/Thread::', 'input', input); //TRACE
     const x = await client.mutate({
       mutation: gql`
-        mutation($input: CreateCommentInput!) {
-          createComment(input: $input){
+        mutation($input: CreateThreadCommentInput!) {
+          createThreadComment(input: $input){
             ${basicFieldsString}
           }
         }

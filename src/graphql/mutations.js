@@ -9,7 +9,7 @@ export const createThread = `mutation CreateThread($input: CreateThreadInput!) {
       items {
         id
         userId
-        commentThreadId
+        threadCommentThreadId
         seen
         body
         createdAt
@@ -29,7 +29,7 @@ export const updateThread = `mutation UpdateThread($input: UpdateThreadInput!) {
       items {
         id
         userId
-        commentThreadId
+        threadCommentThreadId
         seen
         body
         createdAt
@@ -49,7 +49,7 @@ export const deleteThread = `mutation DeleteThread($input: DeleteThreadInput!) {
       items {
         id
         userId
-        commentThreadId
+        threadCommentThreadId
         seen
         body
         createdAt
@@ -61,8 +61,8 @@ export const deleteThread = `mutation DeleteThread($input: DeleteThreadInput!) {
   }
 }
 `;
-export const createComment = `mutation CreateComment($input: CreateCommentInput!) {
-  createComment(input: $input) {
+export const createThreadComment = `mutation CreateThreadComment($input: CreateThreadCommentInput!) {
+  createThreadComment(input: $input) {
     id
     userId
     thread {
@@ -73,7 +73,7 @@ export const createComment = `mutation CreateComment($input: CreateCommentInput!
       }
       createdAt
     }
-    commentThreadId
+    threadCommentThreadId
     seen
     body
     createdAt
@@ -81,8 +81,8 @@ export const createComment = `mutation CreateComment($input: CreateCommentInput!
   }
 }
 `;
-export const updateComment = `mutation UpdateComment($input: UpdateCommentInput!) {
-  updateComment(input: $input) {
+export const updateThreadComment = `mutation UpdateThreadComment($input: UpdateThreadCommentInput!) {
+  updateThreadComment(input: $input) {
     id
     userId
     thread {
@@ -93,7 +93,7 @@ export const updateComment = `mutation UpdateComment($input: UpdateCommentInput!
       }
       createdAt
     }
-    commentThreadId
+    threadCommentThreadId
     seen
     body
     createdAt
@@ -101,8 +101,8 @@ export const updateComment = `mutation UpdateComment($input: UpdateCommentInput!
   }
 }
 `;
-export const deleteComment = `mutation DeleteComment($input: DeleteCommentInput!) {
-  deleteComment(input: $input) {
+export const deleteThreadComment = `mutation DeleteThreadComment($input: DeleteThreadCommentInput!) {
+  deleteThreadComment(input: $input) {
     id
     userId
     thread {
@@ -113,7 +113,7 @@ export const deleteComment = `mutation DeleteComment($input: DeleteCommentInput!
       }
       createdAt
     }
-    commentThreadId
+    threadCommentThreadId
     seen
     body
     createdAt

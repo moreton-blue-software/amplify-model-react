@@ -9,7 +9,7 @@ export const onCreateThread = `subscription OnCreateThread {
       items {
         id
         userId
-        commentThreadId
+        threadCommentThreadId
         seen
         body
         createdAt
@@ -29,7 +29,7 @@ export const onUpdateThread = `subscription OnUpdateThread {
       items {
         id
         userId
-        commentThreadId
+        threadCommentThreadId
         seen
         body
         createdAt
@@ -49,7 +49,7 @@ export const onDeleteThread = `subscription OnDeleteThread {
       items {
         id
         userId
-        commentThreadId
+        threadCommentThreadId
         seen
         body
         createdAt
@@ -61,8 +61,8 @@ export const onDeleteThread = `subscription OnDeleteThread {
   }
 }
 `;
-export const onCreateComment = `subscription OnCreateComment {
-  onCreateComment {
+export const onCreateThreadComment = `subscription OnCreateThreadComment {
+  onCreateThreadComment {
     id
     userId
     thread {
@@ -73,7 +73,7 @@ export const onCreateComment = `subscription OnCreateComment {
       }
       createdAt
     }
-    commentThreadId
+    threadCommentThreadId
     seen
     body
     createdAt
@@ -81,8 +81,8 @@ export const onCreateComment = `subscription OnCreateComment {
   }
 }
 `;
-export const onUpdateComment = `subscription OnUpdateComment {
-  onUpdateComment {
+export const onUpdateThreadComment = `subscription OnUpdateThreadComment {
+  onUpdateThreadComment {
     id
     userId
     thread {
@@ -93,7 +93,7 @@ export const onUpdateComment = `subscription OnUpdateComment {
       }
       createdAt
     }
-    commentThreadId
+    threadCommentThreadId
     seen
     body
     createdAt
@@ -101,8 +101,8 @@ export const onUpdateComment = `subscription OnUpdateComment {
   }
 }
 `;
-export const onDeleteComment = `subscription OnDeleteComment {
-  onDeleteComment {
+export const onDeleteThreadComment = `subscription OnDeleteThreadComment {
+  onDeleteThreadComment {
     id
     userId
     thread {
@@ -113,7 +113,7 @@ export const onDeleteComment = `subscription OnDeleteComment {
       }
       createdAt
     }
-    commentThreadId
+    threadCommentThreadId
     seen
     body
     createdAt

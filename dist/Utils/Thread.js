@@ -10,7 +10,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _templateObject = _taggedTemplateLiteral(['\n      mutation(\n        ', '\n      ) {\n        ', '\n      }\n    '], ['\n      mutation(\n        ', '\n      ) {\n        ', '\n      }\n    ']),
     _templateObject2 = _taggedTemplateLiteral(['\n        query (\n          ', '\n        ){\n          ', '\n        }\n      '], ['\n        query (\n          ', '\n        ){\n          ', '\n        }\n      ']),
-    _templateObject3 = _taggedTemplateLiteral(['\n        mutation($input: CreateCommentInput!) {\n          createComment(input: $input){\n            ', '\n          }\n        }\n      '], ['\n        mutation($input: CreateCommentInput!) {\n          createComment(input: $input){\n            ', '\n          }\n        }\n      ']);
+    _templateObject3 = _taggedTemplateLiteral(['\n        mutation($input: CreateThreadCommentInput!) {\n          createThreadComment(input: $input){\n            ', '\n          }\n        }\n      '], ['\n        mutation($input: CreateThreadCommentInput!) {\n          createThreadComment(input: $input){\n            ', '\n          }\n        }\n      ']);
 
 exports.default = Talk;
 
@@ -147,7 +147,7 @@ function Talk(_ref) {
       getModelSchema = _React$useContext.getModelSchema;
 
   var _React$useMemo = _react2.default.useMemo(function () {
-    return getModelSchema('Comment');
+    return getModelSchema('ThreadComment');
   }, [getModelSchema]),
       basicFieldsString = _React$useMemo.basicFieldsString;
 
@@ -224,7 +224,7 @@ function Talk(_ref) {
             return _context.abrupt('return');
 
           case 14:
-            subject = comment.commentThreadId;
+            subject = comment.threadCommentThreadId;
 
             console.log('>>Utils/Thread::', 'comment', comment); //TRACE
             setState(function (oldState) {
@@ -279,6 +279,7 @@ function Talk(_ref) {
         listIds: []
       });
     });
+    self.current = {};
     fetch5Comments();
   }, [fetch5Comments]);
 
@@ -317,7 +318,7 @@ function Talk(_ref) {
             id = mainSubject + '::' + currentUserId + '::' + (0, _nanoid2.default)();
             input = {
               id: id,
-              commentThreadId: mainSubject,
+              threadCommentThreadId: mainSubject,
               userId: currentUserId,
               body: self.current.comment
             };
