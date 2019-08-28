@@ -1,3 +1,42 @@
+######### Util Models Start ##############
+
+type Thread @model {
+  id: ID!
+  name: String
+  comments: [Comment] @connection(name: "ThreadComments", sortField: "createdAt")
+  createdAt: AWSDateTime
+}
+
+type Comment
+  @model
+  @key(
+    name: "ByThreadId"
+    fields: ["commentThreadId", "createdAt"]
+    queryField: "commentByThreadId"
+  )
+  @key(
+    name: "ByUserId"
+    fields: ["userId", "commentThreadId"]
+    queryField: "commentByUserIdThreadId"
+  )
+  @key(
+    name: "ByThreadIdUserId"
+    fields: ["commentThreadId", "userId"]
+    queryField: "commentByThreadIdUserId"
+  ) {
+  id: ID!
+  userId: String! # cognito user id
+  thread: Thread @connection(name: "ThreadComments", sortField: "createdAt")
+  commentThreadId: ID!
+  # authorName: String
+  # commenter: ID!
+  seen: Boolean # statelogs?
+  body: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+######### Util Models End ##############
+
 type Client @model {
   id: ID!
   createdAt: AWSDateTime
@@ -25,11 +64,9 @@ type VacancyQuestion @model {
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
   indexNo: Int
-  vacancy: Vacancy
-    @connection(name: "VacancyQuestionVacancy", sortField: "createdAt")
+  vacancy: Vacancy @connection(name: "VacancyQuestionVacancy", sortField: "createdAt")
   vacancyQuestionVacancyId: ID
-  question: Question
-    @connection(name: "VacancyQuestionQuestion", sortField: "createdAt")
+  question: Question @connection(name: "VacancyQuestionQuestion", sortField: "createdAt")
   vacancyQuestionQuestionId: ID
   archived: Boolean
 }
