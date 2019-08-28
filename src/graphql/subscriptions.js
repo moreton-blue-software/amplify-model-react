@@ -1,6 +1,126 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onCreateThread = `subscription OnCreateThread {
+  onCreateThread {
+    id
+    name
+    comments {
+      items {
+        id
+        userId
+        commentThreadId
+        seen
+        body
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+  }
+}
+`;
+export const onUpdateThread = `subscription OnUpdateThread {
+  onUpdateThread {
+    id
+    name
+    comments {
+      items {
+        id
+        userId
+        commentThreadId
+        seen
+        body
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+  }
+}
+`;
+export const onDeleteThread = `subscription OnDeleteThread {
+  onDeleteThread {
+    id
+    name
+    comments {
+      items {
+        id
+        userId
+        commentThreadId
+        seen
+        body
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+  }
+}
+`;
+export const onCreateComment = `subscription OnCreateComment {
+  onCreateComment {
+    id
+    userId
+    thread {
+      id
+      name
+      comments {
+        nextToken
+      }
+      createdAt
+    }
+    commentThreadId
+    seen
+    body
+    createdAt
+    updatedAt
+  }
+}
+`;
+export const onUpdateComment = `subscription OnUpdateComment {
+  onUpdateComment {
+    id
+    userId
+    thread {
+      id
+      name
+      comments {
+        nextToken
+      }
+      createdAt
+    }
+    commentThreadId
+    seen
+    body
+    createdAt
+    updatedAt
+  }
+}
+`;
+export const onDeleteComment = `subscription OnDeleteComment {
+  onDeleteComment {
+    id
+    userId
+    thread {
+      id
+      name
+      comments {
+        nextToken
+      }
+      createdAt
+    }
+    commentThreadId
+    seen
+    body
+    createdAt
+    updatedAt
+  }
+}
+`;
 export const onCreateClient = `subscription OnCreateClient {
   onCreateClient {
     id

@@ -1,6 +1,126 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const createThread = `mutation CreateThread($input: CreateThreadInput!) {
+  createThread(input: $input) {
+    id
+    name
+    comments {
+      items {
+        id
+        userId
+        commentThreadId
+        seen
+        body
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+  }
+}
+`;
+export const updateThread = `mutation UpdateThread($input: UpdateThreadInput!) {
+  updateThread(input: $input) {
+    id
+    name
+    comments {
+      items {
+        id
+        userId
+        commentThreadId
+        seen
+        body
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+  }
+}
+`;
+export const deleteThread = `mutation DeleteThread($input: DeleteThreadInput!) {
+  deleteThread(input: $input) {
+    id
+    name
+    comments {
+      items {
+        id
+        userId
+        commentThreadId
+        seen
+        body
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+  }
+}
+`;
+export const createComment = `mutation CreateComment($input: CreateCommentInput!) {
+  createComment(input: $input) {
+    id
+    userId
+    thread {
+      id
+      name
+      comments {
+        nextToken
+      }
+      createdAt
+    }
+    commentThreadId
+    seen
+    body
+    createdAt
+    updatedAt
+  }
+}
+`;
+export const updateComment = `mutation UpdateComment($input: UpdateCommentInput!) {
+  updateComment(input: $input) {
+    id
+    userId
+    thread {
+      id
+      name
+      comments {
+        nextToken
+      }
+      createdAt
+    }
+    commentThreadId
+    seen
+    body
+    createdAt
+    updatedAt
+  }
+}
+`;
+export const deleteComment = `mutation DeleteComment($input: DeleteCommentInput!) {
+  deleteComment(input: $input) {
+    id
+    userId
+    thread {
+      id
+      name
+      comments {
+        nextToken
+      }
+      createdAt
+    }
+    commentThreadId
+    seen
+    body
+    createdAt
+    updatedAt
+  }
+}
+`;
 export const createClient = `mutation CreateClient($input: CreateClientInput!) {
   createClient(input: $input) {
     id
