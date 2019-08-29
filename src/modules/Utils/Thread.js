@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 import gql from 'graphql-tag';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { useApolloClient } from 'react-apollo-hooks';
 import ModelFormControllerContext from '../ModelFormController';
 import nanoid from 'nanoid';
@@ -51,13 +52,22 @@ function initThreads(subjects = [], client) {
   });
 }
 
-// function fetchComments({subjects,client}){
+function DefaultComment({ comment }) {
+  const secondary = React.useMemo(() => {
+    return (
+      comment.userId.substring(0, 6) +
+      ' ▪ ' +
+      new Date(comment.createdAt).toLocaleString()
+    );
+  }, [comment]);
+  return <ListItemText primary={comment.body} secondary={secondary} />;
+}
 
-// }
-
+// eslint-disable-next-line react/no-multi-comp
 export default function Talk({
   subject,
   subjects: allSubjects,
+  beforeSubmit,
   // name = '',
   currentUserId,
   inputProps,
@@ -69,14 +79,28 @@ export default function Talk({
     comment: '',
     submitting: false,
     subjectComments: {},
-    listIds: []
+    listIds: [],
+    noMore: false,
+    loading: false
   });
   const self = React.useRef({});
   const classes = useStyles();
   const client = useApolloClient();
-  const subjects = subject ? [subject] : allSubjects || [];
+  const { subjects, subjectMetadata } = React.useMemo(() => {
+    const subjectMetadata = {};
+    const tmpSubjects = allSubjects.map(sub => {
+      if (sub.threadId) {
+        subjectMetadata[sub.threadId] = sub;
+        return sub.threadId;
+      }
+      subjectMetadata[sub] = { threadId: sub };
+      return sub;
+    });
+    const subjects = subject ? [subject] : tmpSubjects || [];
+    return { subjects, subjectMetadata };
+  }, [allSubjects, subject]);
   const mainSubject = subjects[0];
-
+  console.log('>>Utils/Thread::', 'subjectMetadata', subjectMetadata); //TRACE
   const { getModelSchema } = React.useContext(ModelFormControllerContext);
   const { basicFieldsString } = React.useMemo(() => getModelSchema('ThreadComment'), [
     getModelSchema
@@ -102,6 +126,11 @@ export default function Talk({
       queries = '';
     const variables = {};
     subjects.forEach((subject, ii) => {
+      const nextToken = get(self, 'current.subjectTokens.' + subject);
+      if (nextToken === null) {
+        console.log('>>Utils/Thread::', 'subject ' + subject + ' is empty'); //TRACE
+        return;
+      }
       args += `
         $token_${ii}: String
       `;
@@ -116,7 +145,7 @@ export default function Talk({
           }
         }
       `;
-      variables['token_' + ii] = get(self, 'current.subjectTokens.' + subject);
+      variables['token_' + ii] = nextToken;
     });
     if (Object.keys(variables).length < 1) return;
 
@@ -136,26 +165,44 @@ export default function Talk({
     ]);
     //pick which one is newer
     let newestEntry, comment, nextToken;
-    Object.values(get(res, 'data', {})).forEach(entry => {
-      const commentDate = new Date(get(entry, 'comments.items.0.createdAt')).getTime();
-      if (!newestEntry || commentDate > newestEntry) {
+    const entries = Object.values(get(res, 'data', {}));
+    entries.forEach(entry => {
+      const subjectComment = get(entry, 'comments.items.0');
+      const subjectNextToken = get(entry, 'comments.nextToken');
+      console.log(
+        '>>Utils/Thread::',
+        'subjectNextToken',
+        subjectNextToken,
+        subjectNextToken
+      ); //TRACE
+      if (!subjectComment && subjectNextToken === null) {
+        set(self, 'current.subjectTokens.' + entry.id, null);
+        return;
+      }
+      const commentDate = new Date(subjectComment.createdAt).getTime();
+      if (!newestEntry || commentDate >= newestEntry) {
         newestEntry = commentDate;
-        comment = get(entry, 'comments.items.0');
-        nextToken = get(entry, 'comments.nextToken');
+        comment = subjectComment;
+        nextToken = subjectNextToken;
       }
     });
     if (!comment) return;
+
     const subject = comment.threadCommentThreadId;
-    console.log('>>Utils/Thread::', 'comment', comment); //TRACE
+    set(self, 'current.subjectTokens.' + subject, nextToken);
+    console.log('>>Utils/Thread::', 'token _next', nextToken); //TRACE
     setState(oldState => {
       const listIds = oldState.listIds || [];
-      const newItems = [comment];
+      const newItems = { [comment.id]: comment };
       const oldSc = oldState.subjectComments;
-      const oldScList = oldSc[subject] || [];
-      const newScList = [...oldScList, ...newItems];
+      const oldScList = oldSc[subject] || {};
+
+      if (oldScList[comment.id]) return oldState; //already added;
+
+      const newScList = { ...oldScList, ...newItems };
       const newListIds = [
         ...listIds,
-        ...newItems.map((_, ii) => subject + '.' + (oldScList.length + ii))
+        ...Object.keys(newItems).map(k => subject + '.' + k)
       ];
       return {
         ...oldState,
@@ -163,25 +210,27 @@ export default function Talk({
         listIds: newListIds
       };
     });
-    set(self, 'current.subjectTokens.' + subject, nextToken);
   }, [subjects, client, commentDelay, basicFieldsString]);
 
-  const fetch5Comments = React.useCallback(() => {
-    Promise.map(
+  const fetch5Comments = React.useCallback(async () => {
+    setState(oldState => ({ ...oldState, loading: true }));
+    await Promise.map(
       range(5),
       async () => {
         await fetchComments();
       },
       { concurrency: 1 }
     );
+    setState(oldState => ({ ...oldState, loading: false }));
   }, [fetchComments]);
 
-  console.log('>>Utils/Thread::', 'state.subjectComments', state); //TRACE
   const reset = React.useCallback(() => {
     setState(oldState => ({
       ...oldState,
       submitting: false,
       comment: '',
+      noMore: false,
+      loading: false,
       subjectComments: {},
       listIds: []
     }));
@@ -198,8 +247,17 @@ export default function Talk({
   }, [client, fetch5Comments, fetchComments, subjects]);
 
   const handleShowMore = React.useCallback(async () => {
+    const tokens = get(self, 'current.subjectTokens', {});
+    const tokenList = Object.values(tokens);
+    const cantShowMore =
+      tokenList.length === subjects.length && tokenList.every(token => token === null);
+    if (cantShowMore) {
+      setState(oldState => ({ ...oldState, noMore: true }));
+      return;
+    }
     fetch5Comments();
-  }, [fetch5Comments]);
+  }, [fetch5Comments, subjects.length]);
+  console.log('>>Utils/Thread::', 'state', state); //TRACE
 
   const handleSubmit = React.useCallback(async () => {
     setState(oldState => ({ ...oldState, submitting: true }));
@@ -210,6 +268,13 @@ export default function Talk({
       userId: currentUserId,
       body: self.current.comment
     };
+    if (beforeSubmit) {
+      const allow = await Promise.resolve(beforeSubmit(input));
+      if (!allow) {
+        setState(oldState => ({ ...oldState, submitting: false }));
+        return;
+      }
+    }
     console.log('>>Utils/Thread::', 'input', input); //TRACE
     const x = await client.mutate({
       mutation: gql`
@@ -225,65 +290,67 @@ export default function Talk({
     });
     console.log('>>Utils/Thread::', 'x', x); //TRACE
     reset();
-  }, [mainSubject, currentUserId, client, basicFieldsString, reset]);
+  }, [mainSubject, currentUserId, beforeSubmit, client, basicFieldsString, reset]);
 
-  if (!mainSubject || subjects.length < 1 || !currentUserId) {
-    return <div>loading..</div>;
-  }
-
+  const isInitializing = !mainSubject || subjects.length < 1 || !currentUserId;
+  const isLoading = state.submitting || state.loading;
   return (
-    <div>
-      <TextField
-        id="amr-thread-input"
-        fullWidth
-        multiline
-        value={state.comment}
-        onChange={handleChange}
-        margin="normal"
-        variant="outlined"
-        data-testid="amr-thread-input"
-        {...inpProps}
-      />
-      <div className={classes.actions}>
-        <Button
-          variant="contained"
-          disabled={
-            !state.comment || get(state, 'comment.length', 0) < 1 || state.submitting
-          }
-          onClick={handleSubmit}
-          color="primary">
-          Submit ✔
-        </Button>
-      </div>
-      <Divider />
-      <List component="nav" aria-label="main mailbox folders">
-        {state.listIds.map(id => {
-          const comment = get(state.subjectComments, id);
-          console.log('>>Utils/Thread::', 'id', id, comment); //TRACE
+    <div data-testid="amr-thread-container">
+      {isInitializing ? (
+        <center>
+          <CircularProgress />
+        </center>
+      ) : (
+        <React.Fragment>
+          <TextField
+            id="amr-thread-input"
+            fullWidth
+            multiline
+            value={state.comment}
+            onChange={handleChange}
+            margin="normal"
+            variant="outlined"
+            data-testid="amr-thread-input"
+            {...inpProps}
+          />
+          <div className={classes.actions}>
+            <Button
+              variant="contained"
+              disabled={
+                isLoading || !state.comment || get(state, 'comment.length', 0) < 1
+              }
+              onClick={handleSubmit}
+              color="primary">
+              {isLoading ? 'Please wait 🕕' : 'Submit ✔'}
+            </Button>
+          </div>
+          <Divider />
+          <List component="nav" role="thread-comment-list">
+            {state.listIds.map(id => {
+              const comment = get(state.subjectComments, id);
 
-          if (!comment) return null;
-          if (renderComment)
-            return (
-              <ListItem onClick={onCommitClicked} key={id}>
-                {renderComment(comment)}
-              </ListItem>
-            );
+              if (!comment) return null;
+              if (renderComment)
+                return (
+                  <ListItem onClick={onCommitClicked} key={id}>
+                    {renderComment(comment)}
+                  </ListItem>
+                );
 
-          return (
-            <ListItem button key={id} onClick={onCommitClicked}>
-              <ListItemText
-                primary={comment.body}
-                secondary={new Date(comment.createdAt).toLocaleString()}
-              />
-            </ListItem>
-          );
-        })}
-      </List>
-      <center>
-        <Button variant="outlined" onClick={handleShowMore}>
-          Show More
-        </Button>
-      </center>
+              return (
+                <ListItem button key={id} onClick={onCommitClicked}>
+                  <DefaultComment comment={comment} />
+                </ListItem>
+              );
+            })}
+          </List>
+          <center>
+            <Button variant="outlined" onClick={handleShowMore} disabled={state.noMore}>
+              Show More
+            </Button>
+          </center>
+        </React.Fragment>
+      )}
     </div>
   );
 }

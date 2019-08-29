@@ -1,22 +1,29 @@
-import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
-import awsconfig from "./../aws-exports";
-import Amplify, { Auth } from "aws-amplify";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import config from '../aws-exports';
+import Amplify from 'aws-amplify';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 
-Amplify.configure(awsconfig);
+Amplify.configure(config);
 
 const cache = new InMemoryCache();
+export { config };
 
-export const client = new AWSAppSyncClient(
-  {
-    url: awsconfig.aws_appsync_graphqlEndpoint,
-    region: awsconfig.aws_appsync_region,
-    auth: {
-      type: AUTH_TYPE.API_KEY, // or type: awsconfig.aws_appsync_authenticationType,
-      apiKey: awsconfig.aws_appsync_apiKey
+export function createClient(opts = {}) {
+  return new AWSAppSyncClient(
+    {
+      url: config.aws_appsync_graphqlEndpoint,
+      region: config.aws_appsync_region,
+      auth: {
+        type: AUTH_TYPE.API_KEY,
+        apiKey: config.aws_appsync_apiKey
+      },
+      ...opts
+    },
+    {
+      cache,
+      defaultOptions: {}
     }
-  },
-  {
-    cache
-  }
-);
+  );
+}
+
+export const client = createClient();
