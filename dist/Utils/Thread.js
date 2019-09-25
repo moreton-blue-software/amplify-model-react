@@ -105,7 +105,7 @@ function initThreads() {
   var variables = {};
   subjects.forEach(function (sub, ii) {
     args += '\n  $subject_' + ii + ': ID!\n  ';
-    mutations += '\n      c_' + ii + ': createThread(input: { id: $subject_' + ii + ' }) {\n        id\n      }\n  ';
+    mutations += '\n      c_' + ii + ': createThread(input: { id: $subject_' + ii + ', hash: "_thread" }) {\n        id\n      }\n  ';
     variables['subject_' + ii] = sub;
   });
   return client.mutate({

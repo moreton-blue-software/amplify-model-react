@@ -33,7 +33,7 @@ function initThreads(subjects = [], client) {
   $subject_${ii}: ID!
   `;
     mutations += `
-      c_${ii}: createThread(input: { id: $subject_${ii} }) {
+      c_${ii}: createThread(input: { id: $subject_${ii}, hash: "_thread" }) {
         id
       }
   `;
