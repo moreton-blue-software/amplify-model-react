@@ -78,6 +78,10 @@ var _range = require('lodash/range');
 
 var _range2 = _interopRequireDefault(_range);
 
+var _useAsyncEffect = require('../hooks/useAsyncEffect');
+
+var _useAsyncEffect2 = _interopRequireDefault(_useAsyncEffect);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -198,142 +202,183 @@ function Talk(_ref2) {
     });
   }, []);
 
-  var fetchComments = _react2.default.useCallback(_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var args, queries, variables, _ref4, _ref5, res, newestEntry, comment, nextToken, entries, subject;
+  var fetchComments = _react2.default.useCallback(function () {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(isMounted) {
+      var args, queries, variables, _ref4, _ref5, res, newestEntry, comment, nextToken, entries, subject;
 
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            args = '', queries = '';
-            variables = {};
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              args = '', queries = '';
+              variables = {};
 
-            subjects.forEach(function (subject, ii) {
-              var nextToken = (0, _get2.default)(self, 'current.subjectTokens.' + subject);
-              if (nextToken === null) {
-                console.log('>>Utils/Thread::', 'subject ' + subject + ' is empty'); //TRACE
-                return;
-              }
-              args += '\n        $token_' + ii + ': String\n      ';
-              queries += '\n        thread_' + ii + ': getThread(id:"' + subject + '"){\n          id\n          comments(nextToken: $token_' + ii + ', sortDirection: DESC, limit: 1){\n            nextToken\n            items {\n              ' + basicFieldsString + '\n            }\n          }\n        }\n      ';
-              variables['token_' + ii] = nextToken;
-            });
-
-            if (!(Object.keys(variables).length < 1)) {
-              _context.next = 5;
-              break;
-            }
-
-            return _context.abrupt('return');
-
-          case 5:
-            _context.next = 7;
-            return _bluebird2.default.all([client.query({
-              query: (0, _graphqlTag2.default)(_templateObject2, args, queries),
-              variables: variables,
-              fetchPolicy: 'network-only'
-            }), _bluebird2.default.delay(commentDelay)]);
-
-          case 7:
-            _ref4 = _context.sent;
-            _ref5 = _slicedToArray(_ref4, 1);
-            res = _ref5[0];
-
-            //pick which one is newer
-            newestEntry = void 0, comment = void 0, nextToken = void 0;
-            entries = Object.values((0, _get2.default)(res, 'data', {}));
-
-            entries.forEach(function (entry) {
-              var subjectComment = (0, _get2.default)(entry, 'comments.items.0');
-              var subjectNextToken = (0, _get2.default)(entry, 'comments.nextToken');
-              console.log('>>Utils/Thread::', 'subjectNextToken', subjectNextToken, subjectNextToken); //TRACE
-              if (!subjectComment && subjectNextToken === null) {
-                (0, _set2.default)(self, 'current.subjectTokens.' + entry.id, null);
-                return;
-              }
-              var commentDate = new Date(subjectComment.createdAt).getTime();
-              if (!newestEntry || commentDate >= newestEntry) {
-                newestEntry = commentDate;
-                comment = subjectComment;
-                nextToken = subjectNextToken;
-              }
-            });
-
-            if (comment) {
-              _context.next = 15;
-              break;
-            }
-
-            return _context.abrupt('return');
-
-          case 15:
-            subject = comment.threadCommentThreadId;
-
-            (0, _set2.default)(self, 'current.subjectTokens.' + subject, nextToken);
-            console.log('>>Utils/Thread::', 'token _next', nextToken); //TRACE
-            setState(function (oldState) {
-              var listIds = oldState.listIds || [];
-              var newItems = _defineProperty({}, comment.id, comment);
-              var oldSc = oldState.subjectComments;
-              var oldScList = oldSc[subject] || {};
-
-              if (oldScList[comment.id]) return oldState; //already added;
-
-              var newScList = _extends({}, oldScList, newItems);
-              var newListIds = [].concat(_toConsumableArray(listIds), _toConsumableArray(Object.keys(newItems).map(function (k) {
-                return subject + '.' + k;
-              })));
-              return _extends({}, oldState, {
-                subjectComments: _extends({}, oldSc, _defineProperty({}, subject, newScList)),
-                listIds: newListIds
-              });
-            });
-
-          case 19:
-          case 'end':
-            return _context.stop();
-        }
-      }
-    }, _callee, _this);
-  })), [subjects, client, commentDelay, basicFieldsString]);
-
-  var fetch5Comments = _react2.default.useCallback(_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            setState(function (oldState) {
-              return _extends({}, oldState, { loading: true });
-            });
-            _context3.next = 3;
-            return _bluebird2.default.map((0, _range2.default)(5), _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-              return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                while (1) {
-                  switch (_context2.prev = _context2.next) {
-                    case 0:
-                      _context2.next = 2;
-                      return fetchComments();
-
-                    case 2:
-                    case 'end':
-                      return _context2.stop();
-                  }
+              subjects.forEach(function (subject, ii) {
+                var nextToken = (0, _get2.default)(self, 'current.subjectTokens.' + subject);
+                if (nextToken === null) {
+                  console.log('>>Utils/Thread::', 'subject ' + subject + ' is empty'); //TRACE
+                  return;
                 }
-              }, _callee2, _this);
-            })), { concurrency: 1 });
+                args += '\n        $token_' + ii + ': String\n      ';
+                queries += '\n        thread_' + ii + ': getThread(id:"' + subject + '"){\n          id\n          comments(nextToken: $token_' + ii + ', sortDirection: DESC, limit: 1){\n            nextToken\n            items {\n              ' + basicFieldsString + '\n            }\n          }\n        }\n      ';
+                variables['token_' + ii] = nextToken;
+              });
 
-          case 3:
-            setState(function (oldState) {
-              return _extends({}, oldState, { loading: false });
-            });
+              if (!(Object.keys(variables).length < 1)) {
+                _context.next = 5;
+                break;
+              }
 
-          case 4:
-          case 'end':
-            return _context3.stop();
+              return _context.abrupt('return');
+
+            case 5:
+              _context.next = 7;
+              return _bluebird2.default.all([client.query({
+                query: (0, _graphqlTag2.default)(_templateObject2, args, queries),
+                variables: variables,
+                fetchPolicy: 'network-only'
+              }), _bluebird2.default.delay(commentDelay)]);
+
+            case 7:
+              _ref4 = _context.sent;
+              _ref5 = _slicedToArray(_ref4, 1);
+              res = _ref5[0];
+
+              //pick which one is newer
+              newestEntry = void 0, comment = void 0, nextToken = void 0;
+              entries = Object.values((0, _get2.default)(res, 'data', {}));
+
+              console.log('>>Utils/Thread::', 'resqqq', res, variables); //TRACE
+              entries.forEach(function (entry) {
+                var subjectComment = (0, _get2.default)(entry, 'comments.items.0');
+                var subjectNextToken = (0, _get2.default)(entry, 'comments.nextToken');
+                console.log('>>Utils/Thread::', 'subjectNextToken', subjectNextToken); //TRACE
+                if (!subjectComment && subjectNextToken === null) {
+                  (0, _set2.default)(self, 'current.subjectTokens.' + entry.id, null);
+                  return;
+                }
+                var commentDate = new Date((0, _get2.default)(subjectComment, 'createdAt', 0)).getTime();
+                if (!newestEntry || commentDate >= newestEntry) {
+                  newestEntry = commentDate;
+                  comment = subjectComment;
+                  nextToken = subjectNextToken;
+                }
+              });
+
+              if (comment) {
+                _context.next = 16;
+                break;
+              }
+
+              return _context.abrupt('return');
+
+            case 16:
+              subject = comment.threadCommentThreadId;
+
+              (0, _set2.default)(self, 'current.subjectTokens.' + subject, nextToken);
+              console.log('>>Utils/Thread::', 'token _next', nextToken); //TRACE
+
+              if (isMounted()) {
+                _context.next = 21;
+                break;
+              }
+
+              return _context.abrupt('return');
+
+            case 21:
+              setState(function (oldState) {
+                var listIds = oldState.listIds || [];
+                var newItems = _defineProperty({}, comment.id, comment);
+                var oldSc = oldState.subjectComments;
+                var oldScList = oldSc[subject] || {};
+
+                if (oldScList[comment.id]) return oldState; //already added;
+
+                var newScList = _extends({}, oldScList, newItems);
+                var newListIds = [].concat(_toConsumableArray(listIds), _toConsumableArray(Object.keys(newItems).map(function (k) {
+                  return subject + '.' + k;
+                })));
+                return _extends({}, oldState, {
+                  subjectComments: _extends({}, oldSc, _defineProperty({}, subject, newScList)),
+                  listIds: newListIds
+                });
+              });
+
+            case 22:
+            case 'end':
+              return _context.stop();
+          }
         }
-      }
-    }, _callee3, _this);
-  })), [fetchComments]);
+      }, _callee, _this);
+    }));
+
+    return function (_x2) {
+      return _ref3.apply(this, arguments);
+    };
+  }(), [subjects, client, commentDelay, basicFieldsString]);
+
+  var fetch5Comments = _react2.default.useCallback(function () {
+    var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+      var isMounted = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {
+        return true;
+      };
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              if (isMounted()) {
+                _context3.next = 2;
+                break;
+              }
+
+              return _context3.abrupt('return');
+
+            case 2:
+              setState(function (oldState) {
+                return _extends({}, oldState, { loading: true });
+              });
+              _context3.next = 5;
+              return _bluebird2.default.map((0, _range2.default)(5), _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        _context2.next = 2;
+                        return fetchComments(isMounted);
+
+                      case 2:
+                      case 'end':
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2, _this);
+              })), { concurrency: 1 });
+
+            case 5:
+              if (isMounted()) {
+                _context3.next = 7;
+                break;
+              }
+
+              return _context3.abrupt('return');
+
+            case 7:
+              setState(function (oldState) {
+                return _extends({}, oldState, { loading: false });
+              });
+
+            case 8:
+            case 'end':
+              return _context3.stop();
+          }
+        }
+      }, _callee3, _this);
+    }));
+
+    return function () {
+      return _ref6.apply(this, arguments);
+    };
+  }(), [fetchComments]);
 
   var reset = _react2.default.useCallback(function () {
     setState(function (oldState) {
@@ -350,11 +395,11 @@ function Talk(_ref2) {
     fetch5Comments();
   }, [fetch5Comments]);
 
-  _react2.default.useEffect(function () {
+  (0, _useAsyncEffect2.default)(function (isMounted) {
     //create thread
     initThreads(subjects, client).finally(function () {
       console.log('>>Utils/Thread::', 'created'); //TRACE
-      fetch5Comments();
+      fetch5Comments(isMounted);
     });
   }, [client, fetch5Comments, fetchComments, subjects]);
 
@@ -393,7 +438,8 @@ function Talk(_ref2) {
   console.log('>>Utils/Thread::', 'state', state); //TRACE
 
   var handleSubmit = _react2.default.useCallback(_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-    var id, input, allow, x;
+    var id, input, allow, _ref10, _ref11, res, comment, threadId;
+
     return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
@@ -433,27 +479,44 @@ function Talk(_ref2) {
           case 10:
             console.log('>>Utils/Thread::', 'input', input); //TRACE
             _context5.next = 13;
-            return client.mutate({
+            return _bluebird2.default.all([client.mutate({
               mutation: (0, _graphqlTag2.default)(_templateObject3, basicFieldsString),
               variables: {
                 input: input
               }
-            });
+            }), _bluebird2.default.delay(commentDelay)]);
 
           case 13:
-            x = _context5.sent;
+            _ref10 = _context5.sent;
+            _ref11 = _slicedToArray(_ref10, 1);
+            res = _ref11[0];
+            comment = (0, _get2.default)(res, 'data.createThreadComment');
 
-            console.log('>>Utils/Thread::', 'x', x); //TRACE
-            reset();
+            if (comment) {
+              threadId = comment.threadCommentThreadId;
 
-          case 16:
+              setState(function (oldState) {
+                var oldListIds = oldState.listIds;
+
+                console.log('>>Utils/Thread::', 'oldListIds', oldListIds, comment.id); //TRACE
+                return _extends({}, (0, _set2.default)(oldState, ['subjectComments', threadId, comment.id], comment), {
+                  listIds: [threadId + '.' + comment.id].concat(_toConsumableArray(oldListIds)),
+                  comment: '',
+                  submitting: false
+                });
+              });
+            } else {
+              reset();
+            }
+
+          case 18:
           case 'end':
             return _context5.stop();
         }
       }
     }, _callee5, _this);
-  })), [mainSubject, currentUserId, beforeSubmit, client, basicFieldsString, reset]);
-
+  })), [mainSubject, currentUserId, beforeSubmit, client, basicFieldsString, commentDelay, reset]);
+  console.log('>>Utils/Thread::', 'state.subjectComments', state.subjectComments, state.listIds); //TRACE
   var isInitializing = !mainSubject || subjects.length < 1 || !currentUserId;
   var isLoading = state.submitting || state.loading;
   return _react2.default.createElement(
