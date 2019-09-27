@@ -16,6 +16,7 @@ import nanoid from 'nanoid';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import range from 'lodash/range';
+import useAsyncEffect from '../hooks/useAsyncEffect';
 
 const useStyles = makeStyles({
   actions: {
@@ -121,20 +122,21 @@ export default function Talk({
     setState(oldState => ({ ...oldState, comment }));
   }, []);
 
-  const fetchComments = React.useCallback(async () => {
-    let args = '',
-      queries = '';
-    const variables = {};
-    subjects.forEach((subject, ii) => {
-      const nextToken = get(self, 'current.subjectTokens.' + subject);
-      if (nextToken === null) {
-        console.log('>>Utils/Thread::', 'subject ' + subject + ' is empty'); //TRACE
-        return;
-      }
-      args += `
+  const fetchComments = React.useCallback(
+    async isMounted => {
+      let args = '',
+        queries = '';
+      const variables = {};
+      subjects.forEach((subject, ii) => {
+        const nextToken = get(self, 'current.subjectTokens.' + subject);
+        if (nextToken === null) {
+          console.log('>>Utils/Thread::', 'subject ' + subject + ' is empty'); //TRACE
+          return;
+        }
+        args += `
         $token_${ii}: String
       `;
-      queries += `
+        queries += `
         thread_${ii}: getThread(id:"${subject}"){
           id
           comments(nextToken: $token_${ii}, sortDirection: DESC, limit: 1){
@@ -145,84 +147,88 @@ export default function Talk({
           }
         }
       `;
-      variables['token_' + ii] = nextToken;
-    });
-    if (Object.keys(variables).length < 1) return;
+        variables['token_' + ii] = nextToken;
+      });
+      if (Object.keys(variables).length < 1) return;
 
-    const [res] = await Promise.all([
-      client.query({
-        query: gql`
+      const [res] = await Promise.all([
+        client.query({
+          query: gql`
         query (
           ${args}
         ){
           ${queries}
         }
       `,
-        variables,
-        fetchPolicy: 'network-only'
-      }),
-      Promise.delay(commentDelay)
-    ]);
-    //pick which one is newer
-    let newestEntry, comment, nextToken;
-    const entries = Object.values(get(res, 'data', {}));
-    entries.forEach(entry => {
-      const subjectComment = get(entry, 'comments.items.0');
-      const subjectNextToken = get(entry, 'comments.nextToken');
-      console.log(
-        '>>Utils/Thread::',
-        'subjectNextToken',
-        subjectNextToken,
-        subjectNextToken
-      ); //TRACE
-      if (!subjectComment && subjectNextToken === null) {
-        set(self, 'current.subjectTokens.' + entry.id, null);
-        return;
-      }
-      const commentDate = new Date(subjectComment.createdAt).getTime();
-      if (!newestEntry || commentDate >= newestEntry) {
-        newestEntry = commentDate;
-        comment = subjectComment;
-        nextToken = subjectNextToken;
-      }
-    });
-    if (!comment) return;
+          variables,
+          fetchPolicy: 'network-only'
+        }),
+        Promise.delay(commentDelay)
+      ]);
+      //pick which one is newer
+      let newestEntry, comment, nextToken;
+      const entries = Object.values(get(res, 'data', {}));
+      console.log('>>Utils/Thread::', 'resqqq', res, variables); //TRACE
+      entries.forEach(entry => {
+        const subjectComment = get(entry, 'comments.items.0');
+        const subjectNextToken = get(entry, 'comments.nextToken');
+        console.log('>>Utils/Thread::', 'subjectNextToken', subjectNextToken); //TRACE
+        if (!subjectComment && subjectNextToken === null) {
+          set(self, 'current.subjectTokens.' + entry.id, null);
+          return;
+        }
+        const commentDate = new Date(get(subjectComment, 'createdAt', 0)).getTime();
+        if (!newestEntry || commentDate >= newestEntry) {
+          newestEntry = commentDate;
+          comment = subjectComment;
+          nextToken = subjectNextToken;
+        }
+      });
+      if (!comment) return;
 
-    const subject = comment.threadCommentThreadId;
-    set(self, 'current.subjectTokens.' + subject, nextToken);
-    console.log('>>Utils/Thread::', 'token _next', nextToken); //TRACE
-    setState(oldState => {
-      const listIds = oldState.listIds || [];
-      const newItems = { [comment.id]: comment };
-      const oldSc = oldState.subjectComments;
-      const oldScList = oldSc[subject] || {};
+      const subject = comment.threadCommentThreadId;
+      set(self, 'current.subjectTokens.' + subject, nextToken);
+      console.log('>>Utils/Thread::', 'token _next', nextToken); //TRACE
+      if (!isMounted()) return;
+      setState(oldState => {
+        const listIds = oldState.listIds || [];
+        const newItems = { [comment.id]: comment };
+        const oldSc = oldState.subjectComments;
+        const oldScList = oldSc[subject] || {};
 
-      if (oldScList[comment.id]) return oldState; //already added;
+        if (oldScList[comment.id]) return oldState; //already added;
 
-      const newScList = { ...oldScList, ...newItems };
-      const newListIds = [
-        ...listIds,
-        ...Object.keys(newItems).map(k => subject + '.' + k)
-      ];
-      return {
-        ...oldState,
-        subjectComments: { ...oldSc, [subject]: newScList },
-        listIds: newListIds
-      };
-    });
-  }, [subjects, client, commentDelay, basicFieldsString]);
+        const newScList = { ...oldScList, ...newItems };
+        const newListIds = [
+          ...listIds,
+          ...Object.keys(newItems).map(k => subject + '.' + k)
+        ];
+        return {
+          ...oldState,
+          subjectComments: { ...oldSc, [subject]: newScList },
+          listIds: newListIds
+        };
+      });
+    },
+    [subjects, client, commentDelay, basicFieldsString]
+  );
 
-  const fetch5Comments = React.useCallback(async () => {
-    setState(oldState => ({ ...oldState, loading: true }));
-    await Promise.map(
-      range(5),
-      async () => {
-        await fetchComments();
-      },
-      { concurrency: 1 }
-    );
-    setState(oldState => ({ ...oldState, loading: false }));
-  }, [fetchComments]);
+  const fetch5Comments = React.useCallback(
+    async (isMounted = () => true) => {
+      if (!isMounted()) return;
+      setState(oldState => ({ ...oldState, loading: true }));
+      await Promise.map(
+        range(5),
+        async () => {
+          await fetchComments(isMounted);
+        },
+        { concurrency: 1 }
+      );
+      if (!isMounted()) return;
+      setState(oldState => ({ ...oldState, loading: false }));
+    },
+    [fetchComments]
+  );
 
   const reset = React.useCallback(() => {
     setState(oldState => ({
@@ -238,13 +244,16 @@ export default function Talk({
     fetch5Comments();
   }, [fetch5Comments]);
 
-  React.useEffect(() => {
-    //create thread
-    initThreads(subjects, client).finally(() => {
-      console.log('>>Utils/Thread::', 'created'); //TRACE
-      fetch5Comments();
-    });
-  }, [client, fetch5Comments, fetchComments, subjects]);
+  useAsyncEffect(
+    isMounted => {
+      //create thread
+      initThreads(subjects, client).finally(() => {
+        console.log('>>Utils/Thread::', 'created'); //TRACE
+        fetch5Comments(isMounted);
+      });
+    },
+    [client, fetch5Comments, fetchComments, subjects]
+  );
 
   const handleShowMore = React.useCallback(async () => {
     const tokens = get(self, 'current.subjectTokens', {});
@@ -276,22 +285,52 @@ export default function Talk({
       }
     }
     console.log('>>Utils/Thread::', 'input', input); //TRACE
-    const x = await client.mutate({
-      mutation: gql`
+    const [res] = await Promise.all([
+      client.mutate({
+        mutation: gql`
         mutation($input: CreateThreadCommentInput!) {
           createThreadComment(input: $input){
             ${basicFieldsString}
           }
         }
       `,
-      variables: {
-        input
-      }
-    });
-    console.log('>>Utils/Thread::', 'x', x); //TRACE
-    reset();
-  }, [mainSubject, currentUserId, beforeSubmit, client, basicFieldsString, reset]);
-
+        variables: {
+          input
+        }
+      }),
+      Promise.delay(commentDelay)
+    ]);
+    const comment = get(res, 'data.createThreadComment');
+    if (comment) {
+      const threadId = comment.threadCommentThreadId;
+      setState(oldState => {
+        const { listIds: oldListIds } = oldState;
+        console.log('>>Utils/Thread::', 'oldListIds', oldListIds, comment.id); //TRACE
+        return {
+          ...set(oldState, ['subjectComments', threadId, comment.id], comment),
+          listIds: [threadId + '.' + comment.id, ...oldListIds],
+          comment: '',
+          submitting: false
+        };
+      });
+    } else {
+      reset();
+    }
+  }, [
+    mainSubject,
+    currentUserId,
+    beforeSubmit,
+    client,
+    basicFieldsString,
+    commentDelay,
+    reset
+  ]);
+  console.log(
+    '>>Utils/Thread::',
+    'state.subjectComments',
+    state.subjectComments,
+    state.listIds
+  ); //TRACE
   const isInitializing = !mainSubject || subjects.length < 1 || !currentUserId;
   const isLoading = state.submitting || state.loading;
   return (

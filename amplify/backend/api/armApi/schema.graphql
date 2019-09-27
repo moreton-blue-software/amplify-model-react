@@ -1,7 +1,14 @@
 ######### Util Models Start ##############
 
-type Thread @model {
+type Thread
+  @model
+  @key(
+    name: "ByHashId"
+    fields: ["hash", "id"]
+    queryField: "threadHashId"
+  ){
   id: ID!
+  hash: String!
   name: String
   comments: [ThreadComment] @connection(name: "ThreadComments", sortField: "createdAt")
   createdAt: AWSDateTime

@@ -4,6 +4,7 @@
 export const getThread = `query GetThread($id: ID!) {
   getThread(id: $id) {
     id
+    hash
     name
     comments {
       items {
@@ -29,6 +30,7 @@ export const listThreads = `query ListThreads(
   listThreads(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
+      hash
       name
       comments {
         nextToken
@@ -45,6 +47,7 @@ export const getThreadComment = `query GetThreadComment($id: ID!) {
     userId
     thread {
       id
+      hash
       name
       comments {
         nextToken
@@ -70,6 +73,7 @@ export const listThreadComments = `query ListThreadComments(
       userId
       thread {
         id
+        hash
         name
         createdAt
       }
@@ -342,6 +346,35 @@ export const listQuestions = `query ListQuestions(
   }
 }
 `;
+export const threadHashId = `query ThreadHashId(
+  $hash: String
+  $id: ModelIDKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelThreadFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  threadHashId(
+    hash: $hash
+    id: $id
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      hash
+      name
+      comments {
+        nextToken
+      }
+      createdAt
+    }
+    nextToken
+  }
+}
+`;
 export const commentByThreadId = `query CommentByThreadId(
   $threadCommentThreadId: ID
   $createdAt: ModelStringKeyConditionInput
@@ -363,6 +396,7 @@ export const commentByThreadId = `query CommentByThreadId(
       userId
       thread {
         id
+        hash
         name
         createdAt
       }
@@ -397,6 +431,7 @@ export const commentByUserIdThreadId = `query CommentByUserIdThreadId(
       userId
       thread {
         id
+        hash
         name
         createdAt
       }
@@ -431,6 +466,7 @@ export const commentByThreadIdUserId = `query CommentByThreadIdUserId(
       userId
       thread {
         id
+        hash
         name
         createdAt
       }

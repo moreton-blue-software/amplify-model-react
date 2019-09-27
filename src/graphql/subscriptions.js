@@ -4,6 +4,7 @@
 export const onCreateThread = `subscription OnCreateThread {
   onCreateThread {
     id
+    hash
     name
     comments {
       items {
@@ -24,6 +25,7 @@ export const onCreateThread = `subscription OnCreateThread {
 export const onUpdateThread = `subscription OnUpdateThread {
   onUpdateThread {
     id
+    hash
     name
     comments {
       items {
@@ -44,6 +46,7 @@ export const onUpdateThread = `subscription OnUpdateThread {
 export const onDeleteThread = `subscription OnDeleteThread {
   onDeleteThread {
     id
+    hash
     name
     comments {
       items {
@@ -67,6 +70,7 @@ export const onCreateThreadComment = `subscription OnCreateThreadComment {
     userId
     thread {
       id
+      hash
       name
       comments {
         nextToken
@@ -87,6 +91,7 @@ export const onUpdateThreadComment = `subscription OnUpdateThreadComment {
     userId
     thread {
       id
+      hash
       name
       comments {
         nextToken
@@ -107,6 +112,7 @@ export const onDeleteThreadComment = `subscription OnDeleteThreadComment {
     userId
     thread {
       id
+      hash
       name
       comments {
         nextToken

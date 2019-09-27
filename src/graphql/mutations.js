@@ -4,6 +4,7 @@
 export const createThread = `mutation CreateThread($input: CreateThreadInput!) {
   createThread(input: $input) {
     id
+    hash
     name
     comments {
       items {
@@ -24,6 +25,7 @@ export const createThread = `mutation CreateThread($input: CreateThreadInput!) {
 export const updateThread = `mutation UpdateThread($input: UpdateThreadInput!) {
   updateThread(input: $input) {
     id
+    hash
     name
     comments {
       items {
@@ -44,6 +46,7 @@ export const updateThread = `mutation UpdateThread($input: UpdateThreadInput!) {
 export const deleteThread = `mutation DeleteThread($input: DeleteThreadInput!) {
   deleteThread(input: $input) {
     id
+    hash
     name
     comments {
       items {
@@ -67,6 +70,7 @@ export const createThreadComment = `mutation CreateThreadComment($input: CreateT
     userId
     thread {
       id
+      hash
       name
       comments {
         nextToken
@@ -87,6 +91,7 @@ export const updateThreadComment = `mutation UpdateThreadComment($input: UpdateT
     userId
     thread {
       id
+      hash
       name
       comments {
         nextToken
@@ -107,6 +112,7 @@ export const deleteThreadComment = `mutation DeleteThreadComment($input: DeleteT
     userId
     thread {
       id
+      hash
       name
       comments {
         nextToken
