@@ -345,6 +345,7 @@ export const listQuestions = `query ListQuestions(
 export const commentByThreadId = `query CommentByThreadId(
   $threadCommentThreadId: ID
   $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
   $filter: ModelThreadCommentFilterInput
   $limit: Int
   $nextToken: String
@@ -352,6 +353,7 @@ export const commentByThreadId = `query CommentByThreadId(
   commentByThreadId(
     threadCommentThreadId: $threadCommentThreadId
     createdAt: $createdAt
+    sortDirection: $sortDirection
     filter: $filter
     limit: $limit
     nextToken: $nextToken
@@ -377,6 +379,7 @@ export const commentByThreadId = `query CommentByThreadId(
 export const commentByUserIdThreadId = `query CommentByUserIdThreadId(
   $userId: String
   $threadCommentThreadId: ModelIDKeyConditionInput
+  $sortDirection: ModelSortDirection
   $filter: ModelThreadCommentFilterInput
   $limit: Int
   $nextToken: String
@@ -384,6 +387,7 @@ export const commentByUserIdThreadId = `query CommentByUserIdThreadId(
   commentByUserIdThreadId(
     userId: $userId
     threadCommentThreadId: $threadCommentThreadId
+    sortDirection: $sortDirection
     filter: $filter
     limit: $limit
     nextToken: $nextToken
@@ -409,6 +413,7 @@ export const commentByUserIdThreadId = `query CommentByUserIdThreadId(
 export const commentByThreadIdUserId = `query CommentByThreadIdUserId(
   $threadCommentThreadId: ID
   $userId: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
   $filter: ModelThreadCommentFilterInput
   $limit: Int
   $nextToken: String
@@ -416,6 +421,7 @@ export const commentByThreadIdUserId = `query CommentByThreadIdUserId(
   commentByThreadIdUserId(
     threadCommentThreadId: $threadCommentThreadId
     userId: $userId
+    sortDirection: $sortDirection
     filter: $filter
     limit: $limit
     nextToken: $nextToken

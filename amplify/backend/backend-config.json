@@ -1,6 +1,6 @@
 {
 	"api": {
-		"armApi": {
+		"armAPI": {
 			"service": "AppSync",
 			"providerPlugin": "awscloudformation",
 			"output": {
