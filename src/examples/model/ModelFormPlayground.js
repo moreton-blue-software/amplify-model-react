@@ -1,20 +1,23 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable no-console */
 import React from 'react';
-import ModelForm, { ModelFormContext } from './modules/ModelForm';
+import ModelForm, { ModelFormContext } from 'modules/ModelForm';
 import Button from '@material-ui/core/Button';
-import ModelFieldInput from './modules/ModelFieldInput';
-import ModelFieldSelector from './modules/ModelFieldSelector';
-import ModelFieldTextSelector from './modules/ModelFieldTextSelector';
-import ModelFieldDateTime from './modules/ModelFieldDateTime';
-import ModelFieldDate from './modules/ModelFieldDate';
-import ModelFieldFile from './modules/ModelFieldFile';
-import ModelSelector from './modules/ModelSelector';
+import ModelFieldInput from 'modules/ModelFieldInput';
+import ModelFieldSelector from 'modules/ModelFieldSelector';
+import ModelFieldTextSelector from 'modules/ModelFieldTextSelector';
+import ModelFieldDateTime from 'modules/ModelFieldDateTime';
+import ModelFieldDate from 'modules/ModelFieldDate';
+import ModelFieldFile from 'modules/ModelFieldFile';
+import ModelSelector from 'modules/ModelSelector';
 import ReactPlayer from 'react-player';
 import get from 'lodash/get';
 import range from 'lodash/range';
 import Promise from 'bluebird';
-import { Alerts, ModelFieldControl as ModelControl } from './modules';
+import { Alerts, ModelFieldControl as ModelControl } from 'modules';
+import { useParams, useLocation } from 'react-router';
+import { Route, Switch } from 'react-router-dom';
+import { TracerContext } from 'App';
 
 const Fields = props => {
   const { data } = React.useContext(ModelFormContext);
@@ -61,11 +64,13 @@ const VacancyQuestion = props => {
 
 const FormBody = props => {
   const self = React.useRef({ renders: 0 });
-  React.useEffect(() => {
-    self.current.renders++;
-  });
+  const { setTrace } = React.useContext(TracerContext);
   const { data: formData, state, handlers } = React.useContext(ModelFormContext);
   console.log('state', state, formData); //TRACE
+
+  React.useEffect(() => {
+    setTrace('renders', ++self.current.renders);
+  });
 
   React.useEffect(() => {}, []);
   const confirm = Alerts.useConfirmAsync({
@@ -78,16 +83,21 @@ const FormBody = props => {
       const ctxs = handlers.getChildContexts();
       console.log('>>src/ModelFormPlayground::', 'ctxs', ctxs); //TRACE
     });
-  }, [formData]);
-  const videoRender = React.useCallback(({ file, url, metadata }) => {
-    return (
-      <>
-        {file && <ReactPlayer controls url={URL.createObjectURL(file)} />}
-        {url && <ReactPlayer controls url={url} />}
-        <div>{JSON.stringify(metadata || {})}</div>
-      </>
-    );
-  }, []);
+  }, [formData, handlers]);
+
+  const videoRender = React.useCallback(
+    ({ file, url, metadata }) => {
+      setTrace('videoRenderUrl', url);
+      return (
+        <>
+          {file && <ReactPlayer controls url={URL.createObjectURL(file)} />}
+          {url && !file && <ReactPlayer controls url={url} />}
+          <div>{JSON.stringify(metadata || {})}</div>
+        </>
+      );
+    },
+    [setTrace]
+  );
 
   const multipleRender = React.useCallback(({ file, url }) => {
     if (url) return <span>{url}</span>;
@@ -109,7 +119,6 @@ const FormBody = props => {
 
   return (
     <div>
-      <div>renders:{self.current.renders}</div>
       id:{formData.id}
       {/* <ModelFieldSelector
         name="Client"
@@ -268,10 +277,28 @@ export default function ModelFormPlayground(props) {
     client: null
   });
 
+  const { testType } = useParams();
+  const location = useLocation();
+  const { setTrace } = React.useContext(TracerContext);
+
+  console.log('>>src/ModelFormPlayground::', 'params', location); //TRACE
   const handleClientSelectorChange = React.useCallback(item => {
     console.log('>>src/ModelFormPlayground::', 'item', item); //TRACE
     setState(oldState => ({ ...oldState, client: item.id }));
   }, []);
+
+  const handleOnSave = React.useCallback(savedId => {
+    setTrace('savedId', savedId);
+  }, []);
+
+  const modelFormProps = {};
+  switch (testType) {
+    case 'load-model-from-id': {
+      var searchParams2 = new URLSearchParams(location.search);
+      modelFormProps.modelId = searchParams2.get('id'); // true
+      break;
+    }
+  }
 
   return (
     <div>
@@ -280,13 +307,12 @@ export default function ModelFormPlayground(props) {
       <ModelForm
         name="Vacancy"
         fetchPolicy="network-only"
-        // modelId={"4d8ec785-c737-4a7f-a4c3-bff330e38a29"}
-        modelId={'92d38361-1e60-4c76-9742-baea255e7f23'}
-        // onSave={onSave}
         additionalFields={extraProps}
+        onSave={handleOnSave}
         onChange={e => {
           console.log('>>src/ModelFormPlayground::', 'formData onChange', e); //TRACE
-        }}>
+        }}
+        {...modelFormProps}>
         <FormBody {...props} />
       </ModelForm>
     </div>

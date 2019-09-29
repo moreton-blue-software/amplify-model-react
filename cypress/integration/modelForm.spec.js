@@ -45,7 +45,7 @@ describe('check seed data', async () => {
     });
   });
   it('save form', function() {
-    cy.visit('/');
+    cy.visit('/model');
     cy.get('input[id="position"]').type(vacSample.position, { delay: 100 });
     cy.contains('label', 'Start Date')
       .parent()
@@ -71,23 +71,74 @@ describe('check seed data', async () => {
       .click();
     //wait for form to save
     cy.contains('button', 'Update');
-    cy.getClient().then(async function(client) {
-      const res = await client.query({
-        query: LIST_VACANCYS,
-        fetchPolicy: 'network-only'
+    cy.getClient()
+      .then(async function(client) {
+        const res = await client.query({
+          query: LIST_VACANCYS,
+          fetchPolicy: 'network-only'
+        });
+        savedVacancy = get(res, 'data.listVacancys.items.0');
+        expect(savedVacancy.position).eq(vacSample.position);
+        expect(savedVacancy.startDate).to.exist;
+        expect(savedVacancy.video.filename).to.exist;
+      })
+      .then(function() {
+        cy.contains('#log-tracer', `"savedId": "${savedVacancy.id}"`);
       });
-      savedVacancy = get(res, 'data.listVacancys.items.0');
-      expect(savedVacancy.position).eq(vacSample.position);
-      expect(savedVacancy.startDate).to.exist;
-      expect(savedVacancy.video.filename).to.exist;
-    });
   });
-  it('update form', function() {
+  it('update form (after save)', function() {
     expect(savedVacancy.id).to.exist;
     const changedPosition = 'hello';
     cy.contains(`id:${savedVacancy.id}`);
     cy.get('input[id="position"]').then(function(inp) {
       expect(inp.val()).eq(savedVacancy.position);
+    });
+    cy.get('input[id="position"]').clear();
+    cy.get('input[id="position"]').type(changedPosition, { delay: 100 });
+    const fileName = 'newn' + nanoid();
+    cy.fixture('small.webm', 'base64').then(function(fileContent) {
+      cy.get('input[type="file"]').each(function(d) {
+        cy.wrap(d).upload({
+          fileContent,
+          fileName,
+          mimeType: 'video/webm',
+          encoding: 'binary'
+        });
+      });
+    });
+    cy.root()
+      .contains('button', 'Update')
+      .click();
+    cy.get('div[role="dialog"]')
+      .contains('button', 'OK')
+      .click();
+    cy.root()
+      .contains('button', 'Update')
+      .should('be.disabled');
+    cy.root()
+      .contains('button', 'Update')
+      .should('not.be.disabled');
+    cy.getClient().then(async function(client) {
+      const res = await client.query({
+        query: LIST_VACANCYS,
+        fetchPolicy: 'network-only'
+      });
+      const updatedVacancy = get(res, 'data.listVacancys.items.0');
+      expect(updatedVacancy.id).eq(savedVacancy.id);
+      expect(updatedVacancy.position).eq(changedPosition);
+      expect(updatedVacancy.startDate).to.exist;
+      expect(updatedVacancy.video.filename).eq(savedVacancy.id + '/' + fileName);
+    });
+  });
+  it('update form (after reload)', function() {
+    expect(savedVacancy.id).to.exist;
+    cy.visit('/model/load-model-from-id?id=' + savedVacancy.id);
+
+    const changedPosition = 'hello22';
+    cy.contains(`id:${savedVacancy.id}`);
+    cy.contains('#log-tracer', '"videoRenderUrl": "http');
+    cy.get('input[id="position"]').then(function(inp) {
+      expect(inp.val()).not.eq(changedPosition);
     });
     cy.get('input[id="position"]').clear();
     cy.get('input[id="position"]').type(changedPosition, { delay: 100 });
