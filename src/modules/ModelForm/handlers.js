@@ -4,7 +4,7 @@ import pick from 'lodash/pick';
 import get from 'lodash/get';
 import Promise from 'bluebird';
 import { useSnackbar } from 'notistack';
-import { useApolloClient } from 'react-apollo-hooks';
+import { useApolloClient } from '@apollo/react-hooks';
 import { List } from 'immutable';
 import { ModelFormGlobalProvider } from '../ModelFormController';
 import { composeCreateMutation, composeUpdateMutation } from '../common/graphql/Base';

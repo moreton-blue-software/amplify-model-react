@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "../Select";
-import { useQuery, useApolloClient } from "react-apollo-hooks";
+import { useQuery, useApolloClient } from "@apollo/react-hooks";
 import get from "lodash/get";
 import gql from "graphql-tag";
 import Promise from "bluebird";

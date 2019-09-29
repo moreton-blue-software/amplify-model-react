@@ -56,7 +56,7 @@ var _CircularProgress = require('@material-ui/core/CircularProgress');
 
 var _CircularProgress2 = _interopRequireDefault(_CircularProgress);
 
-var _reactApolloHooks = require('react-apollo-hooks');
+var _reactHooks = require('@apollo/react-hooks');
 
 var _ModelFormController = require('../ModelFormController');
 
@@ -156,7 +156,7 @@ function Talk(_ref2) {
 
   var self = _react2.default.useRef({});
   var classes = useStyles();
-  var client = (0, _reactApolloHooks.useApolloClient)();
+  var client = (0, _reactHooks.useApolloClient)();
 
   var _React$useMemo = _react2.default.useMemo(function () {
     var subjectMetadata = {};

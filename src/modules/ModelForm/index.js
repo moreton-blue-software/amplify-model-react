@@ -1,6 +1,6 @@
 import React from 'react';
 import { toKey } from '../common/graphql/Base';
-import { useQuery } from 'react-apollo-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import get from 'lodash/get';
 import gql from 'graphql-tag';
 import nanoid from 'nanoid';

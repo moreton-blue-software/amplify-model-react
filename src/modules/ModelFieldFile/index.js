@@ -7,7 +7,7 @@ import UploadButton from "../UploadButton";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
-import { Storage } from "aws-amplify";
+import Storage from '@aws-amplify/storage';
 import setFp from "lodash/fp/set";
 import set from "lodash/set";
 import get from "lodash/get";

@@ -10,7 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 import gql from 'graphql-tag';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { useApolloClient } from 'react-apollo-hooks';
+import { useApolloClient } from '@apollo/react-hooks';
 import ModelFormControllerContext from '../ModelFormController';
 import nanoid from 'nanoid';
 import get from 'lodash/get';

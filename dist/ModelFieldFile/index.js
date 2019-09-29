@@ -42,7 +42,9 @@ var _Button2 = _interopRequireDefault(_Button);
 
 var _styles = require("@material-ui/core/styles");
 
-var _awsAmplify = require("aws-amplify");
+var _storage = require("@aws-amplify/storage");
+
+var _storage2 = _interopRequireDefault(_storage);
 
 var _set = require("lodash/fp/set");
 
@@ -85,7 +87,7 @@ function ProgressDisplay(_ref) {
 
   _react2.default.useEffect(function () {
     var um = false;
-    _awsAmplify.Storage.put(filepath, file, _extends({
+    _storage2.default.put(filepath, file, _extends({
       progressCallback: function progressCallback(progress) {
         if (um) return;
         var progressPercentage = progress.loaded / progress.total * 100;
@@ -383,7 +385,7 @@ var Uploader = function Uploader(props) {
     console.log(">>ModelFieldFile/index::", "url", url); //TRACE
     var filename = (0, _get2.default)(url, "filename");
     if (filename) {
-      _awsAmplify.Storage.get(filename, _extends({}, storageOpts)).then(function (result) {
+      _storage2.default.get(filename, _extends({}, storageOpts)).then(function (result) {
         // console.log(">>ModelFieldFile/index::", "result", result); //TRACE
         if (!hasCancelled) setFileData((0, _set2.default)("url", result));
       }).catch(function (err) {
