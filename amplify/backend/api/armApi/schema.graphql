@@ -58,6 +58,7 @@ type Vacancy @model {
   updatedAt: AWSDateTime
   position: String
   description: String
+  startDate: AWSDateTime
   video: File
   agreements: [File]
   questions: [VacancyQuestion]

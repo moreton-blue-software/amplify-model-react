@@ -140,6 +140,7 @@ export const onCreateClient = `subscription OnCreateClient {
         updatedAt
         position
         description
+        startDate
         vacancyClientId
       }
       nextToken
@@ -160,6 +161,7 @@ export const onUpdateClient = `subscription OnUpdateClient {
         updatedAt
         position
         description
+        startDate
         vacancyClientId
       }
       nextToken
@@ -180,6 +182,7 @@ export const onDeleteClient = `subscription OnDeleteClient {
         updatedAt
         position
         description
+        startDate
         vacancyClientId
       }
       nextToken
@@ -194,6 +197,7 @@ export const onCreateVacancy = `subscription OnCreateVacancy {
     updatedAt
     position
     description
+    startDate
     video {
       id
       filename
@@ -240,6 +244,7 @@ export const onUpdateVacancy = `subscription OnUpdateVacancy {
     updatedAt
     position
     description
+    startDate
     video {
       id
       filename
@@ -286,6 +291,7 @@ export const onDeleteVacancy = `subscription OnDeleteVacancy {
     updatedAt
     position
     description
+    startDate
     video {
       id
       filename
@@ -337,6 +343,7 @@ export const onCreateVacancyQuestion = `subscription OnCreateVacancyQuestion {
       updatedAt
       position
       description
+      startDate
       video {
         id
         filename
@@ -391,6 +398,7 @@ export const onUpdateVacancyQuestion = `subscription OnUpdateVacancyQuestion {
       updatedAt
       position
       description
+      startDate
       video {
         id
         filename
@@ -445,6 +453,7 @@ export const onDeleteVacancyQuestion = `subscription OnDeleteVacancyQuestion {
       updatedAt
       position
       description
+      startDate
       video {
         id
         filename
