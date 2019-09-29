@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -6,55 +6,56 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /* eslint-disable react/no-multi-comp */
+
 
 exports.default = ModelFieldFile;
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ModelForm = require("../ModelForm");
+var _ModelForm = require('../ModelForm');
 
 var _ModelForm2 = _interopRequireDefault(_ModelForm);
 
-var _notistack = require("notistack");
+var _notistack = require('notistack');
 
-var _bluebird = require("bluebird");
+var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
 
-var _capitalize = require("lodash/capitalize");
+var _capitalize = require('lodash/capitalize');
 
 var _capitalize2 = _interopRequireDefault(_capitalize);
 
-var _UploadButton = require("../UploadButton");
+var _UploadButton = require('../UploadButton');
 
 var _UploadButton2 = _interopRequireDefault(_UploadButton);
 
-var _Paper = require("@material-ui/core/Paper");
+var _Paper = require('@material-ui/core/Paper');
 
 var _Paper2 = _interopRequireDefault(_Paper);
 
-var _Button = require("@material-ui/core/Button");
+var _Button = require('@material-ui/core/Button');
 
 var _Button2 = _interopRequireDefault(_Button);
 
-var _styles = require("@material-ui/core/styles");
+var _styles = require('@material-ui/core/styles');
 
-var _storage = require("@aws-amplify/storage");
+var _storage = require('@aws-amplify/storage');
 
 var _storage2 = _interopRequireDefault(_storage);
 
-var _set = require("lodash/fp/set");
+var _set = require('lodash/fp/set');
 
 var _set2 = _interopRequireDefault(_set);
 
-var _set3 = require("lodash/set");
+var _set3 = require('lodash/set');
 
 var _set4 = _interopRequireDefault(_set3);
 
-var _get = require("lodash/get");
+var _get = require('lodash/get');
 
 var _get2 = _interopRequireDefault(_get);
 
@@ -103,17 +104,17 @@ function ProgressDisplay(_ref) {
     };
   }, []);
   return _react2.default.createElement(
-    "span",
+    'span',
     null,
-    "Uploading attachments.. ",
+    'Uploading attachments.. ',
     state,
-    "%"
+    '%'
   );
 }
 
 var useUploaderStyles = (0, _styles.makeStyles)({
   multipleDisplay: {
-    "& > div": {
+    '& > div': {
       minHeight: 30,
       padding: 10
     }
@@ -122,7 +123,7 @@ var useUploaderStyles = (0, _styles.makeStyles)({
 
 var Uploader = function Uploader(props) {
   var _props$accept = props.accept,
-      accept = _props$accept === undefined ? "video/*" : _props$accept,
+      accept = _props$accept === undefined ? 'video/*' : _props$accept,
       label = props.label,
       multiple = props.multiple,
       field = props.field,
@@ -157,7 +158,7 @@ var Uploader = function Uploader(props) {
       closeSnackbar = _useSnackbar.closeSnackbar;
 
   _react2.default.useEffect(function () {
-    console.log("1234: before re-attching..");
+    console.log('1234: before re-attching..');
 
     var beforeSave = function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(_ref3) {
@@ -169,7 +170,7 @@ var Uploader = function Uploader(props) {
               while (1) {
                 switch (_context.prev = _context.next) {
                   case 0:
-                    filepath = parentData.id + "/" + rawFile.name;
+                    filepath = parentData.id + '/' + rawFile.name;
                     uploadSnackbar = void 0;
                     file = rawFile;
                     metadata = void 0;
@@ -206,7 +207,7 @@ var Uploader = function Uploader(props) {
                         onDone: resolve,
                         onError: reject
                       })), {
-                        variant: "info",
+                        variant: 'info',
                         persist: true
                       });
                     });
@@ -217,12 +218,12 @@ var Uploader = function Uploader(props) {
                     storeData = _context.sent;
 
                     closeSnackbar(uploadSnackbar);
-                    return _context.abrupt("return", _extends({
+                    return _context.abrupt('return', _extends({
                       filename: storeData.key
                     }, metadata || {}));
 
                   case 15:
-                  case "end":
+                  case 'end':
                     return _context.stop();
                 }
               }
@@ -249,7 +250,7 @@ var Uploader = function Uploader(props) {
                   break;
                 }
 
-                fieldRoot = field.split(".")[0];
+                fieldRoot = field.split('.')[0];
                 _context2.prev = 4;
 
                 if (parentData.id) {
@@ -257,8 +258,8 @@ var Uploader = function Uploader(props) {
                   break;
                 }
 
-                console.log("1234: no parent data id found!.");
-                return _context2.abrupt("return", {});
+                console.log('1234: no parent data id found!.');
+                return _context2.abrupt('return', {});
 
               case 8:
                 _context2.next = 10;
@@ -280,7 +281,7 @@ var Uploader = function Uploader(props) {
               case 13:
                 filesUpls = _context2.sent;
 
-                console.log(">>ModelFieldFile/index::", "filesUpls", filesUpls); //TRACE
+                console.log('>>ModelFieldFile/index::', 'filesUpls', filesUpls); //TRACE
                 _context2.next = 27;
                 break;
 
@@ -298,7 +299,7 @@ var Uploader = function Uploader(props) {
               case 21:
                 storeData = _context2.sent;
 
-                console.log(">>ModelFieldFile/index::" + field, "xxretFields", retFields); //TRACE
+                console.log('>>ModelFieldFile/index::' + field, 'xxretFields', retFields); //TRACE
 
                 (0, _set4.default)(retFields, field, storeData);
                 _context2.next = 27;
@@ -316,14 +317,14 @@ var Uploader = function Uploader(props) {
                   if (fieldRoot !== k) {
                     retFields[k] = undefined;
                   } else {
-                    if (!!(0, _get2.default)(retFields, [k, "length"])) {
+                    if (!!(0, _get2.default)(retFields, [k, 'length'])) {
                       // an array
                       retFields[k].forEach(function (retFieldItem) {
-                        if (retFieldItem) retFieldItem["__typename"] = undefined;
+                        if (retFieldItem) retFieldItem['__typename'] = undefined;
                       });
                     } else if (!!retFields[k]) {
                       // an object
-                      retFields[k]["__typename"] = undefined;
+                      retFields[k]['__typename'] = undefined;
                     }
                   }
                 });
@@ -340,29 +341,26 @@ var Uploader = function Uploader(props) {
 
               case 33:
                 _context2.prev = 33;
-                _context2.t0 = _context2["catch"](4);
+                _context2.t0 = _context2['catch'](4);
 
-                enqueueSnackbar("Something went wrong with saving video", {
-                  variant: "error"
+                enqueueSnackbar('Something went wrong with saving video', {
+                  variant: 'error'
                 });
-                console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", _context2.t0);
-                return _context2.abrupt("return", false);
+                console.log('1234: SOMETHING WENT WRONG UPLOAD AND INSERT ', _context2.t0);
+                return _context2.abrupt('return', false);
 
               case 38:
                 _context2.prev = 38;
 
-                console.log("1234: before saving delay done");
-                // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
-                // closeSnackbar(uploadSnackbar);
-                // throw Error(JSON.stringify(retFields));
-                console.log(">>ModelFieldFile/index::" + field, "retFields", retFields); //TRACE
-                return _context2.abrupt("return", retFields);
+                console.log('1234: before saving delay done');
+                console.log('>>ModelFieldFile/index::' + field, 'retFields', retFields); //TRACE
+                return _context2.abrupt('return', retFields);
 
               case 43:
-                return _context2.abrupt("return", false);
+                return _context2.abrupt('return', false);
 
               case 44:
-              case "end":
+              case 'end':
                 return _context2.stop();
             }
           }
@@ -382,12 +380,12 @@ var Uploader = function Uploader(props) {
   _react2.default.useEffect(function () {
     var hasCancelled = false;
     var url = handlers.getFieldValue(field);
-    console.log(">>ModelFieldFile/index::", "url", url); //TRACE
-    var filename = (0, _get2.default)(url, "filename");
+    console.log('>>ModelFieldFile/index::', 'url', url); //TRACE
+    var filename = (0, _get2.default)(url, 'filename');
     if (filename) {
       _storage2.default.get(filename, _extends({}, storageOpts)).then(function (result) {
         // console.log(">>ModelFieldFile/index::", "result", result); //TRACE
-        if (!hasCancelled) setFileData((0, _set2.default)("url", result));
+        if (!hasCancelled) setFileData((0, _set2.default)('url', result));
       }).catch(function (err) {
         return console.error(err);
       });
@@ -395,7 +393,7 @@ var Uploader = function Uploader(props) {
     return function () {
       hasCancelled = true;
     };
-  }, [field]);
+  }, [field, handlers, storageOpts]);
 
   var hasSelectedFile = fileData.file || fileData.url;
 
@@ -403,7 +401,7 @@ var Uploader = function Uploader(props) {
     var metadata = handlers.getFieldValue(field);
     return render && render({ file: fileData.file, url: fileData.url, metadata: metadata });
   }, [fileData, render]);
-  console.log(">>ModelFieldFile/index::", "fileData", fileListData); //TRACE
+  console.log('>>ModelFieldFile/index::', 'fileData', fileListData); //TRACE
   return _react2.default.createElement(
     _react2.default.Fragment,
     null,
@@ -411,7 +409,7 @@ var Uploader = function Uploader(props) {
       labelText: label,
       multiple: multiple,
       onChange: function onChange(e) {
-        var fileList = (0, _get2.default)(e, "target.files", []);
+        var fileList = (0, _get2.default)(e, 'target.files', []);
         if (multiple) {
           setFileListData(function (oldFileListData) {
             return [].concat(_toConsumableArray(oldFileListData), _toConsumableArray([].concat(_toConsumableArray(fileList)).map(function (f) {
@@ -435,7 +433,7 @@ var Uploader = function Uploader(props) {
     }),
     hasSelectedFile && !multiple && renderFn,
     multiple && _react2.default.createElement(
-      "div",
+      'div',
       { className: classes.multipleDisplay },
       fileListData.map(function (fileData, ii) {
         return _react2.default.createElement(
@@ -445,17 +443,16 @@ var Uploader = function Uploader(props) {
           _react2.default.createElement(
             _Button2.default,
             {
-              size: "small",
-              style: { float: "right" },
+              size: 'small',
+              style: { float: 'right' },
               onClick: function onClick() {
                 setFileListData(function (oldFileListData) {
                   return oldFileListData.filter(function (v, indx) {
                     return indx !== ii;
                   });
                 });
-              }
-            },
-            "Remove"
+              } },
+            'Remove'
           )
         );
       })
@@ -468,7 +465,7 @@ function ModelFieldFile(props) {
       accept = props.accept,
       render = props.render,
       _props$label = props.label,
-      label = _props$label === undefined ? "File" : _props$label,
+      label = _props$label === undefined ? 'File' : _props$label,
       buttonLabel = props.buttonLabel,
       multiple = props.multiple,
       _props$storageOpts = props.storageOpts,
@@ -488,19 +485,18 @@ function ModelFieldFile(props) {
     // set(m, field, get(modelData, field));
     return modelData;
   }, [modelData]);
-  console.log(">>ModelFieldFile/index::" + field, "defaultValue", defaultValue); //TRACE
+  console.log('>>ModelFieldFile/index::' + field, 'defaultValue', defaultValue); //TRACE
   return _react2.default.createElement(
     _ModelForm2.default
     // key={modelData.id} //added this so it reloads the form with the default value
     ,
     { name: name,
-      defaultModelValue: defaultValue
-    },
+      defaultModelValue: defaultValue },
     _react2.default.createElement(
-      "div",
+      'div',
       { style: { marginTop: 15 } },
       _react2.default.createElement(
-        "label",
+        'label',
         null,
         label
       ),
