@@ -453,16 +453,6 @@ function useModelFormHandlers(props) {
       getChildContexts: function getChildContexts() {
         return getChildContextsById(ctxId);
       },
-      getFieldValue: function getFieldValue(fieldPath) {
-        var _ref3 = self.current || {},
-            formData = _ref3.formData;
-
-        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-          args[_key - 1] = arguments[_key];
-        }
-
-        return _get2.default.apply(undefined, [formData, fieldPath].concat(_toConsumableArray(args)));
-      },
       save: function save() {
         var _this4 = this;
 
@@ -527,5 +517,13 @@ function useModelFormHandlers(props) {
       }
     });
   }, [_saveModel, ctxId, enqueueSnackbar, onSave, refetch, setChildrenMap, setFieldErrors, _setFormData, setState, staticHandlers]);
+
+  handlers.getFieldValue = _react2.default.useCallback(function (fieldPath) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    return _get2.default.apply(undefined, [_formData, fieldPath].concat(args));
+  }, [_formData]);
   return handlers;
 }

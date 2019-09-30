@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 import nanoid from 'nanoid';
-import Promise from 'bluebird';
+// import Promise from 'bluebird';
 import gql from 'graphql-tag';
 import get from 'lodash/get';
 

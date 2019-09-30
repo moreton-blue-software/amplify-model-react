@@ -228,10 +228,6 @@ export default function useModelFormHandlers(props) {
       getChildContexts() {
         return getChildContextsById(ctxId);
       },
-      getFieldValue(fieldPath, ...args) {
-        const { formData } = self.current || {};
-        return get(formData, fieldPath, ...args);
-      },
       async save(options = {}) {
         try {
           await setState(set('saving', true));
@@ -267,6 +263,13 @@ export default function useModelFormHandlers(props) {
       setState,
       staticHandlers
     ]
+  );
+
+  handlers.getFieldValue = React.useCallback(
+    (fieldPath, ...args) => {
+      return get(_formData, fieldPath, ...args);
+    },
+    [_formData]
   );
   return handlers;
 }
