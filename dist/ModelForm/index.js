@@ -120,6 +120,7 @@ var ModelForm = _react2.default.memo(function (props) {
       _props$additionalFiel = props.additionalFields,
       additionalFields = _props$additionalFiel === undefined ? '' : _props$additionalFiel,
       schemaInfo = props.schemaInfo,
+      readOnly = props.readOnly,
       fetchPolicy = props.fetchPolicy;
 
   var _React$useState = _react2.default.useState(name + '-' + (0, _nanoid2.default)()),
@@ -244,9 +245,10 @@ var ModelForm = _react2.default.memo(function (props) {
       state: stateJS,
       parent: parentModelContext,
       childrenMap: childrenMap,
-      handlers: handlers
+      handlers: handlers,
+      readOnly: readOnly
     };
-  }, [ctxId, name, formData, stateJS, parentModelContext, childrenMap, handlers]);
+  }, [ctxId, name, formData, stateJS, parentModelContext, childrenMap, handlers, readOnly]);
 
   //Add this context to parent context's children
   _react2.default.useEffect(function () {

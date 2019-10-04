@@ -39,6 +39,7 @@ const ModelForm = React.memo(function(props) {
     afterSave,
     additionalFields = '',
     schemaInfo,
+    readOnly,
     fetchPolicy
   } = props;
   const [ctxId] = React.useState(`${name}-${nanoid()}`);
@@ -139,9 +140,19 @@ const ModelForm = React.memo(function(props) {
       state: stateJS,
       parent: parentModelContext,
       childrenMap,
-      handlers
+      handlers,
+      readOnly
     };
-  }, [ctxId, name, formData, stateJS, parentModelContext, childrenMap, handlers]);
+  }, [
+    ctxId,
+    name,
+    formData,
+    stateJS,
+    parentModelContext,
+    childrenMap,
+    handlers,
+    readOnly
+  ]);
 
   //Add this context to parent context's children
   React.useEffect(() => {
