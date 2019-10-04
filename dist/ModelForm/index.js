@@ -233,9 +233,10 @@ var ModelForm = _react2.default.memo(function (props) {
       errors: errors,
       hasErrors: errors.length > 0,
       loading: loading,
-      editMode: editMode
+      editMode: editMode,
+      readOnly: readOnly
     });
-  }, [state, loading, editMode, fieldErrors]);
+  }, [state, loading, editMode, fieldErrors, readOnly]);
 
   var contextState = _react2.default.useMemo(function () {
     return {

@@ -128,9 +128,10 @@ const ModelForm = React.memo(function(props) {
       errors,
       hasErrors: errors.length > 0,
       loading,
-      editMode
+      editMode,
+      readOnly
     };
-  }, [state, loading, editMode, fieldErrors]);
+  }, [state, loading, editMode, fieldErrors, readOnly]);
 
   const contextState = React.useMemo(() => {
     return {
