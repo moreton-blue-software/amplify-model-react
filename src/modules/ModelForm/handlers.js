@@ -158,7 +158,8 @@ export default function useModelFormHandlers(props) {
       //save children models
       await Promise.map(childContexts || [], childCtxKey => {
         const childCtx = formMap[childCtxKey];
-
+        const isReadOnly = get(childCtx, 'state.readOnly');
+        if (isReadOnly) return;
         return childCtx.handlers._saveModel({
           savedParentId: savedId,
           noRefetch: true

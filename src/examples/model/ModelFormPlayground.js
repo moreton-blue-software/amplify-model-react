@@ -62,6 +62,16 @@ const VacancyQuestion = props => {
   );
 };
 
+function NestedForm() {
+  return (
+    <ModelForm name="Client" readOnly>
+      <ModelControl required>
+        <ModelFieldInput field="name" />
+      </ModelControl>
+    </ModelForm>
+  );
+}
+
 const FormBody = props => {
   const self = React.useRef({ renders: 0 });
   const { setTrace } = React.useContext(TracerContext);
@@ -217,6 +227,7 @@ const FormBody = props => {
         placeholder="Change to Pathway Outcome"
         options={[{ value: true, label: 'Yes' }, { value: false, label: 'No' }]}
       />
+      <NestedForm />
       {/* {range(1).map(i => {
         return (
           <VacancyQuestion key={i} vq={get(formData, "questions.items.0")} />
