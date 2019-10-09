@@ -277,7 +277,8 @@ function useModelFormHandlers(props) {
               _context.next = 47;
               return _bluebird2.default.map(childContexts || [], function (childCtxKey) {
                 var childCtx = formMap[childCtxKey];
-
+                var isReadOnly = (0, _get2.default)(childCtx, 'state.readOnly');
+                if (isReadOnly) return;
                 return childCtx.handlers._saveModel({
                   savedParentId: savedId,
                   noRefetch: true
