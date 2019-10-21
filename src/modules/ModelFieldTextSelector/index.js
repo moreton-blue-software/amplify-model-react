@@ -1,17 +1,17 @@
-import React from "react";
-import { ModelFormContext } from "../ModelForm";
-import startCase from "lodash/startCase";
-import Select from "../Select";
+import React from 'react';
+import { ModelFormContext } from '../ModelForm';
+import startCase from 'lodash/startCase';
+import Select from '../Select';
 
 export default function ModelFieldTextSelector(props) {
-  const { disabled, label, placeholder, field, options } = props;
+  const { disabled, label, placeholder, field, options, selectProps = {} } = props;
   const labelText = label || startCase(field);
   const { handlers } = React.useContext(ModelFormContext);
   const handleChange = React.useCallback(
     item => {
       handlers.setFieldValue(field, item ? item.value : null);
     },
-    [handlers]
+    [field, handlers]
   );
   return (
     <div style={{ marginTop: 10 }}>
@@ -23,6 +23,7 @@ export default function ModelFieldTextSelector(props) {
         onChange={handleChange}
         placeholder={placeholder ? placeholder : `Select the ${labelText}`}
         options={options}
+        {...selectProps}
       />
     </div>
   );
