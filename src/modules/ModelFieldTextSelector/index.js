@@ -3,6 +3,7 @@ import startCase from 'lodash/startCase';
 import Select from '../Select';
 import { useModelForm } from '../ModelForm';
 import { FormHelperText } from '@material-ui/core';
+import RequiredTag from './../common/RequiredTag';
 
 export default function ModelFieldTextSelector(props) {
   const { disabled, label, placeholder, field, options, selectProps = {} } = props;
@@ -20,7 +21,10 @@ export default function ModelFieldTextSelector(props) {
   );
   return (
     <div style={{ marginTop: 10 }}>
-      <label>{labelText}</label>
+      <label>
+        {labelText}
+        <RequiredTag />
+      </label>
       <Select
         isDisabled={disabled}
         value={handlers.getFieldValue(field)}

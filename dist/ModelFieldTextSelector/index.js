@@ -24,6 +24,10 @@ var _ModelForm = require('../ModelForm');
 
 var _core = require('@material-ui/core');
 
+var _RequiredTag = require('./../common/RequiredTag');
+
+var _RequiredTag2 = _interopRequireDefault(_RequiredTag);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ModelFieldTextSelector(props) {
@@ -56,7 +60,8 @@ function ModelFieldTextSelector(props) {
     _react2.default.createElement(
       'label',
       null,
-      labelText
+      labelText,
+      _react2.default.createElement(_RequiredTag2.default, null)
     ),
     _react2.default.createElement(_Select2.default, _extends({
       isDisabled: disabled,

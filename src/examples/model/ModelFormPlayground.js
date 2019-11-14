@@ -176,6 +176,15 @@ const FormBody = props => {
       <ModelControl required requiredLabel="*">
         <ModelFieldInput field="position" />
       </ModelControl>
+      <ModelControl required requiredLabel="*">
+        <ModelFieldTextSelector
+          field="programDES"
+          options={[
+            { value: 'DMS', label: 'DMS' },
+            { value: 'ESS', label: 'ESS' }
+          ]}
+        />
+      </ModelControl>
       <ModelFieldInput field="description" />
       <ModelFieldFile
         label="hello"
