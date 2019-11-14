@@ -91,7 +91,7 @@ type Question @model {
 }
 
 type File {
-  id: String!
+  id: String
   filename: String!
   uploader: String
   uploadDate: AWSDateTime

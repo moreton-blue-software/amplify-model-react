@@ -1,8 +1,15 @@
-import React from "react";
-import { ModelControlContext } from "../ModelControl";
+/* eslint-disable react/no-multi-comp */
+import React from 'react';
+import { ModelControlContext } from '../ModelControl';
+
+function Tag() {
+  const ctx = React.useContext(ModelControlContext);
+
+  return <span>{ctx.requiredLabel || '(required)'}</span>;
+}
 
 export function requiredTagText() {
-  return "(required)";
+  return <Tag />;
 }
 
 export default function RequiredTag() {

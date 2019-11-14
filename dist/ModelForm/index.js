@@ -94,13 +94,20 @@ function useModelForm() {
 
   var form = _react2.default.useContext(ModelFormContext);
   var control = _react2.default.useContext(_ModelControl.ModelControlContext);
+
+  var _ref2 = control || {},
+      setFields = _ref2.setFields;
+
+  var hasController = Boolean(control);
+
   _react2.default.useEffect(function () {
-    if (control && field) {
-      control.setFields(function (oldFields) {
+    if (hasController && field) {
+      setFields(function (oldFields) {
         return _extends({}, oldFields, _defineProperty({}, field, true));
       });
     }
-  }, [control, field]);
+  }, [setFields, field, hasController]);
+
   return {
     form: form,
     control: control || {
@@ -217,26 +224,12 @@ var ModelForm = _react2.default.memo(function (props) {
 
   // console.log("childContexts", childContexts); //TRACE
   var stateJS = _react2.default.useMemo(function () {
-    var errors = [];
-    Object.entries(fieldErrors).forEach(function (entry) {
-      var _entry = _slicedToArray(entry, 2),
-          fieldName = _entry[0],
-          errorList = _entry[1];
-
-      if (errorList && errorList.length > 0) {
-        errorList.forEach(function (err) {
-          errors.push({ fieldName: fieldName, err: err });
-        });
-      }
-    });
     return _extends({}, state, {
-      errors: errors,
-      hasErrors: errors.length > 0,
       loading: loading,
       editMode: editMode,
       readOnly: readOnly
     });
-  }, [state, loading, editMode, fieldErrors, readOnly]);
+  }, [state, loading, editMode, readOnly]);
 
   var contextState = _react2.default.useMemo(function () {
     return {
@@ -250,6 +243,24 @@ var ModelForm = _react2.default.memo(function (props) {
       readOnly: readOnly
     };
   }, [ctxId, name, formData, stateJS, parentModelContext, childrenMap, handlers, readOnly]);
+
+  contextState.errors = _react2.default.useMemo(function () {
+    var errors = [];
+    Object.entries(fieldErrors).forEach(function (entry) {
+      var _entry = _slicedToArray(entry, 2),
+          fieldName = _entry[0],
+          errorList = _entry[1];
+
+      if (errorList && errorList.length > 0) {
+        errorList.forEach(function (err) {
+          errors.push({ fieldName: fieldName, err: err });
+        });
+      }
+    });
+    return errors;
+  }, [fieldErrors]);
+
+  contextState.hasErrors = contextState.errors.length > 0;
 
   //Add this context to parent context's children
   _react2.default.useEffect(function () {
@@ -297,9 +308,9 @@ function ControllerWatcher(props) {
 
 
   _react2.default.useEffect(function () {
-    var _ref2 = contextState || {},
-        parent = _ref2.parent,
-        ctxId = _ref2.ctxId;
+    var _ref3 = contextState || {},
+        parent = _ref3.parent,
+        ctxId = _ref3.ctxId;
 
     if (parent) setFormMap(_defineProperty({}, ctxId, contextState));
     // remove

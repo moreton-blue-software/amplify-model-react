@@ -17,11 +17,15 @@ export const ModelFormContext = React.createContext();
 export function useModelForm({ field } = {}) {
   const form = React.useContext(ModelFormContext);
   const control = React.useContext(ModelControlContext);
+  const { setFields } = control || {};
+  const hasController = Boolean(control);
+
   React.useEffect(() => {
-    if (control && field) {
-      control.setFields(oldFields => ({ ...oldFields, [field]: true }));
+    if (hasController && field) {
+      setFields(oldFields => ({ ...oldFields, [field]: true }));
     }
-  }, [control, field]);
+  }, [setFields, field, hasController]);
+
   return {
     form,
     control: control || { setTouched() {} }
@@ -114,24 +118,13 @@ const ModelForm = React.memo(function(props) {
 
   // console.log("childContexts", childContexts); //TRACE
   const stateJS = React.useMemo(() => {
-    const errors = [];
-    Object.entries(fieldErrors).forEach(entry => {
-      const [fieldName, errorList] = entry;
-      if (errorList && errorList.length > 0) {
-        errorList.forEach(err => {
-          errors.push({ fieldName, err });
-        });
-      }
-    });
     return {
       ...state,
-      errors,
-      hasErrors: errors.length > 0,
       loading,
       editMode,
       readOnly
     };
-  }, [state, loading, editMode, fieldErrors, readOnly]);
+  }, [state, loading, editMode, readOnly]);
 
   const contextState = React.useMemo(() => {
     return {
@@ -154,6 +147,21 @@ const ModelForm = React.memo(function(props) {
     handlers,
     readOnly
   ]);
+
+  contextState.errors = React.useMemo(() => {
+    const errors = [];
+    Object.entries(fieldErrors).forEach(entry => {
+      const [fieldName, errorList] = entry;
+      if (errorList && errorList.length > 0) {
+        errorList.forEach(err => {
+          errors.push({ fieldName, err });
+        });
+      }
+    });
+    return errors;
+  }, [fieldErrors]);
+
+  contextState.hasErrors = contextState.errors.length > 0;
 
   //Add this context to parent context's children
   React.useEffect(() => {

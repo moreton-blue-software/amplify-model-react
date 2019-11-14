@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -11,17 +11,17 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 exports.default = ModelControl;
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ModelForm = require("../ModelForm");
+var _ModelForm = require('../ModelForm');
 
-var _get = require("lodash/get");
+var _get = require('lodash/get');
 
 var _get2 = _interopRequireDefault(_get);
 
-var _groupBy = require("lodash/groupBy");
+var _groupBy = require('lodash/groupBy');
 
 var _groupBy2 = _interopRequireDefault(_groupBy);
 
@@ -32,9 +32,11 @@ var ModelControlContext = exports.ModelControlContext = _react2.default.createCo
 function ModelControl(_ref) {
   var _ref$required = _ref.required,
       required = _ref$required === undefined ? false : _ref$required,
+      requiredLabel = _ref.requiredLabel,
       children = _ref.children;
 
   var form = _react2.default.useContext(_ModelForm.ModelFormContext);
+  var handlers = form.handlers;
 
   var _React$useState = _react2.default.useState({}),
       _React$useState2 = _slicedToArray(_React$useState, 2),
@@ -46,15 +48,14 @@ function ModelControl(_ref) {
       errors = _React$useState4[0],
       setErrors = _React$useState4[1];
 
-  var formData = form.data,
-      state = form.state;
+  var formData = form.data;
 
   var _React$useState5 = _react2.default.useState(false),
       _React$useState6 = _slicedToArray(_React$useState5, 2),
       touched = _React$useState6[0],
       setTouched = _React$useState6[1];
 
-  function validate() {
+  var validate = _react2.default.useCallback(function () {
     var errors = [];
     Object.entries(fields).forEach(function (_ref2) {
       var _ref3 = _slicedToArray(_ref2, 2),
@@ -64,13 +65,13 @@ function ModelControl(_ref) {
       if (flag) {
         var fieldValue = (0, _get2.default)(formData, fieldName);
         if (!fieldValue && required) {
-          var error = "\"" + fieldName + "\" should not be empty";
+          var error = '"' + fieldName + '" should not be empty';
           errors.push({ field: fieldName, message: error });
         }
       }
     });
     return { errors: errors };
-  }
+  }, [fields, formData, required]);
 
   _react2.default.useEffect(function () {
     var checkValid = function checkValid() {
@@ -80,11 +81,11 @@ function ModelControl(_ref) {
       setTouched(true);
       return !(errors.length > 0);
     };
-    form.handlers.attachBeforeSave(checkValid, 4);
+    handlers.attachBeforeSave(checkValid, 4);
     return function () {
-      form.handlers.detachBeforeSave(checkValid);
+      handlers.detachBeforeSave(checkValid);
     };
-  }, [fields, formData]);
+  }, [fields, handlers, validate]);
 
   _react2.default.useEffect(function () {
     if (!touched) return;
@@ -93,7 +94,7 @@ function ModelControl(_ref) {
     var _validate2 = validate(),
         errors = _validate2.errors;
 
-    var errorsByKey = (0, _groupBy2.default)(errors, "field");
+    var errorsByKey = (0, _groupBy2.default)(errors, 'field');
     var errorMsgs = [];
     var errorFields = {};
     Object.entries(errorsByKey).map(function (entry) {
@@ -111,26 +112,23 @@ function ModelControl(_ref) {
       errorFields[field] = errList;
     });
     setErrors(errorMsgs);
-    form.handlers.setFieldErrors(function (oldState) {
+    handlers.setFieldErrors(function (oldState) {
       return _extends({}, oldState, errorFields);
     });
-  }, [formData, required, touched]);
-
-  var contextState = _react2.default.useMemo(function () {
-    var hasErrors = errors.length > 0;
-    return {
-      required: required,
-      touched: touched,
-      setTouched: setTouched,
-      setFields: setFields,
-      errors: errors,
-      hasErrors: hasErrors
-    };
-  }, [required, errors, touched]);
+  }, [handlers, required, touched, validate]);
 
   return _react2.default.createElement(
     ModelControlContext.Provider,
-    { value: contextState },
+    {
+      value: {
+        required: required,
+        touched: touched,
+        setTouched: setTouched,
+        setFields: setFields,
+        requiredLabel: requiredLabel,
+        errors: errors,
+        hasErrors: errors.length > 0
+      } },
     children
   );
 }

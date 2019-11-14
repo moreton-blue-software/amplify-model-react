@@ -173,7 +173,7 @@ const FormBody = props => {
           }}
         />
       </ModelControl> */}
-      <ModelControl required>
+      <ModelControl required requiredLabel="*">
         <ModelFieldInput field="position" />
       </ModelControl>
       <ModelFieldInput field="description" />
@@ -225,7 +225,10 @@ const FormBody = props => {
       <ModelFieldTextSelector
         field="award"
         placeholder="Change to Pathway Outcome"
-        options={[{ value: true, label: 'Yes' }, { value: false, label: 'No' }]}
+        options={[
+          { value: true, label: 'Yes' },
+          { value: false, label: 'No' }
+        ]}
       />
       <NestedForm />
       {/* {range(1).map(i => {
