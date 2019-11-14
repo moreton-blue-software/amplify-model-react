@@ -1,7 +1,7 @@
 import React from 'react';
 import startCase from 'lodash/startCase';
 import Select from '../Select';
-import { useModelForm } from 'modules/ModelForm';
+import { useModelForm } from '../ModelForm';
 import { FormHelperText } from '@material-ui/core';
 
 export default function ModelFieldTextSelector(props) {

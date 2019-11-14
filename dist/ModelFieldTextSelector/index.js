@@ -20,7 +20,7 @@ var _Select = require('../Select');
 
 var _Select2 = _interopRequireDefault(_Select);
 
-var _ModelForm = require('modules/ModelForm');
+var _ModelForm = require('../ModelForm');
 
 var _core = require('@material-ui/core');
 
