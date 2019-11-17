@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -8,31 +8,31 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.default = ModelFieldDateTime;
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ModelForm = require("../ModelForm");
+var _ModelForm = require('../ModelForm');
 
-var _startCase = require("lodash/startCase");
+var _startCase = require('lodash/startCase');
 
 var _startCase2 = _interopRequireDefault(_startCase);
 
-var _FormControl = require("@material-ui/core/FormControl");
+var _FormControl = require('@material-ui/core/FormControl');
 
 var _FormControl2 = _interopRequireDefault(_FormControl);
 
-var _padStart = require("lodash/padStart");
+var _padStart = require('lodash/padStart');
 
 var _padStart2 = _interopRequireDefault(_padStart);
 
-var _FormHelperText = require("@material-ui/core/FormHelperText");
+var _FormHelperText = require('@material-ui/core/FormHelperText');
 
 var _FormHelperText2 = _interopRequireDefault(_FormHelperText);
 
-var _pickers = require("@material-ui/pickers");
+var _pickers = require('@material-ui/pickers');
 
-var _RequiredTag = require("../common/RequiredTag");
+var _RequiredTag = require('../common/RequiredTag');
 
 var _RequiredTag2 = _interopRequireDefault(_RequiredTag);
 
@@ -43,6 +43,7 @@ function ModelFieldDateTime(props) {
       _props$dateOnly = props.dateOnly,
       dateOnlyTmp = _props$dateOnly === undefined ? false : _props$dateOnly,
       label = props.label,
+      formatValue = props.formatValue,
       _props$strictDate = props.strictDate,
       strictDate = _props$strictDate === undefined ? false : _props$strictDate,
       _props$pickerProps = props.pickerProps,
@@ -59,38 +60,48 @@ function ModelFieldDateTime(props) {
   var rawValue = handlers.getFieldValue(field);
   var dateOnly = strictDate || dateOnlyTmp;
   var Picker = dateOnly ? _pickers.DatePicker : _pickers.DateTimePicker;
-  var value = rawValue ? new Date(rawValue) : "";
+  var value = rawValue ? new Date(rawValue) : '';
   var checkDate = _react2.default.useCallback(function (mDate) {
     control && control.setTouched(true);
     // if (!mDate || !mDate._d) return;
     var minuteOffset = mDate.getTimezoneOffset();
     var date = new Date(mDate.getTime());
-    date.setMinutes(date.getMinutes() + minuteOffset);
-    var month = (0, _padStart2.default)(date.getMonth() + 1, 2, "0");
-    var day = (0, _padStart2.default)(date.getDate(), 2, "0");
+    if (formatValue) {
+      handlers.setFieldValue(field, formatValue(date));
+      return;
+    }
+    if (!dateOnly) date.setMinutes(date.getMinutes() + minuteOffset);
+    var month = (0, _padStart2.default)(date.getMonth() + 1, 2, '0');
+    var day = (0, _padStart2.default)(date.getDate(), 2, '0');
     var year = date.getFullYear();
-    var hours = (0, _padStart2.default)(date.getHours(), 2, "0");
-    var minutes = (0, _padStart2.default)(date.getMinutes(), 2, "0");
-    var awsDate = year + "-" + month + "-" + day;
-    var awsDateTime = awsDate + ("T" + hours + ":" + minutes + ":00.000Z");
-    if (strictDate === false) awsDate = awsDate + "T00:00:00.000Z";
-    handlers.setFieldValue(field, dateOnly ? awsDate : awsDateTime);
-  }, [field, handlers]);
+    var hours = (0, _padStart2.default)(date.getHours(), 2, '0');
+    var minutes = (0, _padStart2.default)(date.getMinutes(), 2, '0');
+    var awsDate = year + '-' + month + '-' + day;
+    var awsDateTime = awsDate + ('T' + hours + ':' + minutes + ':00.000Z');
+    if (strictDate === false) awsDate = awsDate + 'T00:00:00.000Z';
+    var theDate = dateOnly ? awsDate : awsDateTime;
+    handlers.setFieldValue(field, theDate);
+  }, [control, dateOnly, field, formatValue, handlers, strictDate]);
   return _react2.default.createElement(
-    "div",
+    'div',
     null,
     _react2.default.createElement(
       _FormControl2.default,
       { fullWidth: true },
       _react2.default.createElement(Picker, _extends({}, pickerProps, {
-        value: value === "" ? null : value,
+        value: value === '' ? null : value,
         onChange: checkDate,
-        label: labelText + (control.required ? (0, _RequiredTag.requiredTagText)() : ""),
+        label: _react2.default.createElement(
+          _react2.default.Fragment,
+          null,
+          labelText,
+          control.required ? (0, _RequiredTag.requiredTagText)() : ''
+        ),
         error: control.hasError
       })),
       control.hasErrors && _react2.default.createElement(
         _FormHelperText2.default,
-        { style: { color: "red" } },
+        { style: { color: 'red' } },
         control.errors.map(function (error) {
           return error;
         })

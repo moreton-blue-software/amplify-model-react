@@ -55,10 +55,10 @@ export default function ModelFieldDateTime(props) {
           value={value === '' ? null : value}
           onChange={checkDate}
           label={
-            <>
+            <React.Fragment>
               {labelText}
               {control.required ? requiredTagText() : ''}
-            </>
+            </React.Fragment>
           }
           error={control.hasError}
         />
