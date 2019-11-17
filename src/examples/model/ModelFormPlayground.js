@@ -165,6 +165,15 @@ const FormBody = props => {
       />
       {/* <ModelControl required>
         <ModelFieldDate
+          field="dateFrom"
+          pickerProps={{
+            format: 'dd/MM/yyyy',
+            views: ['year', 'month', 'date']
+          }}
+        />
+      </ModelControl> */}
+      {/* <ModelControl required>
+        <ModelFieldDate
           field="startDate"
           label="Start Date(date only, strict)"
           pickerProps={{
@@ -176,7 +185,7 @@ const FormBody = props => {
       <ModelControl required requiredLabel="*">
         <ModelFieldInput field="position" />
       </ModelControl>
-      <ModelControl required requiredLabel="*">
+      {/* <ModelControl required requiredLabel="*">
         <ModelFieldTextSelector
           field="programDES"
           options={[
@@ -184,7 +193,7 @@ const FormBody = props => {
             { value: 'ESS', label: 'ESS' }
           ]}
         />
-      </ModelControl>
+      </ModelControl> */}
       <ModelFieldInput field="description" />
       <ModelFieldFile
         label="hello"
