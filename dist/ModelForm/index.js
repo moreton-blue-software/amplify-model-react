@@ -244,6 +244,7 @@ var ModelForm = _react2.default.memo(function (props) {
     };
   }, [ctxId, name, formData, stateJS, parentModelContext, childrenMap, handlers, readOnly]);
 
+  contextState.fieldErrors = fieldErrors;
   contextState.errors = _react2.default.useMemo(function () {
     var errors = [];
     Object.entries(fieldErrors).forEach(function (entry) {

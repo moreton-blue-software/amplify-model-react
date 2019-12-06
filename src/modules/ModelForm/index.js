@@ -148,6 +148,7 @@ const ModelForm = React.memo(function(props) {
     readOnly
   ]);
 
+  contextState.fieldErrors = fieldErrors;
   contextState.errors = React.useMemo(() => {
     const errors = [];
     Object.entries(fieldErrors).forEach(entry => {
