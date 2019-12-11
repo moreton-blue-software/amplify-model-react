@@ -32,7 +32,8 @@ export default function useModelFormHandlers(props) {
     setState,
     name,
     parentModelContext,
-    onSave
+    onSave,
+    resetFormData
   } = props;
   const [_beforeSaveHandlers, setBeforeSaveHandlers] = React.useState(List([]));
   const [_afterSaveHandlers, setAfterSaveHandlers] = React.useState(List([]));
@@ -225,6 +226,7 @@ export default function useModelFormHandlers(props) {
       setChildrenMap,
       setFieldErrors,
       _saveModel,
+      resetFormData,
       ...staticHandlers,
       getChildContexts() {
         return getChildContextsById(ctxId);
