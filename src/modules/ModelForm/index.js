@@ -181,7 +181,7 @@ const ModelForm = React.memo(function(props) {
   }, []);
 
   return (
-    <ModelFormContext.Provider value={contextState}>
+    <ModelFormContext.Provider value={{ ...contextState }}>
       <ControllerWatcher
         contextState={contextState}
         onChildContextsChange={handleChildContextChange}
