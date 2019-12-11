@@ -281,7 +281,7 @@ var ModelForm = _react2.default.memo(function (props) {
 
   return _react2.default.createElement(
     ModelFormContext.Provider,
-    { value: contextState },
+    { value: _extends({}, contextState) },
     _react2.default.createElement(ControllerWatcher, {
       contextState: contextState,
       onChildContextsChange: handleChildContextChange
