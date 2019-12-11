@@ -1,16 +1,17 @@
-import React from "react";
-import ModelForm, { ModelFormContext } from "../ModelForm";
-import { useSnackbar } from "notistack";
-import Promise from "bluebird";
-import capitalize from "lodash/capitalize";
-import UploadButton from "../UploadButton";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core/styles";
-import { Storage } from "aws-amplify";
-import setFp from "lodash/fp/set";
-import set from "lodash/set";
-import get from "lodash/get";
+/* eslint-disable react/no-multi-comp */
+import React from 'react';
+import ModelForm, { ModelFormContext } from '../ModelForm';
+import { useSnackbar } from 'notistack';
+import Promise from 'bluebird';
+import capitalize from 'lodash/capitalize';
+import UploadButton from '../UploadButton';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import Storage from '@aws-amplify/storage';
+import setFp from 'lodash/fp/set';
+import set from 'lodash/set';
+import get from 'lodash/get';
 
 // const Renderer = React.memo(props=>{
 //   const renderObj =
@@ -43,7 +44,7 @@ function ProgressDisplay({ onDone, onError, filepath, storageOpts, file }) {
 
 const useUploaderStyles = makeStyles({
   multipleDisplay: {
-    "& > div": {
+    '& > div': {
       minHeight: 30,
       padding: 10
     }
@@ -52,7 +53,7 @@ const useUploaderStyles = makeStyles({
 
 const Uploader = props => {
   const {
-    accept = "video/*",
+    accept = 'video/*',
     label,
     multiple,
     field,
@@ -73,7 +74,7 @@ const Uploader = props => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   React.useEffect(() => {
-    console.log("1234: before re-attching..");
+    console.log('1234: before re-attching..');
 
     const beforeSave = async ({
       context: { data: contextData },
@@ -90,10 +91,7 @@ const Uploader = props => {
           const beforeFileUploadData = await beforeFileUpload(rawFile);
           if (beforeFileUploadData) {
             if (beforeFileUploadData.metadata) {
-              const {
-                file: tmpFile,
-                metadata: tmpMetadata
-              } = beforeFileUploadData;
+              const { file: tmpFile, metadata: tmpMetadata } = beforeFileUploadData;
               if (tmpFile !== undefined) {
                 file = tmpFile;
               }
@@ -113,7 +111,7 @@ const Uploader = props => {
               onError={reject}
             />,
             {
-              variant: "info",
+              variant: 'info',
               persist: true
             }
           );
@@ -128,10 +126,10 @@ const Uploader = props => {
       const { file } = fileData;
       let retFields = {};
       if (field) {
-        const fieldRoot = field.split(".")[0];
+        const fieldRoot = field.split('.')[0];
         try {
           if (!parentData.id) {
-            console.log("1234: no parent data id found!.");
+            console.log('1234: no parent data id found!.');
             return {};
           }
           await Promise.delay(500);
@@ -145,16 +143,12 @@ const Uploader = props => {
               },
               { concurrency: 4 }
             );
-            console.log(">>ModelFieldFile/index::", "filesUpls", filesUpls); //TRACE
+            console.log('>>ModelFieldFile/index::', 'filesUpls', filesUpls); //TRACE
           } else {
             retFields = { [fieldRoot]: parentData[fieldRoot] };
             if (file) {
               const storeData = await uploadFile(file);
-              console.log(
-                ">>ModelFieldFile/index::" + field,
-                "xxretFields",
-                retFields
-              ); //TRACE
+              console.log('>>ModelFieldFile/index::' + field, 'xxretFields', retFields); //TRACE
 
               set(retFields, field, storeData);
             } else if (file === null) {
@@ -167,14 +161,14 @@ const Uploader = props => {
             if (fieldRoot !== k) {
               retFields[k] = undefined;
             } else {
-              if (!!get(retFields, [k, "length"])) {
+              if (!!get(retFields, [k, 'length'])) {
                 // an array
                 retFields[k].forEach(retFieldItem => {
-                  if (retFieldItem) retFieldItem["__typename"] = undefined;
+                  if (retFieldItem) retFieldItem['__typename'] = undefined;
                 });
               } else if (!!retFields[k]) {
                 // an object
-                retFields[k]["__typename"] = undefined;
+                retFields[k]['__typename'] = undefined;
               }
             }
           });
@@ -186,21 +180,14 @@ const Uploader = props => {
           });
           retFields.id = parentData.id;
         } catch (e) {
-          enqueueSnackbar("Something went wrong with saving video", {
-            variant: "error"
+          enqueueSnackbar('Something went wrong with saving video', {
+            variant: 'error'
           });
-          console.log("1234: SOMETHING WENT WRONG UPLOAD AND INSERT ", e);
+          console.log('1234: SOMETHING WENT WRONG UPLOAD AND INSERT ', e);
           return false;
         } finally {
-          console.log("1234: before saving delay done");
-          // console.log(">>ModelFieldFile/index::", "retFields", retFields); //TRACE
-          // closeSnackbar(uploadSnackbar);
-          // throw Error(JSON.stringify(retFields));
-          console.log(
-            ">>ModelFieldFile/index::" + field,
-            "retFields",
-            retFields
-          ); //TRACE
+          console.log('1234: before saving delay done');
+          console.log('>>ModelFieldFile/index::' + field, 'retFields', retFields); //TRACE
           return retFields;
         }
       }
@@ -215,37 +202,35 @@ const Uploader = props => {
   React.useEffect(() => {
     let hasCancelled = false;
     const url = handlers.getFieldValue(field);
-    console.log(">>ModelFieldFile/index::", "url", url); //TRACE
-    const filename = get(url, "filename");
+    console.log('>>ModelFieldFile/index::', 'url', url); //TRACE
+    const filename = get(url, 'filename');
     if (filename) {
       Storage.get(filename, { ...storageOpts })
         .then(result => {
           // console.log(">>ModelFieldFile/index::", "result", result); //TRACE
-          if (!hasCancelled) setFileData(setFp("url", result));
+          if (!hasCancelled) setFileData(setFp('url', result));
         })
         .catch(err => console.error(err));
     }
     return () => {
       hasCancelled = true;
     };
-  }, [field]);
+  }, [field, handlers, storageOpts]);
 
   const hasSelectedFile = fileData.file || fileData.url;
 
   const renderFn = React.useMemo(() => {
     const metadata = handlers.getFieldValue(field);
-    return (
-      render && render({ file: fileData.file, url: fileData.url, metadata })
-    );
+    return render && render({ file: fileData.file, url: fileData.url, metadata });
   }, [fileData, render]);
-  console.log(">>ModelFieldFile/index::", "fileData", fileListData); //TRACE
+  console.log('>>ModelFieldFile/index::', 'fileData', fileListData); //TRACE
   return (
     <React.Fragment>
       <UploadButton
         labelText={label}
         multiple={multiple}
         onChange={e => {
-          const fileList = get(e, "target.files", []);
+          const fileList = get(e, 'target.files', []);
           if (multiple) {
             setFileListData(oldFileListData => [
               ...oldFileListData,
@@ -274,13 +259,12 @@ const Uploader = props => {
                 {render({ file: fileData.file, url: fileData.url })}
                 <Button
                   size="small"
-                  style={{ float: "right" }}
+                  style={{ float: 'right' }}
                   onClick={() => {
                     setFileListData(oldFileListData => {
                       return oldFileListData.filter((v, indx) => indx !== ii);
                     });
-                  }}
-                >
+                  }}>
                   Remove
                 </Button>
               </Paper>
@@ -297,29 +281,26 @@ export default function ModelFieldFile(props) {
     field,
     accept,
     render,
-    label = "File",
+    label = 'File',
     buttonLabel,
     multiple,
     storageOpts = {},
     onChange,
     beforeFileUpload
   } = props;
-  const { name, data: modelData, handlers } = React.useContext(
-    ModelFormContext
-  );
+  const { name, data: modelData, handlers } = React.useContext(ModelFormContext);
   // const [state, setState] = React.useState(Map({ defaultValue: null }));
   const defaultValue = React.useMemo(() => {
     // const m = { id: modelData.id };
     // set(m, field, get(modelData, field));
     return modelData;
   }, [modelData]);
-  console.log(">>ModelFieldFile/index::" + field, "defaultValue", defaultValue); //TRACE
+  console.log('>>ModelFieldFile/index::' + field, 'defaultValue', defaultValue); //TRACE
   return (
     <ModelForm
       // key={modelData.id} //added this so it reloads the form with the default value
       name={name}
-      defaultModelValue={defaultValue}
-    >
+      defaultModelValue={defaultValue}>
       <div style={{ marginTop: 15 }}>
         <label>{label}</label>
         <Uploader

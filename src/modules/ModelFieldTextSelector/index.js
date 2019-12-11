@@ -1,21 +1,30 @@
-import React from "react";
-import { ModelFormContext } from "../ModelForm";
-import startCase from "lodash/startCase";
-import Select from "../Select";
+import React from 'react';
+import startCase from 'lodash/startCase';
+import Select from '../Select';
+import { useModelForm } from '../ModelForm';
+import { FormHelperText } from '@material-ui/core';
+import RequiredTag from './../common/RequiredTag';
 
 export default function ModelFieldTextSelector(props) {
-  const { disabled, label, placeholder, field, options } = props;
+  const { disabled, label, placeholder, field, options, selectProps = {} } = props;
   const labelText = label || startCase(field);
-  const { handlers } = React.useContext(ModelFormContext);
+  const { form, control } = useModelForm({ field });
+  const { handlers } = form;
+  const { errors, hasErrors } = control;
+
   const handleChange = React.useCallback(
     item => {
       handlers.setFieldValue(field, item ? item.value : null);
+      control && control.setTouched(true);
     },
-    [handlers]
+    [field, handlers, control]
   );
   return (
     <div style={{ marginTop: 10 }}>
-      <label>{labelText}</label>
+      <label>
+        {labelText}
+        <RequiredTag />
+      </label>
       <Select
         isDisabled={disabled}
         value={handlers.getFieldValue(field)}
@@ -23,7 +32,15 @@ export default function ModelFieldTextSelector(props) {
         onChange={handleChange}
         placeholder={placeholder ? placeholder : `Select the ${labelText}`}
         options={options}
+        {...selectProps}
       />
+      {hasErrors && (
+        <FormHelperText style={{ color: 'red' }}>
+          {errors.map(error => {
+            return error;
+          })}
+        </FormHelperText>
+      )}
     </div>
   );
 }

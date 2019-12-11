@@ -100,6 +100,7 @@ export const getClient = `query GetClient($id: ID!) {
         updatedAt
         position
         description
+        startDate
         vacancyClientId
       }
       nextToken
@@ -133,6 +134,7 @@ export const getVacancy = `query GetVacancy($id: ID!) {
     updatedAt
     position
     description
+    startDate
     video {
       id
       filename
@@ -184,6 +186,7 @@ export const listVacancys = `query ListVacancys(
       updatedAt
       position
       description
+      startDate
       video {
         id
         filename
@@ -225,6 +228,7 @@ export const getVacancyQuestion = `query GetVacancyQuestion($id: ID!) {
       updatedAt
       position
       description
+      startDate
       video {
         id
         filename
@@ -284,6 +288,7 @@ export const listVacancyQuestions = `query ListVacancyQuestions(
         updatedAt
         position
         description
+        startDate
         vacancyClientId
       }
       vacancyQuestionVacancyId

@@ -1,9 +1,9 @@
-import { Storage, StorageProvider } from "aws-amplify";
-import Promise from "bluebird";
+import { Storage, StorageProvider } from 'aws-amplify';
+import Promise from 'bluebird';
 export default class DummyStorageProvider {
   // category and provider name
-  static category = "Storage";
-  static providerName = "DummyStorageProvider";
+  static category = 'Storage';
+  static providerName = 'DummyStorageProvider';
 
   // you need to implement these seven methods
   // configure your provider
@@ -13,16 +13,16 @@ export default class DummyStorageProvider {
 
   // get object/pre-signed url from storage
   async get(key, options) {
-    return "http://techslides.com/demos/sample-videos/small.webm";
+    return 'http://techslides.com/demos/sample-videos/small.webm';
   }
 
   // upload storage object
   async put(key, object, options) {
     for (let index = 0; index < 10; index++) {
-      await Promise.delay(150);
+      await Promise.delay(50);
       options.progressCallback({ loaded: index * 10, total: 100 });
     }
-    return { key: "http://techslides.com/demos/sample-videos/small.webm" };
+    return { key };
   }
 
   // remove object

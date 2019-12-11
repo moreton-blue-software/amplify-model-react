@@ -140,6 +140,7 @@ export const createClient = `mutation CreateClient($input: CreateClientInput!) {
         updatedAt
         position
         description
+        startDate
         vacancyClientId
       }
       nextToken
@@ -160,6 +161,7 @@ export const updateClient = `mutation UpdateClient($input: UpdateClientInput!) {
         updatedAt
         position
         description
+        startDate
         vacancyClientId
       }
       nextToken
@@ -180,6 +182,7 @@ export const deleteClient = `mutation DeleteClient($input: DeleteClientInput!) {
         updatedAt
         position
         description
+        startDate
         vacancyClientId
       }
       nextToken
@@ -194,6 +197,7 @@ export const createVacancy = `mutation CreateVacancy($input: CreateVacancyInput!
     updatedAt
     position
     description
+    startDate
     video {
       id
       filename
@@ -240,6 +244,7 @@ export const updateVacancy = `mutation UpdateVacancy($input: UpdateVacancyInput!
     updatedAt
     position
     description
+    startDate
     video {
       id
       filename
@@ -286,6 +291,7 @@ export const deleteVacancy = `mutation DeleteVacancy($input: DeleteVacancyInput!
     updatedAt
     position
     description
+    startDate
     video {
       id
       filename
@@ -337,6 +343,7 @@ export const createVacancyQuestion = `mutation CreateVacancyQuestion($input: Cre
       updatedAt
       position
       description
+      startDate
       video {
         id
         filename
@@ -391,6 +398,7 @@ export const updateVacancyQuestion = `mutation UpdateVacancyQuestion($input: Upd
       updatedAt
       position
       description
+      startDate
       video {
         id
         filename
@@ -445,6 +453,7 @@ export const deleteVacancyQuestion = `mutation DeleteVacancyQuestion($input: Del
       updatedAt
       position
       description
+      startDate
       video {
         id
         filename

@@ -21,7 +21,7 @@ var _Select = require("../Select");
 
 var _Select2 = _interopRequireDefault(_Select);
 
-var _reactApolloHooks = require("react-apollo-hooks");
+var _reactHooks = require("@apollo/react-hooks");
 
 var _get = require("lodash/get");
 
@@ -123,7 +123,7 @@ function ModelSelector(props) {
   //convert to fragment
 
 
-  var apolloClient = (0, _reactApolloHooks.useApolloClient)();
+  var apolloClient = (0, _reactHooks.useApolloClient)();
   _react2.default.useEffect(function () {
     var um = false;
     _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -180,7 +180,7 @@ function ModelSelector(props) {
     };
   }, [filter]);
 
-  var _useQuery = (0, _reactApolloHooks.useQuery)(query, (0, _merge2.default)({
+  var _useQuery = (0, _reactHooks.useQuery)(query, (0, _merge2.default)({
     variables: { limit: limit, filter: dataFilter },
     notifyOnNetworkStatusChange: true
   })(queryOpts)),

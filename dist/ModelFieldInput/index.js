@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -8,35 +8,31 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 exports.default = ModelFieldInput;
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ModelForm = require("../ModelForm");
+var _ModelForm = require('../ModelForm');
 
-var _capitalize = require("lodash/capitalize");
+var _capitalize = require('lodash/capitalize');
 
 var _capitalize2 = _interopRequireDefault(_capitalize);
 
-var _debounce = require("lodash/debounce");
+var _debounce = require('lodash/debounce');
 
 var _debounce2 = _interopRequireDefault(_debounce);
 
-var _TextField = require("@material-ui/core/TextField");
+var _TextField = require('@material-ui/core/TextField');
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
-var _FormHelperText = require("@material-ui/core/FormHelperText");
+var _FormHelperText = require('@material-ui/core/FormHelperText');
 
 var _FormHelperText2 = _interopRequireDefault(_FormHelperText);
 
-var _FormControl = require("@material-ui/core/FormControl");
+var _styles = require('@material-ui/core/styles');
 
-var _FormControl2 = _interopRequireDefault(_FormControl);
-
-var _styles = require("@material-ui/core/styles");
-
-var _RequiredTag = require("./../common/RequiredTag");
+var _RequiredTag = require('./../common/RequiredTag');
 
 var _RequiredTag2 = _interopRequireDefault(_RequiredTag);
 
@@ -46,10 +42,10 @@ var useStyle = (0, _styles.makeStyles)(function (theme) {
   return {
     root: {
       color: function color(props) {
-        return props.hasErrors ? theme.palette.error.main : "inherit";
+        return props.hasErrors ? theme.palette.error.main : 'inherit';
       },
-      "& > p": {
-        color: "inherit"
+      '& > p': {
+        color: 'inherit'
       }
     }
   };
@@ -64,31 +60,27 @@ function ModelFieldInput(props) {
       form = _useModelForm.form,
       control = _useModelForm.control;
 
-  var state = form.state,
-      handlers = form.handlers;
-
-
-  console.log(">>ModelFieldInput/index::", "control", control); //TRACE
+  var handlers = form.handlers;
   var errors = control.errors,
       hasErrors = control.hasErrors;
 
 
   var classes = useStyle({ hasErrors: hasErrors });
 
-  var _React$useState = _react2.default.useState(""),
+  var _React$useState = _react2.default.useState(''),
       _React$useState2 = _slicedToArray(_React$useState, 2),
       txt = _React$useState2[0],
       setTxt = _React$useState2[1];
 
-  var defaultValue = handlers.getFieldValue(field, "");
-  var inputId = handlers.getFieldValue("id") + "@" + field;
+  var defaultValue = handlers.getFieldValue(field, '');
+  var inputId = handlers.getFieldValue('id') + '@' + field;
 
   _react2.default.useEffect(function () {
     setTxt(defaultValue);
   }, [defaultValue]);
 
   var updateField = (0, _debounce2.default)(function (targetValue) {
-    handlers.setFieldValue(targetValue.id, targetValue.value === "" ? null : targetValue.value);
+    handlers.setFieldValue(targetValue.id, targetValue.value === '' ? null : targetValue.value);
   }, 200);
 
   var handleInputChange = _react2.default.useCallback(function (e) {
@@ -102,14 +94,14 @@ function ModelFieldInput(props) {
   }, []);
 
   var formattedValue = _react2.default.useMemo(function () {
-    var txtValue = txt || "";
+    var txtValue = txt || '';
     if (format) return format(txtValue);
     return txtValue;
   }, [format, txt]);
 
   var onBlur = _react2.default.useCallback(function () {
     control && control.setTouched(true);
-  }, []);
+  }, [control]);
 
   // const Wrapper = React.useMemo(()=>{
 
@@ -118,10 +110,10 @@ function ModelFieldInput(props) {
   // ]);
 
   return _react2.default.createElement(
-    "div",
+    'div',
     { className: classes.root },
     _react2.default.createElement(
-      "label",
+      'label',
       null,
       label || (0, _capitalize2.default)(field),
       _react2.default.createElement(_RequiredTag2.default, null)

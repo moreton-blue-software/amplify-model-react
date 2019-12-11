@@ -1,35 +1,33 @@
-import React from "react";
-import { ModelFormContext, useModelForm } from "../ModelForm";
-import capitalize from "lodash/capitalize";
-import debounce from "lodash/debounce";
-import TextField from "@material-ui/core/TextField";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import { makeStyles } from "@material-ui/core/styles";
-import RequiredTag from "./../common/RequiredTag";
+import React from 'react';
+import { useModelForm } from '../ModelForm';
+import capitalize from 'lodash/capitalize';
+import debounce from 'lodash/debounce';
+import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import { makeStyles } from '@material-ui/core/styles';
+import RequiredTag from './../common/RequiredTag';
 
 const useStyle = makeStyles(theme => ({
   root: {
-    color: props => (props.hasErrors ? theme.palette.error.main : "inherit"),
-    "& > p": {
-      color: "inherit"
+    color: props => (props.hasErrors ? theme.palette.error.main : 'inherit'),
+    '& > p': {
+      color: 'inherit'
     }
   }
 }));
 export default function ModelFieldInput(props) {
   const { field, label, disabled, format } = props;
   const { form, control } = useModelForm({ field });
-  const { state, handlers } = form;
+  const { handlers } = form;
 
-  console.log(">>ModelFieldInput/index::", "control", control); //TRACE
   const { errors, hasErrors } = control;
 
   const classes = useStyle({ hasErrors });
 
-  const [txt, setTxt] = React.useState("");
+  const [txt, setTxt] = React.useState('');
 
-  const defaultValue = handlers.getFieldValue(field, "");
-  const inputId = `${handlers.getFieldValue("id")}@${field}`;
+  const defaultValue = handlers.getFieldValue(field, '');
+  const inputId = `${handlers.getFieldValue('id')}@${field}`;
 
   React.useEffect(() => {
     setTxt(defaultValue);
@@ -38,7 +36,7 @@ export default function ModelFieldInput(props) {
   const updateField = debounce(targetValue => {
     handlers.setFieldValue(
       targetValue.id,
-      targetValue.value === "" ? null : targetValue.value
+      targetValue.value === '' ? null : targetValue.value
     );
   }, 200);
 
@@ -50,14 +48,14 @@ export default function ModelFieldInput(props) {
   }, []);
 
   const formattedValue = React.useMemo(() => {
-    const txtValue = txt || "";
+    const txtValue = txt || '';
     if (format) return format(txtValue);
     return txtValue;
   }, [format, txt]);
 
   const onBlur = React.useCallback(() => {
     control && control.setTouched(true);
-  }, []);
+  }, [control]);
 
   // const Wrapper = React.useMemo(()=>{
 
