@@ -84,7 +84,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/// const NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
+/// const NOISE_FIELDS  = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
 var ModelFormContext = exports.ModelFormContext = _react2.default.createContext();
 
@@ -159,6 +159,8 @@ var ModelForm = _react2.default.memo(function (props) {
       childContexts = _React$useState12[0],
       setChildContexts = _React$useState12[1];
 
+  var origData = _react2.default.useRef();
+
   _react2.default.useEffect(function () {
     onChange && onChange(formData);
   }, [formData, onChange]);
@@ -201,6 +203,7 @@ var ModelForm = _react2.default.memo(function (props) {
     setFormData(function (oldModelData) {
       return _extends({}, oldModelData, modelData);
     });
+    origData.current = data;
   }, [data]);
 
   var editMode = !!(0, _get2.default)(formData, 'id');
@@ -219,7 +222,10 @@ var ModelForm = _react2.default.memo(function (props) {
     parentModelContext: parentModelContext,
     name: name,
     childContexts: childContexts,
-    onSave: onSave
+    onSave: onSave,
+    resetFormData: function resetFormData() {
+      setFormData(origData.current);
+    }
   });
 
   // console.log("childContexts", childContexts); //TRACE

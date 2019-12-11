@@ -52,6 +52,7 @@ const ModelForm = React.memo(function(props) {
   const [formData, setFormData] = React.useState(defaultModelValue || {});
   const [childrenMap, setChildrenMap] = React.useState({});
   const [childContexts, setChildContexts] = React.useState([]);
+  const origData = React.useRef();
 
   React.useEffect(() => {
     onChange && onChange(formData);
@@ -95,6 +96,7 @@ const ModelForm = React.memo(function(props) {
   React.useEffect(() => {
     const modelData = get(data, 'model', {});
     setFormData(oldModelData => ({ ...oldModelData, ...modelData }));
+    origData.current = data;
   }, [data]);
 
   const editMode = !!get(formData, 'id');
@@ -113,7 +115,10 @@ const ModelForm = React.memo(function(props) {
     parentModelContext,
     name,
     childContexts,
-    onSave
+    onSave,
+    resetFormData() {
+      setFormData(origData.current);
+    }
   });
 
   // console.log("childContexts", childContexts); //TRACE
