@@ -69,6 +69,7 @@ const ModelForm = React.memo(function(props) {
   const [beforeSaveHandlers, setBeforeSaveHandlers] = React.useState(List([]));
   const [afterSaveHandlers, setAfterSaveHandlers] = React.useState(List([]));
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const origData = React.useRef();
 
   React.useEffect(() => {
     onChange && onChange(formData);
@@ -146,6 +147,7 @@ const ModelForm = React.memo(function(props) {
 
   //Fetch model data for editting
   React.useEffect(() => {
+    origData.current = data;
     const modelData = get(data, "model", {});
     setFormData(oldModelData => ({ ...oldModelData, ...modelData }));
   }, [data]);
@@ -158,6 +160,9 @@ const ModelForm = React.memo(function(props) {
 
   const handlers = React.useMemo(
     () => ({
+      resetFormData() {
+        setFormData(origData.current);
+      },
       refetch,
       setChildrenMap,
       setFieldErrors,
