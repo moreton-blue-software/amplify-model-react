@@ -10,7 +10,7 @@ import omit from 'lodash/fp/omit';
 import { ModelControlContext } from './../ModelControl';
 import useModelFormHandlers from './handlers';
 
-/// const NOISE_FIELDS = ["__typename", "createdAt", "updatedAt", "videoFile"];
+/// const NOISE_FIELDS  = ["__typename", "createdAt", "updatedAt", "videoFile"];
 
 export const ModelFormContext = React.createContext();
 
