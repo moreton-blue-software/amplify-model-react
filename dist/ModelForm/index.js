@@ -191,6 +191,8 @@ var ModelForm = _react2.default.memo(function (props) {
       enqueueSnackbar = _useSnackbar.enqueueSnackbar,
       closeSnackbar = _useSnackbar.closeSnackbar;
 
+  var origData = _react2.default.useRef();
+
   _react2.default.useEffect(function () {
     onChange && onChange(formData);
   }, [formData]);
@@ -274,6 +276,7 @@ var ModelForm = _react2.default.memo(function (props) {
 
 
   _react2.default.useEffect(function () {
+    origData.current = data;
     var modelData = (0, _get2.default)(data, "model", {});
     _setFormData(function (oldModelData) {
       return _extends({}, oldModelData, modelData);
@@ -288,6 +291,10 @@ var ModelForm = _react2.default.memo(function (props) {
 
   var handlers = _react2.default.useMemo(function () {
     return {
+      resetFormData: function resetFormData() {
+        _setFormData(origData.current);
+      },
+
       refetch: refetch,
       setChildrenMap: setChildrenMap,
       setFieldErrors: setFieldErrors,
