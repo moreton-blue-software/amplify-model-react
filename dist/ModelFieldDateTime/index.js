@@ -95,7 +95,7 @@ function ModelFieldDateTime(props) {
           _react2.default.Fragment,
           null,
           labelText,
-          control.required ? (0, _RequiredTag.requiredTagText)() : ''
+          control.required ? _react2.default.createElement(_RequiredTag2.default, null) : ''
         ),
         error: control.hasError
       })),

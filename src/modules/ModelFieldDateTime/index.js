@@ -1,11 +1,11 @@
 import React from 'react';
-import { ModelFormContext, useModelForm } from '../ModelForm';
+import { useModelForm } from '../ModelForm';
 import startCase from 'lodash/startCase';
 import FormControl from '@material-ui/core/FormControl';
 import padStart from 'lodash/padStart';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { DateTimePicker, DatePicker } from '@material-ui/pickers';
-import RequiredTag, { requiredTagText } from '../common/RequiredTag';
+import RequiredTag from '../common/RequiredTag';
 
 export default function ModelFieldDateTime(props) {
   const {
@@ -57,7 +57,7 @@ export default function ModelFieldDateTime(props) {
           label={
             <React.Fragment>
               {labelText}
-              {control.required ? requiredTagText() : ''}
+              {control.required ? <RequiredTag /> : ''}
             </React.Fragment>
           }
           error={control.hasError}
