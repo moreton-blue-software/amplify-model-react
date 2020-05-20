@@ -34,8 +34,6 @@ var _pickers = require('@material-ui/pickers');
 
 var _RequiredTag = require('../common/RequiredTag');
 
-var _RequiredTag2 = _interopRequireDefault(_RequiredTag);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ModelFieldDateTime(props) {
@@ -78,6 +76,9 @@ function ModelFieldDateTime(props) {
   },
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [field, handlers]);
+
+  var requiredText = (0, _RequiredTag.useRequiredTagText)();
+
   return _react2.default.createElement(
     'div',
     null,
@@ -87,7 +88,7 @@ function ModelFieldDateTime(props) {
       _react2.default.createElement(Picker, _extends({}, pickerProps, {
         value: value === '' ? null : value,
         onChange: checkDate,
-        label: labelText + (control.required ? _react2.default.createElement(_RequiredTag2.default, null) : ''),
+        label: labelText + (control.required ? requiredText : ''),
         error: control.hasError
       })),
       control.hasErrors && _react2.default.createElement(

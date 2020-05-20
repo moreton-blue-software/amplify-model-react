@@ -5,7 +5,7 @@ import FormControl from '@material-ui/core/FormControl';
 import padStart from 'lodash/padStart';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { DateTimePicker, DatePicker } from '@material-ui/pickers';
-import RequiredTag from '../common/RequiredTag';
+import { useRequiredTagText } from '../common/RequiredTag';
 
 export default function ModelFieldDateTime(props) {
   const {
@@ -42,6 +42,9 @@ export default function ModelFieldDateTime(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [field, handlers]
   );
+
+  const requiredText = useRequiredTagText();
+
   return (
     <div>
       <FormControl fullWidth>
@@ -49,7 +52,7 @@ export default function ModelFieldDateTime(props) {
           {...pickerProps}
           value={value === '' ? null : value}
           onChange={checkDate}
-          label={labelText + (control.required ? <RequiredTag /> : '')}
+          label={labelText + (control.required ? requiredText : '')}
           error={control.hasError}
         />
         {control.hasErrors && (

@@ -2,14 +2,21 @@
 import React from 'react';
 import { ModelControlContext } from '../ModelControl';
 
+const DEFAULT_TEXT = '(required)'
+
 function Tag() {
   const ctx = React.useContext(ModelControlContext);
 
-  return <span>{ctx.requiredLabel || '(required)'}</span>;
+  return <span>{ctx.requiredLabel || DEFAULT_TEXT}</span>;
 }
 
 export function requiredTagText() {
   return <Tag />;
+}
+
+export function useRequiredTagText() {
+  const ctx = React.useContext(ModelControlContext);
+  return ctx.requiredLabel || DEFAULT_TEXT;
 }
 
 export default function RequiredTag() {
