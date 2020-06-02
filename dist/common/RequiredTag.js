@@ -34,7 +34,8 @@ function requiredTagText() {
 
 function useRequiredTagText() {
   var ctx = _react2.default.useContext(_ModelControl.ModelControlContext);
-  return ctx.requiredLabel || DEFAULT_TEXT;
+  if (ctx && ctx.requiredLabel) return ctx.requiredLabel;
+  return DEFAULT_TEXT;
 }
 
 function RequiredTag() {
