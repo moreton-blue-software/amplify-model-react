@@ -30,7 +30,7 @@
     "graphql-tag": "^2.10.1",
     "immutable": "^4.0.0-rc.12",
     "lodash": "^4.17.15",
-    "nanoid": "^2.1.6",
+    "nanoid": "^3.1.31",
     "prop-types": "^15.6.2",
     "reactn": "^2.2.4"
   },
